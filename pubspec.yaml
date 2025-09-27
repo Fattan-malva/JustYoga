@@ -1,0 +1,47 @@
+name: gymbooking
+description: A modern Flutter front-end app for gym booking, ready for Laravel backend integration.
+publish_to: "none" # prevent accidental publishing
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  salomon_bottom_bar: ^3.3.0
+
+  # State management
+  provider: ^6.1.2
+
+  # Icons
+  font_awesome_flutter: ^10.9.0
+
+  # Fonts
+  google_fonts: ^6.2.1
+
+  # HTTP requests (untuk integrasi API Laravel nanti)
+  http: ^1.2.2
+
+  # Animations & transitions
+  animations: ^2.0.11
+
+  # Utilities
+  intl: ^0.19.0
+
+  # Cupertino icons (default iOS style)
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/icons/

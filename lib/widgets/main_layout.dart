@@ -1,0 +1,95 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../widgets/bottom_nav.dart';
+import '../screens/pages/home_screen.dart';
+import '../screens/pages/schedule_screen.dart';
+import '../screens/pages/booked_screen.dart';
+import '../screens/pages/membership_screen.dart';
+import '../screens/pages/profile_screen.dart';
+import '../providers/auth_provider.dart';
+import '../providers/theme_provider.dart';
+
+class MainLayout extends StatefulWidget {
+  const MainLayout({Key? key}) : super(key: key);
+
+  @override
+  _MainLayoutState createState() => _MainLayoutState();
+}
+
+class _MainLayoutState extends State<MainLayout> {
+  int _currentIndex = 0;
+  final PageController _pageController = PageController();
+
+  final List<Widget> _pages = [
+    HomeScreen(),
+    ScheduleScreen(),
+    BookedScreen(),
+    MembershipScreen(),
+    ProfileScreen(),
+  ];
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _onPageChanged(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+
+  void _onBottomNavTapped(int index) {
+    _pageController.animateToPage(
+      index,
+      duration: Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final auth = Provider.of<AuthProvider>(context);
+    final user = auth.user;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Hi, ${user?.name ?? 'Guest'}'),
+        actions: [
+          Consumer<ThemeProvider>(
+            builder: (context, themeProvider, child) {
+              return IconButton(
+                icon: Icon(
+                  themeProvider.isDarkMode ? Icons.light_mode : Icons.dark_mode,
+                  color: Theme.of(context).appBarTheme.iconTheme?.color,
+                ),
+                onPressed: () => themeProvider.toggleTheme(),
+                tooltip: themeProvider.isDarkMode
+                    ? 'Switch to Light Mode'
+                    : 'Switch to Dark Mode',
+              );
+            },
+          ),
+          Padding(
+            padding: EdgeInsets.only(right: 16),
+            child: CircleAvatar(
+              backgroundImage: NetworkImage(
+                  user?.avatarUrl ?? 'https://i.pravatar.cc/150?img=12'),
+            ),
+          ),
+        ],
+      ),
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: _onPageChanged,
+        physics: BouncingScrollPhysics(), // Untuk gesture swipe yang smooth
+        children: _pages,
+      ),
+      bottomNavigationBar: AppBottomNav(
+        currentIndex: _currentIndex,
+        onTap: _onBottomNavTapped,
+      ),
+    );
+  }
+}
