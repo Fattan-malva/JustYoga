@@ -11,7 +11,7 @@ class AuthProvider extends ChangeNotifier {
   Future<bool> loginWithDummy(String email, String password) async {
     await Future.delayed(Duration(milliseconds: 600));
     // Dummy credentials
-    if (email == demoUser.email && password == 'password123') {
+    if (email == demoUser.email && password == 'fattan14') {
       _user = demoUser;
       notifyListeners();
       return true;
