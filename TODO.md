@@ -6,3 +6,5 @@
 - [x] Add fetchStudios() and fetchSchedulesByDateAndStudio(date, studioID) methods to lib/services/api_service.dart
 - [x] Add studio dropdown above "Schedule for" text in lib/screens/pages/schedule_screen.dart, displaying name and address
 - [x] Update schedule_screen.dart to filter schedules by selected studio, keeping filter on date changes
+- [x] Add roomName field to ScheduleItem model
+- [x] Update schedule screen UI to display roomName in subtitle and move studioName to trailing with red location icon

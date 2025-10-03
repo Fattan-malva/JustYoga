@@ -264,28 +264,85 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(16),
                                 ),
-                                elevation: 2,
-                                child: ListTile(
-                                  leading: CircleAvatar(
-                                    backgroundColor:
-                                        Theme.of(context).colorScheme.primary,
-                                    child: Icon(Icons.schedule,
-                                        color: Colors.white),
-                                  ),
-                                  title: Text(
-                                    '${s.timeCls} - ${s.className}',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 16,
+                                elevation: 4,
+                                child: Stack(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          // Judul Kelas & Jam
+                                          Row(
+                                            children: [
+                                              CircleAvatar(
+                                                backgroundColor:
+                                                    Theme.of(context)
+                                                        .colorScheme
+                                                        .primary,
+                                                child: Icon(Icons.schedule,
+                                                    color: Colors.white),
+                                              ),
+                                              const SizedBox(width: 12),
+                                              Expanded(
+                                                child: Text(
+                                                  '${s.timeCls} - ${s.className}',
+                                                  style: const TextStyle(
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize: 16,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 8),
+
+                                          // Detail Room & Trainer
+                                          Text(
+                                            'Room: ${s.roomName ?? 'N/A'}\nTrainer: ${s.teacher1}' +
+                                                (s.teacher2 != null
+                                                    ? ', ${s.teacher2}'
+                                                    : ''),
+                                            style: TextStyle(
+                                                color: Colors.grey[700],
+                                                fontSize: 14),
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                  subtitle: Text(
-                                    '${s.studioName}\nTrainer: ${s.teacher1}' +
-                                        (s.teacher2 != null
-                                            ? ', ${s.teacher2}'
-                                            : ''),
-                                    style: TextStyle(color: Colors.grey[700]),
-                                  ),
+
+                                    // Lokasi di kanan atas
+                                    Positioned(
+                                      right: 12,
+                                      top: 12,
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: Colors.red.shade50,
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            const Icon(Icons.location_on,
+                                                color: Colors.red, size: 16),
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              s.studioName,
+                                              style: const TextStyle(
+                                                color: Colors.red,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               );
                             },
