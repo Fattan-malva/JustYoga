@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:calendar_slider/calendar_slider.dart';
-import '../../providers/classes_provider.dart';
-import '../../providers/booking_provider.dart';
-import '../../models/gym_class.dart';
+import '../../models/schedule_item.dart';
+import '../../models/studio.dart';
+import '../../services/api_service.dart';
 
 class ScheduleScreen extends StatefulWidget {
   @override
@@ -13,9 +12,21 @@ class ScheduleScreen extends StatefulWidget {
 class _ScheduleScreenState extends State<ScheduleScreen> {
   DateTime selectedDate = DateTime.now();
 
-  // Define first and last date for calendar bounds
   final DateTime firstDate = DateTime.now().subtract(const Duration(days: 30));
   final DateTime lastDate = DateTime.now().add(const Duration(days: 365));
+
+  List<ScheduleItem> schedules = [];
+  bool isLoading = false;
+  String? error;
+
+  List<Studio> studios = [];
+  Studio? selectedStudio;
+  bool isLoadingStudios = false;
+  String? studioError;
+
+  final ApiService apiService = ApiService(baseUrl: 'http://localhost:3000');
+  // Note: For Flutter web, ensure your backend API has CORS enabled (e.g., app.use(cors()) in Express).
+  // Alternatively, run the app on an Android/iOS emulator or device, where localhost works without CORS issues.
 
   String _getMonthName(int month) {
     const monthNames = [
@@ -43,6 +54,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       } else {
         selectedDate = prevMonth;
       }
+      _fetchSchedules();
     });
   }
 
@@ -54,28 +66,71 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       } else {
         selectedDate = nextMonth;
       }
+      _fetchSchedules();
     });
   }
 
   @override
+  void initState() {
+    super.initState();
+    _fetchStudios();
+    _fetchSchedules();
+  }
+
+  Future<void> _fetchSchedules() async {
+    setState(() {
+      isLoading = true;
+      error = null;
+    });
+    try {
+      final dateStr = '${selectedDate.year.toString().padLeft(4, '0')}-'
+          '${selectedDate.month.toString().padLeft(2, '0')}-'
+          '${selectedDate.day.toString().padLeft(2, '0')}';
+      List<ScheduleItem> fetchedSchedules;
+      if (selectedStudio != null) {
+        fetchedSchedules = await apiService.fetchSchedulesByDateAndStudio(
+            dateStr, selectedStudio!.studioID);
+      } else {
+        fetchedSchedules = await apiService.fetchSchedulesByDate(dateStr);
+      }
+      setState(() {
+        schedules = fetchedSchedules;
+      });
+    } catch (e) {
+      setState(() {
+        error = e.toString();
+        schedules = [];
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _fetchStudios() async {
+    setState(() {
+      isLoadingStudios = true;
+      studioError = null;
+    });
+    try {
+      final fetchedStudios = await apiService.fetchStudios();
+      setState(() {
+        studios = fetchedStudios;
+      });
+    } catch (e) {
+      setState(() {
+        studioError = e.toString();
+      });
+    } finally {
+      setState(() {
+        isLoadingStudios = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final classesProv = Provider.of<ClassesProvider>(context);
-    final bookingProv = Provider.of<BookingProvider>(context);
-
-    // Filter bookings by selected date
-    final bookingsForDate = bookingProv.bookings
-        .where((b) =>
-            b.date.year == selectedDate.year &&
-            b.date.month == selectedDate.month &&
-            b.date.day == selectedDate.day)
-        .toList();
-
-    // Get classes for the filtered bookings
-    final classesForDate = bookingsForDate
-        .map((b) => classesProv.findById(b.classId))
-        .whereType<GymClass>()
-        .toList();
-
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -104,9 +159,9 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         ),
         centerTitle: true,
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(100), // tinggi AppBar bottom
+          preferredSize: Size.fromHeight(100),
           child: SizedBox(
-            height: 100, // samakan dengan preferredSize biar pas
+            height: 100,
             child: CalendarSlider(
               initialDate: selectedDate,
               firstDate: firstDate,
@@ -114,7 +169,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               locale: 'en',
               monthYearTextColor: Colors.transparent,
               monthYearButtonBackgroundColor: Colors.transparent,
-              selectedDateColor: Color(0xFFFFD700), // gold
+              selectedDateColor: Color(0xFFFFD700),
               selectedTileBackgroundColor:
                   Theme.of(context).primaryColor.withOpacity(0.1),
               tileHeight: 70,
@@ -122,6 +177,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 setState(() {
                   selectedDate = date;
                 });
+                _fetchSchedules();
               },
             ),
           ),
@@ -130,67 +186,110 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          /// Judul section
+          if (isLoadingStudios)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Center(child: CircularProgressIndicator()),
+            )
+          else if (studioError != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Center(
+                child: Text(
+                  'Error loading studios: $studioError',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+            )
+          else
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: DropdownButtonFormField<Studio>(
+                isExpanded: true,
+                decoration: InputDecoration(
+                  labelText: 'Select Studio',
+                  border: OutlineInputBorder(),
+                ),
+                value: selectedStudio,
+                items: studios.map((studio) {
+                  return DropdownMenuItem<Studio>(
+                    value: studio,
+                    child: Text(
+                      '${studio.name} - ${studio.address}',
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  );
+                }).toList(),
+                onChanged: (Studio? newValue) {
+                  setState(() {
+                    selectedStudio = newValue;
+                  });
+                  _fetchSchedules();
+                },
+              ),
+            ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Text(
-              'Jadwal Kelas',
+              'Schedule for ${selectedDate.day} ${_getMonthName(selectedDate.month)} ${selectedDate.year}',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
             ),
           ),
-
-          /// Daftar kelas
           Expanded(
-            child: classesForDate.isEmpty
-                ? Center(
-                    child: Text(
-                      'Tidak ada kelas pada tanggal ini.',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  )
-                : ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: classesForDate.length,
-                    itemBuilder: (_, i) {
-                      final c = classesForDate[i];
-                      return Card(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+            child: isLoading
+                ? Center(child: CircularProgressIndicator())
+                : error != null
+                    ? Center(
+                        child: Text(
+                          'Error: $error',
+                          style: TextStyle(color: Colors.red),
                         ),
-                        elevation: 2,
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor:
-                                Theme.of(context).colorScheme.primary,
-                            child:
-                                Icon(Icons.fitness_center, color: Colors.white),
-                          ),
-                          title: Text(
-                            c.title,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16,
+                      )
+                    : schedules.isEmpty
+                        ? Center(
+                            child: Text(
+                              'Tidak ada kelas pada tanggal ini.',
+                              style: Theme.of(context).textTheme.bodyMedium,
                             ),
+                          )
+                        : ListView.builder(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            itemCount: schedules.length,
+                            itemBuilder: (_, i) {
+                              final s = schedules[i];
+                              return Card(
+                                margin: const EdgeInsets.only(bottom: 12),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                elevation: 2,
+                                child: ListTile(
+                                  leading: CircleAvatar(
+                                    backgroundColor:
+                                        Theme.of(context).colorScheme.primary,
+                                    child: Icon(Icons.schedule,
+                                        color: Colors.white),
+                                  ),
+                                  title: Text(
+                                    '${s.timeCls} - ${s.className}',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    '${s.studioName}\nTrainer: ${s.teacher1}' +
+                                        (s.teacher2 != null
+                                            ? ', ${s.teacher2}'
+                                            : ''),
+                                    style: TextStyle(color: Colors.grey[700]),
+                                  ),
+                                ),
+                              );
+                            },
                           ),
-                          subtitle: Text(
-                            'Trainer: ${c.trainerId}',
-                            style: TextStyle(color: Colors.grey[700]),
-                          ),
-                          trailing: Icon(
-                            Icons.arrow_forward_ios,
-                            size: 16,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                          onTap: () {
-                            // TODO: Arahkan ke detail kelas
-                          },
-                        ),
-                      );
-                    },
-                  ),
           ),
         ],
       ),

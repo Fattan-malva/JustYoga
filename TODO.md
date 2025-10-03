@@ -1,5 +1,8 @@
-- [x] Add helper function `_getMonthName` for Indonesian month names
-- [x] Modify AppBar title to include month navigation arrows and centered month-year text
-- [x] Implement month navigation logic with bounds checking for selectedDate
-- [x] Ensure CalendarSlider updates with new selectedDate
-- [x] Test the app to verify calendar app bar appearance
+- [x] Create lib/models/schedule_item.dart model with fields: timeCls, studioName, className, teacher1, teacher2 (nullable)
+- [x] Update lib/services/api_service.dart to add fetchSchedulesByDate method
+- [x] Refactor lib/screens/pages/schedule_screen.dart to use API data instead of providers
+- [x] Test the schedule screen with API data
+- [x] Create lib/models/studio.dart model with fields matching API response
+- [x] Add fetchStudios() and fetchSchedulesByDateAndStudio(date, studioID) methods to lib/services/api_service.dart
+- [x] Add studio dropdown above "Schedule for" text in lib/screens/pages/schedule_screen.dart, displaying name and address
+- [x] Update schedule_screen.dart to filter schedules by selected studio, keeping filter on date changes
