@@ -18,6 +18,7 @@ import 'package:http/http.dart' as http;
 
 import '../models/schedule_item.dart';
 import '../models/studio.dart';
+import '../models/room_type.dart';
 
 class ApiService {
   final String baseUrl;
@@ -28,17 +29,6 @@ class ApiService {
     final url = Uri.parse('$baseUrl\$path');
     final resp = await http.get(url);
     return jsonDecode(resp.body);
-  }
-
-  Future<List<ScheduleItem>> fetchSchedulesByDate(String date) async {
-    final url = Uri.parse('$baseUrl/api/schedules/by-date?date=$date');
-    final resp = await http.get(url);
-    if (resp.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(resp.body);
-      return data.map((item) => ScheduleItem.fromJson(item)).toList();
-    } else {
-      throw Exception('Failed to load schedules');
-    }
   }
 
   Future<List<Studio>> fetchStudios() async {
@@ -52,14 +42,90 @@ class ApiService {
     }
   }
 
-  Future<List<ScheduleItem>> fetchSchedulesByDateAndStudio(String date, int studioID) async {
-    final url = Uri.parse('$baseUrl/api/schedules/by-date-studio?date=$date&studioID=$studioID');
+  Future<List<RoomType>> fetchRoomTypes() async {
+    final url = Uri.parse('$baseUrl/api/room-types');
+    final resp = await http.get(url);
+    if (resp.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(resp.body);
+      return data.map((item) => RoomType.fromJson(item)).toList();
+    } else {
+      throw Exception('Failed to load room types');
+    }
+  }
+
+  Future<List<ScheduleItem>> fetchSchedulesByDate(String date) async {
+    final url = Uri.parse('$baseUrl/api/schedules/by-date?date=$date');
     final resp = await http.get(url);
     if (resp.statusCode == 200) {
       final List<dynamic> data = jsonDecode(resp.body);
       return data.map((item) => ScheduleItem.fromJson(item)).toList();
     } else {
-      throw Exception('Failed to load schedules by date and studio');
+      try {
+        final Map<String, dynamic> errorData = jsonDecode(resp.body);
+        if (errorData.containsKey('message')) {
+          throw Exception(errorData['message']);
+        }
+      } catch (_) {}
+      throw Exception('No schedule found');
+    }
+  }
+
+  Future<List<ScheduleItem>> fetchSchedulesByDateAndStudio(
+      String date, int studioID) async {
+    final url = Uri.parse(
+        '$baseUrl/api/schedules/by-date-studio?date=$date&studioID=$studioID');
+    final resp = await http.get(url);
+    if (resp.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(resp.body);
+      return data.map((item) => ScheduleItem.fromJson(item)).toList();
+    } else {
+      try {
+        final Map<String, dynamic> errorData = jsonDecode(resp.body);
+        if (errorData.containsKey('message')) {
+          throw Exception(errorData['message']);
+        }
+      } catch (_) {}
+      throw Exception('No schedule found for this date and studio');
+    }
+  }
+
+  Future<List<ScheduleItem>> fetchSchedulesByDateAndRoomType(
+      String date, int roomType) async {
+    final url = Uri.parse(
+        '$baseUrl/api/schedules/by-date-roomType?date=$date&roomType=$roomType');
+    final resp = await http.get(url);
+    if (resp.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(resp.body);
+      return data.map((item) => ScheduleItem.fromJson(item)).toList();
+    } else {
+      try {
+        final Map<String, dynamic> errorData = jsonDecode(resp.body);
+        if (errorData.containsKey('message')) {
+          throw Exception(errorData['message']);
+        }
+      } catch (_) {}
+      throw Exception('No schedule found for this date and room type');
+    }
+  }
+
+  Future<List<ScheduleItem>> fetchSchedules(String date,
+      {int? studioID, int? roomType}) async {
+    final queryParams = <String>['date=$date'];
+    if (studioID != null) queryParams.add('studioID=$studioID');
+    if (roomType != null) queryParams.add('roomType=$roomType');
+    final url = Uri.parse('$baseUrl/api/schedules?${queryParams.join('&')}');
+    final resp = await http.get(url);
+    if (resp.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(resp.body);
+      return data.map((item) => ScheduleItem.fromJson(item)).toList();
+    } else {
+      try {
+        final Map<String, dynamic> errorData = jsonDecode(resp.body);
+        if (errorData.containsKey('message')) {
+          throw Exception(errorData['message']);
+        }
+      } catch (_) {}
+      throw Exception('Failed to load schedules');
     }
   }
 

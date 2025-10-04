@@ -1,10 +1,4 @@
-- [x] Create lib/models/schedule_item.dart model with fields: timeCls, studioName, className, teacher1, teacher2 (nullable)
-- [x] Update lib/services/api_service.dart to add fetchSchedulesByDate method
-- [x] Refactor lib/screens/pages/schedule_screen.dart to use API data instead of providers
-- [x] Test the schedule screen with API data
-- [x] Create lib/models/studio.dart model with fields matching API response
-- [x] Add fetchStudios() and fetchSchedulesByDateAndStudio(date, studioID) methods to lib/services/api_service.dart
-- [x] Add studio dropdown above "Schedule for" text in lib/screens/pages/schedule_screen.dart, displaying name and address
-- [x] Update schedule_screen.dart to filter schedules by selected studio, keeping filter on date changes
-- [x] Add roomName field to ScheduleItem model
-- [x] Update schedule screen UI to display roomName in subtitle and move studioName to trailing with red location icon
+- [x] Modify lib/services/api_service.dart to parse API message on error responses
+- [x] Update lib/screens/pages/schedule_screen.dart to handle no schedule message display
+- [x] Adjust padding for studio and room type inputs in schedule_screen.dart
+- [x] Test the changes for no schedule scenario

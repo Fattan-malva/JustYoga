@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:calendar_slider/calendar_slider.dart';
 import '../../models/schedule_item.dart';
 import '../../models/studio.dart';
+import '../../models/room_type.dart';
 import '../../services/api_service.dart';
 
 class ScheduleScreen extends StatefulWidget {
@@ -18,11 +19,17 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   List<ScheduleItem> schedules = [];
   bool isLoading = false;
   String? error;
+  String? noScheduleMessage;
 
   List<Studio> studios = [];
   Studio? selectedStudio;
   bool isLoadingStudios = false;
   String? studioError;
+
+  List<RoomType> roomTypes = [];
+  RoomType? selectedRoomType;
+  bool isLoadingRoomTypes = false;
+  String? roomTypeError;
 
   final ApiService apiService = ApiService(baseUrl: 'http://localhost:3000');
   // Note: For Flutter web, ensure your backend API has CORS enabled (e.g., app.use(cors()) in Express).
@@ -74,6 +81,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   void initState() {
     super.initState();
     _fetchStudios();
+    _fetchRoomTypes();
     _fetchSchedules();
   }
 
@@ -81,26 +89,45 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     setState(() {
       isLoading = true;
       error = null;
+      noScheduleMessage = null;
     });
     try {
       final dateStr = '${selectedDate.year.toString().padLeft(4, '0')}-'
           '${selectedDate.month.toString().padLeft(2, '0')}-'
           '${selectedDate.day.toString().padLeft(2, '0')}';
       List<ScheduleItem> fetchedSchedules;
-      if (selectedStudio != null) {
+      if (selectedStudio != null && selectedRoomType != null) {
+        fetchedSchedules = await apiService.fetchSchedules(
+          dateStr,
+          studioID: selectedStudio!.studioID,
+          roomType: selectedRoomType!.roomType,
+        );
+      } else if (selectedStudio != null) {
         fetchedSchedules = await apiService.fetchSchedulesByDateAndStudio(
             dateStr, selectedStudio!.studioID);
+      } else if (selectedRoomType != null) {
+        fetchedSchedules = await apiService.fetchSchedulesByDateAndRoomType(
+            dateStr, selectedRoomType!.roomType);
       } else {
         fetchedSchedules = await apiService.fetchSchedulesByDate(dateStr);
       }
       setState(() {
         schedules = fetchedSchedules;
+        noScheduleMessage = null;
       });
     } catch (e) {
-      setState(() {
-        error = e.toString();
-        schedules = [];
-      });
+      final errorMsg = e.toString();
+      if (errorMsg.contains('No schedule found')) {
+        setState(() {
+          noScheduleMessage = errorMsg.replaceFirst('Exception: ', '');
+          schedules = [];
+        });
+      } else {
+        setState(() {
+          error = errorMsg.replaceFirst('Exception: ', '');
+          schedules = [];
+        });
+      }
     } finally {
       setState(() {
         isLoading = false;
@@ -125,6 +152,27 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     } finally {
       setState(() {
         isLoadingStudios = false;
+      });
+    }
+  }
+
+  Future<void> _fetchRoomTypes() async {
+    setState(() {
+      isLoadingRoomTypes = true;
+      roomTypeError = null;
+    });
+    try {
+      final fetchedRoomTypes = await apiService.fetchRoomTypes();
+      setState(() {
+        roomTypes = fetchedRoomTypes;
+      });
+    } catch (e) {
+      setState(() {
+        roomTypeError = e.toString();
+      });
+    } finally {
+      setState(() {
+        isLoadingRoomTypes = false;
       });
     }
   }
@@ -186,48 +234,94 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (isLoadingStudios)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Center(child: CircularProgressIndicator()),
-            )
-          else if (studioError != null)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Center(
-                child: Text(
-                  'Error loading studios: $studioError',
-                  style: TextStyle(color: Colors.red),
+          Row(
+            children: [
+              Expanded(
+                flex: 2,
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                      left: 16, right: 8, top: 16, bottom: 8),
+                  child: isLoadingStudios
+                      ? Center(child: CircularProgressIndicator())
+                      : studioError != null
+                          ? Center(
+                              child: Text(
+                                'Error loading studios: $studioError',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                            )
+                          : DropdownButtonFormField<Studio>(
+                              isExpanded: true,
+                              decoration: InputDecoration(
+                                labelText: 'Studio',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                prefixIcon: Icon(Icons.location_on),
+                              ),
+                              value: selectedStudio,
+                              items: studios.map((studio) {
+                                return DropdownMenuItem<Studio>(
+                                  value: studio,
+                                  child: Text(
+                                    '${studio.name} - ${studio.address}',
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                );
+                              }).toList(),
+                              onChanged: (Studio? newValue) {
+                                setState(() {
+                                  selectedStudio = newValue;
+                                });
+                                _fetchSchedules();
+                              },
+                            ),
                 ),
               ),
-            )
-          else
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: DropdownButtonFormField<Studio>(
-                isExpanded: true,
-                decoration: InputDecoration(
-                  labelText: 'Select Studio',
-                  border: OutlineInputBorder(),
+              Expanded(
+                flex: 1,
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                      left: 8, right: 16, top: 16, bottom: 8),
+                  child: isLoadingRoomTypes
+                      ? Center(child: CircularProgressIndicator())
+                      : roomTypeError != null
+                          ? Center(
+                              child: Text(
+                                'Error loading room types: $roomTypeError',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                            )
+                          : DropdownButtonFormField<RoomType>(
+                              isExpanded: true,
+                              decoration: InputDecoration(
+                                labelText: 'Room',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                prefixIcon: Icon(Icons.meeting_room),
+                              ),
+                              value: selectedRoomType,
+                              items: roomTypes.map((roomType) {
+                                return DropdownMenuItem<RoomType>(
+                                  value: roomType,
+                                  child: Text(
+                                    '${roomType.roomName}',
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                );
+                              }).toList(),
+                              onChanged: (RoomType? newValue) {
+                                setState(() {
+                                  selectedRoomType = newValue;
+                                });
+                                _fetchSchedules();
+                              },
+                            ),
                 ),
-                value: selectedStudio,
-                items: studios.map((studio) {
-                  return DropdownMenuItem<Studio>(
-                    value: studio,
-                    child: Text(
-                      '${studio.name} - ${studio.address}',
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  );
-                }).toList(),
-                onChanged: (Studio? newValue) {
-                  setState(() {
-                    selectedStudio = newValue;
-                  });
-                  _fetchSchedules();
-                },
               ),
-            ),
+            ],
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Text(
@@ -240,113 +334,153 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           Expanded(
             child: isLoading
                 ? Center(child: CircularProgressIndicator())
-                : error != null
+                : noScheduleMessage != null
                     ? Center(
-                        child: Text(
-                          'Error: $error',
-                          style: TextStyle(color: Colors.red),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.sentiment_dissatisfied,
+                              size: 64,
+                              color: Colors.grey.withOpacity(0.5),
+                            ),
+                            SizedBox(height: 16),
+                            Text(
+                              noScheduleMessage!,
+                              style: TextStyle(
+                                color: Colors.grey.withOpacity(0.5),
+                                fontSize: 16,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
                         ),
                       )
-                    : schedules.isEmpty
+                    : error != null
                         ? Center(
-                            child: Text(
-                              'Tidak ada kelas pada tanggal ini.',
-                              style: Theme.of(context).textTheme.bodyMedium,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.sentiment_dissatisfied,
+                                  size: 64,
+                                  color: Colors.grey.withOpacity(0.5),
+                                ),
+                                SizedBox(height: 16),
+                                Text(
+                                  '$error',
+                                  style: TextStyle(
+                                    color: Colors.grey.withOpacity(0.5),
+                                    fontSize: 16,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
                             ),
                           )
-                        : ListView.builder(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            itemCount: schedules.length,
-                            itemBuilder: (_, i) {
-                              final s = schedules[i];
-                              return Card(
-                                margin: const EdgeInsets.only(bottom: 12),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
+                        : schedules.isEmpty
+                            ? Center(
+                                child: Text(
+                                  'Tidak ada kelas pada tanggal ini.',
+                                  style: Theme.of(context).textTheme.bodyMedium,
                                 ),
-                                elevation: 4,
-                                child: Stack(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(16.0),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          // Judul Kelas & Jam
-                                          Row(
+                              )
+                            : ListView.builder(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 16),
+                                itemCount: schedules.length,
+                                itemBuilder: (_, i) {
+                                  final s = schedules[i];
+                                  return Card(
+                                    margin: const EdgeInsets.only(bottom: 12),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                    elevation: 4,
+                                    child: Stack(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.all(16.0),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
-                                              CircleAvatar(
-                                                backgroundColor:
-                                                    Theme.of(context)
-                                                        .colorScheme
-                                                        .primary,
-                                                child: Icon(Icons.schedule,
-                                                    color: Colors.white),
-                                              ),
-                                              const SizedBox(width: 12),
-                                              Expanded(
-                                                child: Text(
-                                                  '${s.timeCls} - ${s.className}',
-                                                  style: const TextStyle(
-                                                    fontWeight: FontWeight.w600,
-                                                    fontSize: 16,
+                                              // Judul Kelas & Jam
+                                              Row(
+                                                children: [
+                                                  CircleAvatar(
+                                                    backgroundColor:
+                                                        Theme.of(context)
+                                                            .colorScheme
+                                                            .primary,
+                                                    child: Icon(Icons.schedule,
+                                                        color: Colors.white),
                                                   ),
-                                                ),
+                                                  const SizedBox(width: 12),
+                                                  Expanded(
+                                                    child: Text(
+                                                      '${s.timeCls} - ${s.className}',
+                                                      style: const TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        fontSize: 16,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              const SizedBox(height: 8),
+
+                                              // Detail Room & Trainer
+                                              Text(
+                                                'Room: ${s.roomName ?? 'N/A'}\nTrainer: ${s.teacher1}' +
+                                                    (s.teacher2 != null
+                                                        ? ', ${s.teacher2}'
+                                                        : ''),
+                                                style: TextStyle(
+                                                    color: Colors.grey[700],
+                                                    fontSize: 14),
                                               ),
                                             ],
                                           ),
-                                          const SizedBox(height: 8),
-
-                                          // Detail Room & Trainer
-                                          Text(
-                                            'Room: ${s.roomName ?? 'N/A'}\nTrainer: ${s.teacher1}' +
-                                                (s.teacher2 != null
-                                                    ? ', ${s.teacher2}'
-                                                    : ''),
-                                            style: TextStyle(
-                                                color: Colors.grey[700],
-                                                fontSize: 14),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-
-                                    // Lokasi di kanan atas
-                                    Positioned(
-                                      right: 12,
-                                      top: 12,
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 8, vertical: 4),
-                                        decoration: BoxDecoration(
-                                          color: Colors.red.shade50,
-                                          borderRadius:
-                                              BorderRadius.circular(12),
                                         ),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            const Icon(Icons.location_on,
-                                                color: Colors.red, size: 16),
-                                            const SizedBox(width: 4),
-                                            Text(
-                                              s.studioName,
-                                              style: const TextStyle(
-                                                color: Colors.red,
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w600,
-                                              ),
+
+                                        // Lokasi di kanan atas
+                                        Positioned(
+                                          right: 12,
+                                          top: 12,
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 8, vertical: 4),
+                                            decoration: BoxDecoration(
+                                              color: Colors.red.shade50,
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
                                             ),
-                                          ],
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                const Icon(Icons.location_on,
+                                                    color: Colors.red,
+                                                    size: 16),
+                                                const SizedBox(width: 4),
+                                                Text(
+                                                  s.studioName,
+                                                  style: const TextStyle(
+                                                    color: Colors.red,
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
                                         ),
-                                      ),
+                                      ],
                                     ),
-                                  ],
-                                ),
-                              );
-                            },
-                          ),
+                                  );
+                                },
+                              ),
           ),
         ],
       ),
