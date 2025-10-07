@@ -433,7 +433,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
                                               // Detail Room & Trainer
                                               Text(
-                                                'Room: ${s.roomName ?? 'N/A'}\nTrainer: ${s.teacher1}' +
+                                                'Room: ${s.roomName ?? 'N/A'}\nTrainer: ${s.teacher1 ?? 'N/A'}' +
                                                     (s.teacher2 != null
                                                         ? ', ${s.teacher2}'
                                                         : ''),

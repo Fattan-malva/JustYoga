@@ -3,7 +3,7 @@ class ScheduleItem {
   final String studioName;
   final String className;
   final String? roomName;
-  final String teacher1;
+  final String? teacher1;
   final String? teacher2;
 
   ScheduleItem({
@@ -11,7 +11,7 @@ class ScheduleItem {
     required this.studioName,
     required this.className,
     this.roomName,
-    required this.teacher1,
+    this.teacher1,
     this.teacher2,
   });
 
