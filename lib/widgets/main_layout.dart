@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../widgets/bottom_nav.dart';
 import '../screens/pages/home_screen.dart';
 import '../screens/pages/schedule_screen.dart';
-import '../screens/pages/booked_screen.dart';
+import '../screens/pages/justme_screen.dart';
 import '../screens/pages/membership_screen.dart';
 import '../screens/pages/profile_screen.dart';
 import '../providers/auth_provider.dart';
@@ -23,7 +23,7 @@ class _MainLayoutState extends State<MainLayout> {
   final List<Widget> _pages = [
     HomeScreen(),
     ScheduleScreen(),
-    BookedScreen(),
+    JustMeScreen(),
     MembershipScreen(),
     ProfileScreen(),
   ];
@@ -55,6 +55,7 @@ class _MainLayoutState extends State<MainLayout> {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text('Hi, ${user?.name ?? 'Guest'}'),
         actions: [
           Consumer<ThemeProvider>(
@@ -73,9 +74,23 @@ class _MainLayoutState extends State<MainLayout> {
           ),
           Padding(
             padding: EdgeInsets.only(right: 16),
-            child: CircleAvatar(
-              backgroundImage: NetworkImage(
-                  user?.avatarUrl ?? 'https://i.pravatar.cc/150?img=12'),
+            child: GestureDetector(
+              onTap: () {
+                // Arahkan ke halaman Profile (index 4)
+                setState(() {
+                  _currentIndex = 4;
+                });
+                _pageController.animateToPage(
+                  4,
+                  duration: Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                );
+              },
+              child: CircleAvatar(
+                backgroundImage: NetworkImage(
+                  user?.avatarUrl ?? 'https://i.pravatar.cc/150?img=12',
+                ),
+              ),
             ),
           ),
         ],

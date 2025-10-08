@@ -5,12 +5,12 @@ import '../../models/studio.dart';
 import '../../models/room_type.dart';
 import '../../services/api_service.dart';
 
-class ScheduleScreen extends StatefulWidget {
+class JustMeScreen extends StatefulWidget {
   @override
-  _ScheduleScreenState createState() => _ScheduleScreenState();
+  _JustMeScreenState createState() => _JustMeScreenState();
 }
 
-class _ScheduleScreenState extends State<ScheduleScreen> {
+class _JustMeScreenState extends State<JustMeScreen> {
   DateTime selectedDate = DateTime.now();
 
   final DateTime firstDate = DateTime.now().subtract(const Duration(days: 30));
@@ -325,7 +325,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Text(
-              'Schedule for ${selectedDate.day} ${_getMonthName(selectedDate.month)} ${selectedDate.year}',
+              'Just Me Schedule for ${selectedDate.day} ${_getMonthName(selectedDate.month)} ${selectedDate.year}',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
