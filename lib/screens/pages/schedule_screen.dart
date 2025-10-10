@@ -239,34 +239,32 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         ),
         centerTitle: true,
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(52),
-          child: SizedBox(
-            height: 80,
-            child: MediaQuery(
-              // Flutter modern (3.10+): pakai TextScaler
-              data: MediaQuery.of(context).copyWith(
-                textScaler:
-                    const TextScaler.linear(0.85), // 85% dari ukuran default
-              ),
-              // Jika belum ada TextScaler di versi Flutter kamu:
-              // data: MediaQuery.of(context).copyWith(textScaleFactor: 0.85),
-
-              child: CalendarSlider(
-                initialDate: selectedDate,
-                firstDate: firstDate,
-                lastDate: lastDate,
-                locale: 'en',
-                monthYearTextColor: Colors.transparent,
-                monthYearButtonBackgroundColor: Colors.transparent,
-                selectedDateColor: const Color(0xFFFFD700),
-                selectedTileBackgroundColor:
-                    theme.primaryColor.withOpacity(0.1),
-                selectedTileHeight: 60,
-                tileHeight: 50,
-                onDateSelected: (date) {
-                  setState(() => selectedDate = date);
-                  _fetchSchedules();
-                },
+          preferredSize: const Size.fromHeight(60),
+          child: Padding(
+            padding: const EdgeInsets.only(top: 6), // ⬅️ atur jarak di sini
+            child: SizedBox(
+              height: 80,
+              child: MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  textScaler: const TextScaler.linear(0.85),
+                ),
+                child: CalendarSlider(
+                  initialDate: selectedDate,
+                  firstDate: firstDate,
+                  lastDate: lastDate,
+                  locale: 'en',
+                  monthYearTextColor: Colors.transparent,
+                  monthYearButtonBackgroundColor: Colors.transparent,
+                  selectedDateColor: const Color(0xFFFFD700),
+                  selectedTileBackgroundColor:
+                      theme.primaryColor.withOpacity(0.1),
+                  selectedTileHeight: 60,
+                  tileHeight: 50,
+                  onDateSelected: (date) {
+                    setState(() => selectedDate = date);
+                    _fetchSchedules();
+                  },
+                ),
               ),
             ),
           ),
@@ -288,17 +286,26 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                           ? Center(
                               child: Text(
                                 'Error loading studios: $studioError',
-                                style: const TextStyle(color: Colors.red),
+                                style: const TextStyle(
+                                    color: Colors.red, fontSize: 12),
                               ),
                             )
                           : DropdownButtonFormField<Studio>(
                               isExpanded: true,
+                              style: const TextStyle(
+                                  fontSize: 12), // ⬅️ ukuran teks
                               decoration: InputDecoration(
                                 labelText: 'Studio',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                labelStyle: const TextStyle(fontSize: 12),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 10, // ⬅️ kontrol tinggi input
                                 ),
-                                prefixIcon: const Icon(Icons.location_on),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                prefixIcon:
+                                    const Icon(Icons.location_on, size: 18),
                               ),
                               value: selectedStudio,
                               items: studios.map((studio) {
@@ -307,6 +314,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                   child: Text(
                                     '${studio.name} - ${studio.address}',
                                     overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(fontSize: 12),
                                   ),
                                 );
                               }).toList(),
@@ -330,17 +338,25 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                           ? Center(
                               child: Text(
                                 'Error loading room types: $roomTypeError',
-                                style: const TextStyle(color: Colors.red),
+                                style: const TextStyle(
+                                    color: Colors.red, fontSize: 12),
                               ),
                             )
                           : DropdownButtonFormField<RoomType>(
                               isExpanded: true,
+                              style: const TextStyle(fontSize: 12),
                               decoration: InputDecoration(
                                 labelText: 'Room',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                labelStyle: const TextStyle(fontSize: 12),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 10,
                                 ),
-                                prefixIcon: const Icon(Icons.meeting_room),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                prefixIcon:
+                                    const Icon(Icons.meeting_room, size: 18),
                               ),
                               value: selectedRoomType,
                               items: roomTypes.map((roomType) {
@@ -349,6 +365,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                   child: Text(
                                     roomType.roomName,
                                     overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(fontSize: 12),
                                   ),
                                 );
                               }).toList(),
@@ -364,11 +381,12 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             ],
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Text(
               'Reguler Class for ${selectedDate.day} ${_getMonthName(selectedDate.month)} ${selectedDate.year}',
               style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold, fontSize: 16,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
               ),
             ),
           ),
