@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:calendar_slider/calendar_slider.dart';
+
 import '../../models/schedule_item.dart';
 import '../../models/studio.dart';
 import '../../models/room_type.dart';
 import '../../services/api_service.dart';
+import '../pages/booking_screen.dart'; // <-- pastikan path ini sesuai
 
 class ScheduleScreen extends StatefulWidget {
   @override
@@ -31,9 +33,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   bool isLoadingRoomTypes = false;
   String? roomTypeError;
 
-  final ApiService apiService = ApiService(baseUrl: 'http://192.168.234.182:3000');
-  // Note: For Flutter web, ensure your backend API has CORS enabled (e.g., app.use(cors()) in Express).
-  // Alternatively, run the app on an Android/iOS emulator or device, where localhost works without CORS issues.
+  final ApiService apiService = ApiService(baseUrl: 'http://localhost:3000');
+  // Catatan: Untuk Flutter web, pastikan API backend enable CORS.
 
   String _getMonthName(int month) {
     const monthNames = [
@@ -177,56 +178,96 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     }
   }
 
+  Color getRoomColor(String? roomName) {
+    switch (roomName?.toUpperCase()) {
+      case 'JADE':
+        return Colors.amber.shade50;
+      case 'RUBY':
+        return Colors.purple.shade50;
+      case 'SAPPHIRE JADE':
+        return Colors.blue.shade50;
+      case 'SAPPHIRE RUBY':
+        return Colors.red.shade50;
+      default:
+        return Colors.grey.shade50; // default jika tidak cocok
+    }
+  }
+
+  Color getRoomTextColor(String? roomName) {
+    switch (roomName?.toUpperCase()) {
+      case 'JADE':
+        return Colors.amber.shade900;
+      case 'RUBY':
+        return Colors.purple.shade800;
+      case 'SAPPHIRE JADE':
+        return Colors.blue.shade800;
+      case 'SAPPHIRE RUBY':
+        return Colors.red.shade800;
+      default:
+        return Colors.grey.shade800;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         elevation: 0,
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: theme.colorScheme.primary,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             IconButton(
-              icon: Icon(Icons.chevron_left, color: Colors.white),
+              icon: const Icon(Icons.chevron_left, color: Colors.white),
               onPressed: _goToPreviousMonth,
             ),
             Text(
               '${_getMonthName(selectedDate.month)} ${selectedDate.year}',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
             ),
             IconButton(
-              icon: Icon(Icons.chevron_right, color: Colors.white),
+              icon: const Icon(Icons.chevron_right, color: Colors.white),
               onPressed: _goToNextMonth,
             ),
           ],
         ),
         centerTitle: true,
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(100),
+          preferredSize: const Size.fromHeight(72),
           child: SizedBox(
-            height: 100,
-            child: CalendarSlider(
-              initialDate: selectedDate,
-              firstDate: firstDate,
-              lastDate: lastDate,
-              locale: 'en',
-              monthYearTextColor: Colors.transparent,
-              monthYearButtonBackgroundColor: Colors.transparent,
-              selectedDateColor: Color(0xFFFFD700),
-              selectedTileBackgroundColor:
-                  Theme.of(context).primaryColor.withOpacity(0.1),
-              tileHeight: 70,
-              onDateSelected: (date) {
-                setState(() {
-                  selectedDate = date;
-                });
-                _fetchSchedules();
-              },
+            height: 80,
+            child: MediaQuery(
+              // Flutter modern (3.10+): pakai TextScaler
+              data: MediaQuery.of(context).copyWith(
+                textScaler:
+                    const TextScaler.linear(0.85), // 85% dari ukuran default
+              ),
+              // Jika belum ada TextScaler di versi Flutter kamu:
+              // data: MediaQuery.of(context).copyWith(textScaleFactor: 0.85),
+
+              child: CalendarSlider(
+                initialDate: selectedDate,
+                firstDate: firstDate,
+                lastDate: lastDate,
+                locale: 'en',
+                monthYearTextColor: Colors.transparent,
+                monthYearButtonBackgroundColor: Colors.transparent,
+                selectedDateColor: const Color(0xFFFFD700),
+                selectedTileBackgroundColor:
+                    theme.primaryColor.withOpacity(0.1),
+                selectedTileHeight: 60,
+                tileHeight: 50, // lebih kecil
+                onDateSelected: (date) {
+                  setState(() => selectedDate = date);
+                  _fetchSchedules();
+                },
+              ),
             ),
           ),
         ),
@@ -242,12 +283,12 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   padding: const EdgeInsets.only(
                       left: 16, right: 8, top: 16, bottom: 8),
                   child: isLoadingStudios
-                      ? Center(child: CircularProgressIndicator())
+                      ? const Center(child: CircularProgressIndicator())
                       : studioError != null
                           ? Center(
                               child: Text(
                                 'Error loading studios: $studioError',
-                                style: TextStyle(color: Colors.red),
+                                style: const TextStyle(color: Colors.red),
                               ),
                             )
                           : DropdownButtonFormField<Studio>(
@@ -257,7 +298,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
-                                prefixIcon: Icon(Icons.location_on),
+                                prefixIcon: const Icon(Icons.location_on),
                               ),
                               value: selectedStudio,
                               items: studios.map((studio) {
@@ -284,12 +325,12 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   padding: const EdgeInsets.only(
                       left: 8, right: 16, top: 16, bottom: 8),
                   child: isLoadingRoomTypes
-                      ? Center(child: CircularProgressIndicator())
+                      ? const Center(child: CircularProgressIndicator())
                       : roomTypeError != null
                           ? Center(
                               child: Text(
                                 'Error loading room types: $roomTypeError',
-                                style: TextStyle(color: Colors.red),
+                                style: const TextStyle(color: Colors.red),
                               ),
                             )
                           : DropdownButtonFormField<RoomType>(
@@ -299,14 +340,14 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
-                                prefixIcon: Icon(Icons.meeting_room),
+                                prefixIcon: const Icon(Icons.meeting_room),
                               ),
                               value: selectedRoomType,
                               items: roomTypes.map((roomType) {
                                 return DropdownMenuItem<RoomType>(
                                   value: roomType,
                                   child: Text(
-                                    '${roomType.roomName}',
+                                    roomType.roomName,
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 );
@@ -326,14 +367,14 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Text(
               'Schedule for ${selectedDate.day} ${_getMonthName(selectedDate.month)} ${selectedDate.year}',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
           Expanded(
             child: isLoading
-                ? Center(child: CircularProgressIndicator())
+                ? const Center(child: CircularProgressIndicator())
                 : noScheduleMessage != null
                     ? Center(
                         child: Column(
@@ -344,7 +385,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                               size: 64,
                               color: Colors.grey.withOpacity(0.5),
                             ),
-                            SizedBox(height: 16),
+                            const SizedBox(height: 16),
                             Text(
                               noScheduleMessage!,
                               style: TextStyle(
@@ -366,7 +407,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                   size: 64,
                                   color: Colors.grey.withOpacity(0.5),
                                 ),
-                                SizedBox(height: 16),
+                                const SizedBox(height: 16),
                                 Text(
                                   '$error',
                                   style: TextStyle(
@@ -382,7 +423,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                             ? Center(
                                 child: Text(
                                   'Tidak ada kelas pada tanggal ini.',
-                                  style: Theme.of(context).textTheme.bodyMedium,
+                                  style: theme.textTheme.bodyMedium,
                                 ),
                               )
                             : ListView.builder(
@@ -391,6 +432,12 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                 itemCount: schedules.length,
                                 itemBuilder: (_, i) {
                                   final s = schedules[i];
+                                  final timeRange =
+                                      '${s.timeCls} - ${s.timeClsEnd ?? 'N/A'}';
+                                  final trainer =
+                                      'Trainer: ${s.teacher1 ?? 'N/A'}'
+                                      '${s.teacher2 != null ? ', ${s.teacher2}' : ''}';
+
                                   return Card(
                                     margin: const EdgeInsets.only(bottom: 12),
                                     shape: RoundedRectangleBorder(
@@ -405,21 +452,25 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              // Judul Kelas & Jam
+                                              // Jam
                                               Row(
                                                 children: [
                                                   CircleAvatar(
-                                                    backgroundColor:
-                                                        Theme.of(context)
-                                                            .colorScheme
-                                                            .primary,
-                                                    child: Icon(Icons.schedule,
-                                                        color: Colors.white),
+                                                    radius:
+                                                        14, // 🔹 default = 20, jadi ini lebih kecil
+                                                    backgroundColor: theme
+                                                        .colorScheme.primary,
+                                                    child: const Icon(
+                                                      Icons.schedule,
+                                                      color: Colors.white,
+                                                      size:
+                                                          18, // 🔹 default = 24, kecilkan agar pas dengan radius di atas
+                                                    ),
                                                   ),
-                                                  const SizedBox(width: 12),
+                                                  const SizedBox(width: 8),
                                                   Expanded(
                                                     child: Text(
-                                                      '${s.timeCls} - ${s.className}',
+                                                      timeRange,
                                                       style: const TextStyle(
                                                         fontWeight:
                                                             FontWeight.w600,
@@ -429,51 +480,187 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                                   ),
                                                 ],
                                               ),
+
                                               const SizedBox(height: 8),
 
-                                              // Detail Room & Trainer
+                                              // Nama Kelas
                                               Text(
-                                                'Room: ${s.roomName ?? 'N/A'}\nTrainer: ${s.teacher1 ?? 'N/A'}' +
-                                                    (s.teacher2 != null
-                                                        ? ', ${s.teacher2}'
-                                                        : ''),
+                                                s.className,
+                                                style: const TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 8),
+
+                                              // Trainer
+                                              Text(
+                                                trainer,
                                                 style: TextStyle(
-                                                    color: Colors.grey[700],
-                                                    fontSize: 14),
+                                                  color: Colors.grey[700],
+                                                  fontSize: 14,
+                                                ),
                                               ),
                                             ],
                                           ),
                                         ),
 
-                                        // Lokasi di kanan atas
+                                        // Area kanan atas: chip studio + room + tombol Booking
                                         Positioned(
                                           right: 12,
                                           top: 12,
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 8, vertical: 4),
-                                            decoration: BoxDecoration(
-                                              color: Colors.red.shade50,
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                            ),
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                const Icon(Icons.location_on,
-                                                    color: Colors.red,
-                                                    size: 16),
-                                                const SizedBox(width: 4),
-                                                Text(
-                                                  s.studioName,
-                                                  style: const TextStyle(
-                                                    color: Colors.red,
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.w600,
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.end,
+                                            children: [
+                                              Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Container(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 8,
+                                                        vertical: 4),
+                                                    decoration: BoxDecoration(
+                                                      color: getRoomColor(
+                                                          s.roomName),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              12),
+                                                    ),
+                                                    child: Row(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        Icon(
+                                                          Icons.meeting_room,
+                                                          color:
+                                                              getRoomTextColor(
+                                                                  s.roomName),
+                                                          size: 16,
+                                                        ),
+                                                        const SizedBox(
+                                                            width: 4),
+                                                        ConstrainedBox(
+                                                          constraints:
+                                                              const BoxConstraints(
+                                                                  maxWidth:
+                                                                      100),
+                                                          child: Text(
+                                                            s.roomName ?? 'N/A',
+                                                            style: TextStyle(
+                                                              color:
+                                                                  getRoomTextColor(
+                                                                      s.roomName),
+                                                              fontSize: 12,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                            ),
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 6),
+                                                  // Studio name
+                                                  Container(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 8,
+                                                        vertical: 4),
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.red.shade50,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              12),
+                                                    ),
+                                                    child: Row(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        const Icon(
+                                                            Icons.location_on,
+                                                            color: Colors.red,
+                                                            size: 16),
+                                                        const SizedBox(
+                                                            width: 4),
+                                                        ConstrainedBox(
+                                                          constraints:
+                                                              const BoxConstraints(
+                                                                  maxWidth:
+                                                                      120),
+                                                          child: Text(
+                                                            s.studioName,
+                                                            style:
+                                                                const TextStyle(
+                                                              color: Colors.red,
+                                                              fontSize: 12,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                            ),
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+
+                                                  // Room type
+                                                ],
+                                              ),
+
+                                              const SizedBox(height: 35),
+
+                                              // 🔹 Tombol Booking tetap di bawah
+                                              SizedBox(
+                                                height: 32,
+                                                child: ElevatedButton.icon(
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                    elevation: 0,
+                                                    backgroundColor: theme
+                                                        .colorScheme
+                                                        .primary, // 🔹 Warna utama dari tema
+                                                    foregroundColor: Colors
+                                                        .white, // 🔹 Warna teks dan ikon jadi putih
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 10),
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              15),
+                                                    ),
+                                                  ),
+                                                  onPressed: () {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (_) =>
+                                                            BookingScreen(
+                                                                schedule: s),
+                                                      ),
+                                                    );
+                                                  },
+                                                  icon: const Icon(
+                                                      Icons.shopping_bag,
+                                                      size: 16),
+                                                  label: const Text(
+                                                    'Booking',
+                                                    style:
+                                                        TextStyle(fontSize: 12),
                                                   ),
                                                 ),
-                                              ],
-                                            ),
+                                              ),
+                                            ],
                                           ),
                                         ),
                                       ],

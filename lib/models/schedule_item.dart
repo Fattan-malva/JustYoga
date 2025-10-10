@@ -5,6 +5,8 @@ class ScheduleItem {
   final String? roomName;
   final String? teacher1;
   final String? teacher2;
+  final String? timeClsEnd;
+  final int? roomType;
 
   ScheduleItem({
     required this.timeCls,
@@ -13,6 +15,8 @@ class ScheduleItem {
     this.roomName,
     this.teacher1,
     this.teacher2,
+    this.timeClsEnd,
+    this.roomType,
   });
 
   factory ScheduleItem.fromJson(Map<String, dynamic> json) {
@@ -23,6 +27,8 @@ class ScheduleItem {
       roomName: json['RoomName'],
       teacher1: json['Teacher1'],
       teacher2: json['Teacher2'],
+      timeClsEnd: json['TimeClsEnd'],
+      roomType: json['RoomType'],
     );
   }
 
@@ -34,6 +40,8 @@ class ScheduleItem {
       'RoomName': roomName,
       'Teacher1': teacher1,
       'Teacher2': teacher2,
+      'TimeClsEnd': timeClsEnd,
+      'RoomType': roomType,
     };
   }
 }

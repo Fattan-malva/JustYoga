@@ -1,2 +1,5 @@
-- [x] Add import for 'package:flutter/services.dart' in lib/main.dart
-- [x] Add SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky) in main() function to hide Android navigation bar and allow swipe up to reveal
+- [x] Add helper functions getRoomColor and getRoomTextColor in schedule_screen.dart for room badge colors based on roomType
+- [x] Update the time display in the Card to show '${s.timeCls} - ${s.timeClsEnd ?? 'N/A'}'
+- [x] Add className as a separate Text widget below the time
+- [x] Update the trainer text to only show trainer info, removing room details
+- [x] Add room badge in the right column below the studio badge with color and icon
