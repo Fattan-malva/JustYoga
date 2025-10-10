@@ -239,7 +239,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         ),
         centerTitle: true,
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(72),
+          preferredSize: const Size.fromHeight(52),
           child: SizedBox(
             height: 80,
             child: MediaQuery(
@@ -262,7 +262,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 selectedTileBackgroundColor:
                     theme.primaryColor.withOpacity(0.1),
                 selectedTileHeight: 60,
-                tileHeight: 50, // lebih kecil
+                tileHeight: 50,
                 onDateSelected: (date) {
                   setState(() => selectedDate = date);
                   _fetchSchedules();
@@ -366,9 +366,9 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Text(
-              'Schedule for ${selectedDate.day} ${_getMonthName(selectedDate.month)} ${selectedDate.year}',
+              'Reguler Class for ${selectedDate.day} ${_getMonthName(selectedDate.month)} ${selectedDate.year}',
               style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.bold, fontSize: 16,
               ),
             ),
           ),
@@ -457,101 +457,26 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                                 children: [
                                                   CircleAvatar(
                                                     radius:
-                                                        14, // 🔹 default = 20, jadi ini lebih kecil
+                                                        10, // 🔹 default = 20, jadi ini lebih kecil
                                                     backgroundColor: theme
                                                         .colorScheme.primary,
                                                     child: const Icon(
                                                       Icons.schedule,
                                                       color: Colors.white,
                                                       size:
-                                                          18, // 🔹 default = 24, kecilkan agar pas dengan radius di atas
+                                                          12, // 🔹 default = 24, kecilkan agar pas dengan radius di atas
                                                     ),
                                                   ),
                                                   const SizedBox(width: 8),
-                                                  Expanded(
-                                                    child: Text(
-                                                      timeRange,
-                                                      style: const TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        fontSize: 16,
-                                                      ),
+                                                  Text(
+                                                    timeRange,
+                                                    style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      fontSize: 12,
                                                     ),
                                                   ),
-                                                ],
-                                              ),
-
-                                              const SizedBox(height: 8),
-
-                                              Row(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                children: [
-                                                  const Icon(
-                                                    Icons
-                                                        .self_improvement, // 🧘 Ikon yoga / class
-                                                    size: 20,
-                                                    color: Colors
-                                                        .deepPurple, // atau pakai theme color
-                                                  ),
-                                                  const SizedBox(width: 6),
-                                                  Expanded(
-                                                    child: Text(
-                                                      s.className,
-                                                      style: const TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize: 16,
-                                                      ),
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              const SizedBox(height: 8),
-
-                                              // Trainer
-                                              Row(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                children: [
-                                                  const Icon(
-                                                    Icons
-                                                        .person, // 🔹 Ganti sesuai ikon yang kamu mau
-                                                    size: 18,
-                                                    color: Colors.redAccent,
-                                                  ),
-                                                  const SizedBox(width: 6),
-                                                  Expanded(
-                                                    child: Text(
-                                                      '${s.teacher1 ?? 'N/A'}${s.teacher2 != null ? ', ${s.teacher2}' : ''}',
-                                                      style: const TextStyle(
-                                                        fontSize: 13,
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                      ),
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                    ),
-                                                  ),
-                                                ],
-                                              )
-                                            ],
-                                          ),
-                                        ),
-
-                                        // Area kanan atas: chip studio + room + tombol Booking
-                                        Positioned(
-                                          right: 12,
-                                          top: 12,
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.end,
-                                            children: [
-                                              Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
+                                                  const SizedBox(width: 8),
                                                   Container(
                                                     padding: const EdgeInsets
                                                         .symmetric(
@@ -573,7 +498,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                                           color:
                                                               getRoomTextColor(
                                                                   s.roomName),
-                                                          size: 16,
+                                                          size: 12,
                                                         ),
                                                         const SizedBox(
                                                             width: 4),
@@ -588,7 +513,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                                               color:
                                                                   getRoomTextColor(
                                                                       s.roomName),
-                                                              fontSize: 12,
+                                                              fontSize: 10,
                                                               fontWeight:
                                                                   FontWeight
                                                                       .w600,
@@ -601,62 +526,122 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                                       ],
                                                     ),
                                                   ),
-                                                  const SizedBox(width: 6),
-                                                  // Studio name
-                                                  Container(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                        horizontal: 8,
-                                                        vertical: 4),
-                                                    decoration: BoxDecoration(
-                                                      color: Colors.red.shade50,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              12),
-                                                    ),
-                                                    child: Row(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      children: [
-                                                        const Icon(
-                                                            Icons.location_on,
-                                                            color: Colors.red,
-                                                            size: 16),
-                                                        const SizedBox(
-                                                            width: 4),
-                                                        ConstrainedBox(
-                                                          constraints:
-                                                              const BoxConstraints(
-                                                                  maxWidth:
-                                                                      120),
-                                                          child: Text(
-                                                            s.studioName,
-                                                            style:
-                                                                const TextStyle(
-                                                              color: Colors.red,
-                                                              fontSize: 12,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600,
-                                                            ),
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-
-                                                  // Room type
                                                 ],
                                               ),
 
-                                              const SizedBox(height: 35),
+                                              const SizedBox(height: 2),
+
+                                              Row(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  const Icon(
+                                                    Icons
+                                                        .self_improvement, // 🧘 Ikon yoga / class
+                                                    size: 20,
+                                                    color: Colors
+                                                        .deepPurple, // atau pakai theme color
+                                                  ),
+                                                  const SizedBox(width: 6),
+                                                  Expanded(
+                                                    child: Text(
+                                                      s.className,
+                                                      style: const TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 12,
+                                                      ),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              const SizedBox(height: 2),
+
+                                              // Trainer
+                                              Row(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  const Icon(
+                                                    Icons
+                                                        .school_rounded, // 🔹 Ganti sesuai ikon yang kamu mau
+                                                    size: 15,
+                                                    color: Colors.redAccent,
+                                                  ),
+                                                  const SizedBox(width: 10),
+                                                  Expanded(
+                                                    child: Text(
+                                                      '${s.teacher1 ?? 'N/A'}${s.teacher2 != null ? ', ${s.teacher2}' : ''}',
+                                                      style: const TextStyle(
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                  ),
+                                                ],
+                                              )
+                                            ],
+                                          ),
+                                        ),
+
+                                        // Area kanan atas: chip studio + room + tombol Booking
+                                        Positioned(
+                                          right: 12,
+                                          top: 12,
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.end,
+                                            children: [
+                                              // Studio name
+                                              Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 8,
+                                                        vertical: 4),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.red.shade50,
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                                child: Row(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    const Icon(
+                                                        Icons.location_on,
+                                                        color: Colors.red,
+                                                        size: 12),
+                                                    const SizedBox(width: 4),
+                                                    ConstrainedBox(
+                                                      constraints:
+                                                          const BoxConstraints(
+                                                              maxWidth: 120),
+                                                      child: Text(
+                                                        s.studioName,
+                                                        style: const TextStyle(
+                                                          color: Colors.red,
+                                                          fontSize: 10,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                        ),
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+
+                                              const SizedBox(height: 25),
 
                                               // 🔹 Tombol Booking tetap di bawah
                                               SizedBox(
-                                                height: 32,
+                                                height: 25,
                                                 child: ElevatedButton.icon(
                                                   style:
                                                       ElevatedButton.styleFrom(
@@ -688,7 +673,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                                   },
                                                   icon: const Icon(
                                                       Icons.shopping_bag,
-                                                      size: 16),
+                                                      size: 12),
                                                   label: const Text(
                                                     'Booking',
                                                     style:
