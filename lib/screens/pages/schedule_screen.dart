@@ -483,24 +483,60 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
                                               const SizedBox(height: 8),
 
-                                              // Nama Kelas
-                                              Text(
-                                                s.className,
-                                                style: const TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 16,
-                                                ),
+                                              Row(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  const Icon(
+                                                    Icons
+                                                        .self_improvement, // 🧘 Ikon yoga / class
+                                                    size: 20,
+                                                    color: Colors
+                                                        .deepPurple, // atau pakai theme color
+                                                  ),
+                                                  const SizedBox(width: 6),
+                                                  Expanded(
+                                                    child: Text(
+                                                      s.className,
+                                                      style: const TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 16,
+                                                      ),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                               const SizedBox(height: 8),
 
                                               // Trainer
-                                              Text(
-                                                trainer,
-                                                style: TextStyle(
-                                                  color: Colors.grey[700],
-                                                  fontSize: 14,
-                                                ),
-                                              ),
+                                              Row(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  const Icon(
+                                                    Icons
+                                                        .person, // 🔹 Ganti sesuai ikon yang kamu mau
+                                                    size: 18,
+                                                    color: Colors.redAccent,
+                                                  ),
+                                                  const SizedBox(width: 6),
+                                                  Expanded(
+                                                    child: Text(
+                                                      '${s.teacher1 ?? 'N/A'}${s.teacher2 != null ? ', ${s.teacher2}' : ''}',
+                                                      style: const TextStyle(
+                                                        fontSize: 13,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                  ),
+                                                ],
+                                              )
                                             ],
                                           ),
                                         ),

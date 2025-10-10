@@ -60,13 +60,15 @@ class AppBottomNav extends StatelessWidget {
           title: const Text("Just Me"),
           selectedColor: Colors.red,
         ),
+
+        // 🔸 Membership — selalu amber, baik mode terang maupun gelap
         SalomonBottomBarItem(
           icon: SvgPicture.asset(
             'assets/icons/membership.svg',
-            width: 30,
-            height: 30,
-            colorFilter: ColorFilter.mode(
-              isDarkMode ? Colors.amber : Theme.of(context).iconTheme.color!,
+            width: 33,
+            height: 33,
+            colorFilter: const ColorFilter.mode(
+              Colors.amber,
               BlendMode.srcIn,
             ),
           ),
