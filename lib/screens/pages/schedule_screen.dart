@@ -5,7 +5,7 @@ import '../../models/schedule_item.dart';
 import '../../models/studio.dart';
 import '../../models/room_type.dart';
 import '../../services/api_service.dart';
-import '../pages/booking_screen.dart'; // <-- pastikan path ini sesuai
+import '../pages/bookings_screen.dart'; 
 
 class ScheduleScreen extends StatefulWidget {
   @override
@@ -740,7 +740,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                                       context,
                                                       MaterialPageRoute(
                                                         builder: (_) =>
-                                                            BookingScreen(
+                                                            BookingsScreen(
                                                                 schedule: s),
                                                       ),
                                                     );
