@@ -279,7 +279,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 flex: 2,
                 child: Padding(
                   padding: const EdgeInsets.only(
-                      left: 16, right: 8, top: 16, bottom: 8),
+                      left: 16, right: 8, top: 8, bottom: 4),
                   child: isLoadingStudios
                       ? const Center(child: CircularProgressIndicator())
                       : studioError != null
@@ -292,20 +292,41 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                             )
                           : DropdownButtonFormField<Studio>(
                               isExpanded: true,
-                              style: const TextStyle(
-                                  fontSize: 12), // ⬅️ ukuran teks
+                              style: TextStyle(
+                                fontSize: 12,
+                                height: 1.1, // ⬅️ lebih rapat lagi
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black87,
+                              ),
+                              dropdownColor: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.grey[850]
+                                  : Colors.white, // ⬅️ dropdown-nya ikut tema
                               decoration: InputDecoration(
+                                isDense: true, // ⬅️ wajib biar super ciut
                                 labelText: 'Studio',
-                                labelStyle: const TextStyle(fontSize: 12),
+                                labelStyle: TextStyle(
+                                  fontSize: 11,
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.grey[300]
+                                      : Colors.grey[700],
+                                ),
                                 contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 10, // ⬅️ kontrol tinggi input
+                                  horizontal: 8,
+                                  vertical:
+                                      2, // ⬅️ makin kecil → makin tipis form-nya
                                 ),
                                 border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(20),
+                                  borderRadius: BorderRadius.circular(14),
                                 ),
-                                prefixIcon:
-                                    const Icon(Icons.location_on, size: 18),
+                                prefixIcon: Icon(
+                                  Icons.location_on,
+                                  size: 14,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
                               ),
                               value: selectedStudio,
                               items: studios.map((studio) {
@@ -314,7 +335,14 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                   child: Text(
                                     '${studio.name} - ${studio.address}',
                                     overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(fontSize: 12),
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      height: 1.1,
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.white
+                                          : Colors.black87,
+                                    ),
                                   ),
                                 );
                               }).toList(),
@@ -328,10 +356,10 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 ),
               ),
               Expanded(
-                flex: 1,
+                flex: 2,
                 child: Padding(
                   padding: const EdgeInsets.only(
-                      left: 8, right: 16, top: 16, bottom: 8),
+                      left: 8, right: 16, top: 8, bottom: 4),
                   child: isLoadingRoomTypes
                       ? const Center(child: CircularProgressIndicator())
                       : roomTypeError != null
@@ -344,19 +372,40 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                             )
                           : DropdownButtonFormField<RoomType>(
                               isExpanded: true,
-                              style: const TextStyle(fontSize: 12),
+                              style: TextStyle(
+                                fontSize: 12,
+                                height: 1.1,
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black87,
+                              ),
+                              dropdownColor: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.grey[850]
+                                  : Colors.white,
                               decoration: InputDecoration(
+                                isDense: true,
                                 labelText: 'Room',
-                                labelStyle: const TextStyle(fontSize: 12),
+                                labelStyle: TextStyle(
+                                  fontSize: 11,
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.grey[300]
+                                      : Colors.grey[700],
+                                ),
                                 contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 10,
+                                  horizontal: 8,
+                                  vertical: 2,
                                 ),
                                 border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(20),
+                                  borderRadius: BorderRadius.circular(14),
                                 ),
-                                prefixIcon:
-                                    const Icon(Icons.meeting_room, size: 18),
+                                prefixIcon: Icon(
+                                  Icons.meeting_room,
+                                  size: 14,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
                               ),
                               value: selectedRoomType,
                               items: roomTypes.map((roomType) {
@@ -365,7 +414,14 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                   child: Text(
                                     roomType.roomName,
                                     overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(fontSize: 12),
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      height: 1.1,
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.white
+                                          : Colors.black87,
+                                    ),
                                   ),
                                 );
                               }).toList(),
@@ -381,12 +437,12 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             ],
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
             child: Text(
               'Reguler Class for ${selectedDate.day} ${_getMonthName(selectedDate.month)} ${selectedDate.year}',
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
-                fontSize: 16,
+                fontSize: 14,
               ),
             ),
           ),

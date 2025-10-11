@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../widgets/search_bar.dart' as custom_search;
+import '../../widgets/category_card.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -62,23 +63,36 @@ class HomeScreen extends StatelessWidget {
           // Floating Categories
           Positioned(
             top: 180,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: Container(
-                height: 110,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  mainAxisSize:
-                      MainAxisSize.min, // biar konten ngepas, bukan full width
+            left: 16,
+            right: 16,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final availableWidth = constraints.maxWidth;
+                const spacing = 12.0;
+                final totalSpacing = spacing * 3;
+                final cardWidth =
+                    ((availableWidth - totalSpacing) / 4).clamp(50.0, 100.0);
+
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    _categoryCard(context, "Live", Icons.live_tv),
-                    _categoryCard(context, "Video", Icons.play_circle_fill),
-                    _categoryCard(context, "Workshop", Icons.school),
-                    _categoryCard(context, "Packages", Icons.card_giftcard),
+                    CategoryCard(
+                        label: "Live", icon: Icons.live_tv, width: cardWidth),
+                    CategoryCard(
+                        label: "Video",
+                        icon: Icons.play_circle_fill,
+                        width: cardWidth),
+                    CategoryCard(
+                        label: "Workshop",
+                        icon: Icons.school,
+                        width: cardWidth),
+                    CategoryCard(
+                        label: "Packages",
+                        icon: Icons.card_giftcard,
+                        width: cardWidth),
                   ],
-                ),
-              ),
+                );
+              },
             ),
           ),
 
@@ -193,43 +207,6 @@ class HomeScreen extends StatelessWidget {
                   const SizedBox(height: 24),
                 ],
               ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Category Card
-  Widget _categoryCard(BuildContext context, String label, IconData icon) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    return Container(
-      width: 100,
-      height: 90,
-      margin: const EdgeInsets.only(right: 16),
-      decoration: BoxDecoration(
-        color: colorScheme.primary,
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(
-            color: theme.shadowColor.withOpacity(0.2),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, color: colorScheme.secondary, size: 28),
-          const SizedBox(height: 6),
-          Text(
-            label,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: colorScheme.onPrimary,
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
             ),
           ),
         ],

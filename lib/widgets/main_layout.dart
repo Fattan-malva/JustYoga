@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import '../widgets/bottom_nav.dart';
 import '../screens/pages/home_screen.dart';
@@ -56,7 +57,14 @@ class _MainLayoutState extends State<MainLayout> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text('Hi, ${user?.name ?? 'Guest'}'),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        title: Text(
+          'Hi, ${user?.name ?? 'Guest'}',
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         actions: [
           Consumer<ThemeProvider>(
             builder: (context, themeProvider, child) {
@@ -87,8 +95,13 @@ class _MainLayoutState extends State<MainLayout> {
                 );
               },
               child: CircleAvatar(
-                backgroundImage: NetworkImage(
-                  user?.avatarUrl ?? 'https://i.pravatar.cc/150?img=12',
+                radius: 18, // bisa ubah ukuran lingkaran
+                backgroundColor:
+                    Colors.white.withOpacity(0.15), // opsional efek halus
+                child: Icon(
+                  Icons.person,
+                  color: Colors.white,
+                  size: 22,
                 ),
               ),
             ),
