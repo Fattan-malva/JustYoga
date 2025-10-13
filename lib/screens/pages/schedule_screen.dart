@@ -33,7 +33,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   bool isLoadingRoomTypes = false;
   String? roomTypeError;
 
-  final ApiService apiService = ApiService(baseUrl: 'http://localhost:3000');
+  final ApiService apiService =
+      ApiService(baseUrl: 'http://192.168.234.182:3000');
   // Catatan: Untuk Flutter web, pastikan API backend enable CORS.
 
   String _getMonthName(int month) {
@@ -556,7 +557,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                                     style: const TextStyle(
                                                       fontWeight:
                                                           FontWeight.w600,
-                                                      fontSize: 12,
+                                                      fontSize: 16,
                                                     ),
                                                   ),
                                                   const SizedBox(width: 8),
@@ -632,7 +633,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                                       style: const TextStyle(
                                                         fontWeight:
                                                             FontWeight.bold,
-                                                        fontSize: 12,
+                                                        fontSize: 16,
                                                       ),
                                                       overflow:
                                                           TextOverflow.ellipsis,
@@ -658,7 +659,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                                     child: Text(
                                                       '${s.teacher1 ?? 'N/A'}${s.teacher2 != null ? ', ${s.teacher2}' : ''}',
                                                       style: const TextStyle(
-                                                        fontSize: 12,
+                                                        fontSize: 15,
                                                         fontWeight:
                                                             FontWeight.w500,
                                                       ),

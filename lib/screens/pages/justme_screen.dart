@@ -31,9 +31,10 @@ class _JustMeScreenState extends State<JustMeScreen> {
   bool isLoadingRoomTypes = false;
   String? roomTypeError;
 
-  final ApiService apiService = ApiService(baseUrl: 'http://localhost:3000');
+  final ApiService apiService =
+      ApiService(baseUrl: 'http://192.168.234.182:3000');
   // Note: For Flutter web, ensure your backend API has CORS enabled (e.g., app.use(cors()) in Express).
-  // Alternatively, run the app on an Android/iOS emulator or device, where localhost works without CORS issues.
+  // Alternatively, run the app on an Android/iOS emulator or device, where 192.168.234.182 works without CORS issues.
 
   String _getMonthName(int month) {
     const monthNames = [
@@ -327,7 +328,8 @@ class _JustMeScreenState extends State<JustMeScreen> {
             child: Text(
               'Just Me Class for ${selectedDate.day} ${_getMonthName(selectedDate.month)} ${selectedDate.year}',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold, fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
                   ),
             ),
           ),
