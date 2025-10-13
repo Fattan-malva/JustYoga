@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../models/schedule_item.dart';
 import '../../models/booking_item.dart';
 import '../../services/api_service.dart';
@@ -16,6 +17,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
   List<_Seat> seats = [];
   bool isLoading = true;
   String? selectedSeatId;
+  int totalBooked = 0;
 
   @override
   void initState() {
@@ -36,6 +38,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
           final seatNumber = index + 1;
           return _Seat(seatNumber.toString(), !takenSeats.contains(seatNumber));
         });
+        totalBooked = takenSeats.length;
         isLoading = false;
       });
     } catch (e) {
@@ -51,46 +54,251 @@ class _BookingsScreenState extends State<BookingsScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     final timeAndClass =
-        '${widget.schedule.timeCls} - ${widget.schedule.className}';
+        '${widget.schedule.timeCls} - ${widget.schedule.timeClsEnd} - ${widget.schedule.className}';
     final roomAndTrainer = 'Room: ${widget.schedule.roomName ?? 'N/A'}\n'
         'Trainer: ${widget.schedule.teacher1 ?? 'N/A'}'
         '${widget.schedule.teacher2 != null ? ', ${widget.schedule.teacher2}' : ''}';
     final studioName = widget.schedule.studioName;
+    final mapInfo = 'Mat: $totalBooked/${widget.schedule.totalMap}';
+
+    // Define variables for header display
+    final timeStr =
+        '${widget.schedule.timeCls} - ${widget.schedule.timeClsEnd}';
+    final className = widget.schedule.className;
+    final roomName = widget.schedule.roomName ?? 'N/A';
+    final trainerName = '${widget.schedule.teacher1 ?? 'N/A'}'
+        '${widget.schedule.teacher2 != null ? ', ${widget.schedule.teacher2}' : ''}';
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Booking'),
+        backgroundColor: theme.colorScheme.primary,
+        foregroundColor: Colors.white,
+        titleTextStyle: const TextStyle(
+            color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
+        leading: IconButton(
+          icon: const Icon(Icons.chevron_left_rounded),
+          color: Colors.white,
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
       body: Stack(
         children: [
-          // ===== Scrollable content (berjarak dari header sticky) =====
+          // ===== Sticky header (info forward) =====
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primary,
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(30),
+                  bottomRight: Radius.circular(30),
+                ),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 4,
+                    offset: Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  // ======== Header Keterangan Statis ========
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: const [
+                      Expanded(
+                        child: Text(
+                          'Time & Class',
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Text(
+                          'Room & Teacher',
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Text(
+                          'Studio & Map',
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  // ======== Baris Data Dinamis ========
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Kolom 1: Time & Class
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(Icons.schedule,
+                                    color: Colors.white, size: 14),
+                                const SizedBox(width: 6),
+                                Text(
+                                  timeStr,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              className,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.white70,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      // Kolom 2: Room & Trainer
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(Icons.meeting_room,
+                                    color: Colors.white, size: 14),
+                                const SizedBox(width: 6),
+                                Text(
+                                  roomName,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              trainerName,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.white70,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      // Kolom 3: Studio & Map
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(Icons.location_on,
+                                    color: Colors.white, size: 14),
+                                const SizedBox(width: 6),
+                                Flexible(
+                                  child: Text(
+                                    studioName,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                      color: Colors.white,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              mapInfo,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.white70,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // ===== Legend (Available / Booked / Selected) =====
+                  Center(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _legendDot(color: Colors.green),
+                        const SizedBox(width: 6),
+                        const Text('Available',
+                            style: TextStyle(color: Colors.white)),
+                        const SizedBox(width: 16),
+                        _legendDot(color: Colors.red),
+                        const SizedBox(width: 6),
+                        const Text('Booked',
+                            style: TextStyle(color: Colors.white)),
+                        const SizedBox(width: 16),
+                        _legendDot(color: Color.fromARGB(255, 106, 15, 15)),
+                        const SizedBox(width: 6),
+                        const Text('Selected',
+                            style: TextStyle(color: Colors.white)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // ===== Scrollable content =====
           Padding(
-            padding: const EdgeInsets.only(top: 180),
+            padding: const EdgeInsets.only(
+                top: 140), // Sesuaikan dengan tinggi header + legend
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Legend
-                  Row(
-                    children: [
-                      _legendDot(color: Colors.green),
-                      const SizedBox(width: 6),
-                      const Text('Kosong'),
-                      const SizedBox(width: 16),
-                      _legendDot(color: Colors.red),
-                      const SizedBox(width: 6),
-                      const Text('Terisi'),
-                      const SizedBox(width: 16),
-                      _legendDot(color: theme.colorScheme.primary),
-                      const SizedBox(width: 6),
-                      const Text('Dipilih'),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-
                   // ===== Loading indicator =====
                   if (isLoading)
                     const Center(child: CircularProgressIndicator())
@@ -106,11 +314,15 @@ class _BookingsScreenState extends State<BookingsScreen> {
 
                         final Color tileBorder = isSelected
                             ? theme.colorScheme.primary
-                            : Colors.grey.shade300;
+                            : isDark
+                                ? Colors.grey[700]!
+                                : Colors.grey.shade300;
 
                         final Color tileColor = isSelected
                             ? theme.colorScheme.primary.withOpacity(0.10)
-                            : Colors.grey.shade100;
+                            : isDark
+                                ? Colors.grey[800]!
+                                : Colors.grey.shade100;
 
                         final Color seatIconColor = !seat.isAvailable
                             ? Colors.red
@@ -126,19 +338,26 @@ class _BookingsScreenState extends State<BookingsScreen> {
                               side: BorderSide(color: tileBorder, width: 1.2),
                             ),
                             tileColor: tileColor,
-                            leading:
-                                Icon(Icons.event_seat, color: seatIconColor),
+                            leading: SvgPicture.asset(
+                              'assets/icons/mat.svg',
+                              width: 30,
+                              height: 30,
+
+                            ),
+
                             title: Text(
-                              'Kursi ${seat.id}',
+                              'Mat ${seat.id}',
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 color: isSelected
                                     ? theme.colorScheme.primary
-                                    : Colors.black87,
+                                    : isDark
+                                        ? Colors.white
+                                        : Colors.black87,
                               ),
                             ),
                             subtitle: Text(
-                              seat.isAvailable ? 'Kosong' : 'Terisi',
+                              seat.isAvailable ? 'Available' : 'Booked',
                               style: TextStyle(
                                 color: seat.isAvailable
                                     ? Colors.green
@@ -156,12 +375,11 @@ class _BookingsScreenState extends State<BookingsScreen> {
                                       key: ValueKey('confirm_${seat.id}'),
                                       width: 150,
                                       child: ElevatedButton.icon(
-                                        onPressed:
-                                            _onConfirmPressed, // gunakan selectedSeatId
+                                        onPressed: _onConfirmPressed,
                                         icon: const Icon(Icons.check_circle,
                                             size: 18),
                                         label: const Text(
-                                          'Konfirmasi',
+                                          'Confirm',
                                           overflow: TextOverflow.ellipsis,
                                         ),
                                         style: ElevatedButton.styleFrom(
@@ -200,65 +418,6 @@ class _BookingsScreenState extends State<BookingsScreen> {
               ),
             ),
           ),
-
-          // ===== Sticky header (info forward) =====
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade50,
-                border: Border(
-                  bottom: BorderSide(color: Colors.grey.shade300, width: 1),
-                ),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 4,
-                    offset: Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                      child: _infoBlock('Waktu & Nama Kelas', timeAndClass)),
-                  const SizedBox(width: 12),
-                  Expanded(
-                      child: _infoBlock('Nama Room & Trainer', roomAndTrainer)),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Nama Studio',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey,
-                              fontWeight: FontWeight.w600,
-                            )),
-                        const SizedBox(height: 6),
-                        Text(
-                          studioName,
-                          style: const TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.w700),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'UniqCode: ${widget.schedule.uniqCode}',
-                          style:
-                              const TextStyle(fontSize: 10, color: Colors.grey),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
         ],
       ),
     );
@@ -274,25 +433,6 @@ class _BookingsScreenState extends State<BookingsScreen> {
         borderRadius: BorderRadius.circular(7),
         border: Border.all(color: Colors.black12),
       ),
-    );
-  }
-
-  Widget _infoBlock(String title, String value) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title,
-            style: const TextStyle(
-              fontSize: 12,
-              color: Colors.grey,
-              fontWeight: FontWeight.w600,
-            )),
-        const SizedBox(height: 6),
-        Text(
-          value,
-          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
-        ),
-      ],
     );
   }
 

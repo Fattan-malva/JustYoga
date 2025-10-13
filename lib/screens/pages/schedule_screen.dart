@@ -5,7 +5,7 @@ import '../../models/schedule_item.dart';
 import '../../models/studio.dart';
 import '../../models/room_type.dart';
 import '../../services/api_service.dart';
-import '../pages/bookings_screen.dart'; 
+import '../pages/bookings_screen.dart';
 
 class ScheduleScreen extends StatefulWidget {
   @override
@@ -212,58 +212,67 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        elevation: 0,
-        backgroundColor: theme.colorScheme.primary,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.chevron_left, color: Colors.white),
-              onPressed: _goToPreviousMonth,
-            ),
-            Text(
-              '${_getMonthName(selectedDate.month)} ${selectedDate.year}',
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            IconButton(
-              icon: const Icon(Icons.chevron_right, color: Colors.white),
-              onPressed: _goToNextMonth,
-            ),
-          ],
-        ),
-        centerTitle: true,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(60),
-          child: Padding(
-            padding: const EdgeInsets.only(top: 6), // ⬅️ atur jarak di sini
-            child: SizedBox(
-              height: 80,
-              child: MediaQuery(
-                data: MediaQuery.of(context).copyWith(
-                  textScaler: const TextScaler.linear(0.85),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(110),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            bottomLeft: Radius.circular(30),
+            bottomRight: Radius.circular(30),
+          ),
+          child: AppBar(
+            automaticallyImplyLeading: false,
+            elevation: 4,
+            backgroundColor: theme.colorScheme.primary,
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.chevron_left, color: Colors.white),
+                  onPressed: _goToPreviousMonth,
                 ),
-                child: CalendarSlider(
-                  initialDate: selectedDate,
-                  firstDate: firstDate,
-                  lastDate: lastDate,
-                  locale: 'en',
-                  monthYearTextColor: Colors.transparent,
-                  monthYearButtonBackgroundColor: Colors.transparent,
-                  selectedDateColor: const Color(0xFFFFD700),
-                  selectedTileBackgroundColor:
-                      theme.primaryColor.withOpacity(0.1),
-                  selectedTileHeight: 60,
-                  tileHeight: 50,
-                  onDateSelected: (date) {
-                    setState(() => selectedDate = date);
-                    _fetchSchedules();
-                  },
+                Text(
+                  '${_getMonthName(selectedDate.month)} ${selectedDate.year}',
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.chevron_right, color: Colors.white),
+                  onPressed: _goToNextMonth,
+                ),
+              ],
+            ),
+            centerTitle: true,
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(60),
+              child: Padding(
+                padding: const EdgeInsets.only(top: 6),
+                child: SizedBox(
+                  height: 80,
+                  child: MediaQuery(
+                    data: MediaQuery.of(context).copyWith(
+                      textScaler: const TextScaler.linear(0.85),
+                    ),
+                    child: CalendarSlider(
+                      initialDate: selectedDate,
+                      firstDate: firstDate,
+                      lastDate: lastDate,
+                      locale: 'en',
+                      monthYearTextColor: Colors.transparent,
+                      monthYearButtonBackgroundColor: Colors.transparent,
+                      selectedDateColor: const Color(0xFFFFD700),
+                      selectedTileBackgroundColor:
+                          theme.primaryColor.withOpacity(0.1),
+                      selectedTileHeight: 60,
+                      tileHeight: 50,
+                      onDateSelected: (date) {
+                        setState(() => selectedDate = date);
+                        _fetchSchedules();
+                      },
+                    ),
+                  ),
                 ),
               ),
             ),
