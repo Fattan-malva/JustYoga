@@ -9,6 +9,8 @@ class ScheduleItem {
   final int? roomType;
   final int totalMap;
   final String uniqCode;
+  final int? studioID;
+  final int? classID;
 
   ScheduleItem({
     required this.timeCls,
@@ -21,6 +23,8 @@ class ScheduleItem {
     this.roomType,
     required this.totalMap,
     required this.uniqCode,
+    this.studioID,
+    this.classID,
   });
 
   factory ScheduleItem.fromJson(Map<String, dynamic> json) {
@@ -35,6 +39,8 @@ class ScheduleItem {
       roomType: json['RoomType'],
       totalMap: json['TotalMap'],
       uniqCode: json['UniqCode'],
+      studioID: json['studioID'],
+      classID: json['ClassID'],
     );
   }
 
@@ -50,6 +56,8 @@ class ScheduleItem {
       'RoomType': roomType,
       'TotalMap': totalMap,
       'UniqCode': uniqCode,
+      'StudioID': studioID,
+      'ClassID': classID,
     };
   }
 }

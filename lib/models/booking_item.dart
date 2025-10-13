@@ -33,20 +33,31 @@ class BookingItem {
 
   factory BookingItem.fromJson(Map<String, dynamic> json) {
     return BookingItem(
-      studioID: json['studioID'].toString(),
-      roomType: json['RoomType'],
-      classID: json['ClassID'],
-      classBookingDate: DateTime.parse(json['ClassBookingDate']),
-      classBookingTime: json['ClassBookingTime'],
-      customerID: json['customerID'],
-      contractID: json['ContractID'],
-      accessCardNumber: json['AccessCardNumber'],
-      isActive: json['isActive'],
-      isRelease: json['isRelease'],
-      isConfirm: json['isConfirm'],
-      classMapNumber: json['ClassMapNumber'],
-      createby: json['createby'],
-      createdate: DateTime.parse(json['createdate']),
+      studioID: json['studioID']?.toString() ?? '',
+      roomType: json['RoomType'] is int
+          ? json['RoomType']
+          : int.tryParse(json['RoomType'].toString()) ?? 0,
+      classID: json['ClassID'] is int
+          ? json['ClassID']
+          : int.tryParse(json['ClassID'].toString()) ?? 0,
+      classBookingDate:
+          DateTime.tryParse(json['ClassBookingDate'].toString()) ??
+              DateTime.now(),
+      classBookingTime: json['ClassBookingTime']?.toString() ?? '',
+      customerID: json['customerID']?.toString() ?? '',
+      contractID: json['ContractID']?.toString() ?? '',
+      accessCardNumber: json['AccessCardNumber'] is int
+          ? json['AccessCardNumber']
+          : int.tryParse(json['AccessCardNumber'].toString()) ?? 0,
+      isActive: json['isActive'] == true || json['isActive'] == 1,
+      isRelease: json['isRelease'] == true || json['isRelease'] == 1,
+      isConfirm: json['isConfirm'] == true || json['isConfirm'] == 1,
+      classMapNumber: json['ClassMapNumber'] is int
+          ? json['ClassMapNumber']
+          : int.tryParse(json['ClassMapNumber'].toString()) ?? 0,
+      createby: json['createby']?.toString() ?? '',
+      createdate:
+          DateTime.tryParse(json['createdate'].toString()) ?? DateTime.now(),
     );
   }
 

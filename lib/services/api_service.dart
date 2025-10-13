@@ -148,5 +148,26 @@ class ApiService {
     }
   }
 
+  Future<BookingItem> createBooking(BookingItem booking) async {
+    final url = Uri.parse('$baseUrl/api/bookings');
+    final resp = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(booking.toJson()),
+    );
+    if (resp.statusCode == 201 || resp.statusCode == 200) {
+      final Map<String, dynamic> data = jsonDecode(resp.body);
+      return BookingItem.fromJson(data);
+    } else {
+      try {
+        final Map<String, dynamic> errorData = jsonDecode(resp.body);
+        if (errorData.containsKey('message')) {
+          throw Exception(errorData['message']);
+        }
+      } catch (_) {}
+      throw Exception('Failed to create booking');
+    }
+  }
+
   // TODO: add post, put, delete helpers and token-based auth
 }

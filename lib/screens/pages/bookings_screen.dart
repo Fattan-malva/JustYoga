@@ -6,8 +6,11 @@ import '../../services/api_service.dart';
 
 class BookingsScreen extends StatefulWidget {
   final ScheduleItem schedule;
+  final DateTime selectedDate;
 
-  const BookingsScreen({Key? key, required this.schedule}) : super(key: key);
+  const BookingsScreen(
+      {Key? key, required this.schedule, required this.selectedDate})
+      : super(key: key);
 
   @override
   State<BookingsScreen> createState() => _BookingsScreenState();
@@ -460,6 +463,8 @@ class _BookingsScreenState extends State<BookingsScreen> {
         'Trainer: ${widget.schedule.teacher1 ?? 'N/A'}'
         '${widget.schedule.teacher2 != null ? ', ${widget.schedule.teacher2}' : ''}';
     final studioName = widget.schedule.studioName;
+    final dateStr =
+        '${widget.selectedDate.day}/${widget.selectedDate.month}/${widget.selectedDate.year}';
 
     showDialog(
       context: context,
@@ -471,6 +476,8 @@ class _BookingsScreenState extends State<BookingsScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              _dialogRow('Tanggal', dateStr),
+              const SizedBox(height: 8),
               _dialogRow('Waktu & Kelas', timeAndClass),
               const SizedBox(height: 8),
               _dialogRow('Room & Trainer', roomAndTrainer),
@@ -486,12 +493,9 @@ class _BookingsScreenState extends State<BookingsScreen> {
               child: const Text('No'),
             ),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 Navigator.of(ctx).pop(); // tutup dialog
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Booking berhasil divalidasi!')),
-                );
-                Navigator.of(context).pop(); // kembali ke screen sebelumnya
+                await _createBooking();
               },
               child: const Text('Yes'),
             ),
@@ -513,6 +517,45 @@ class _BookingsScreenState extends State<BookingsScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> _createBooking() async {
+    if (selectedSeatId == null) return;
+
+    setState(() => isLoading = true);
+
+    try {
+      final apiService = ApiService(baseUrl: 'http://localhost:3000');
+      final booking = BookingItem(
+        studioID: (widget.schedule.studioID ?? 0).toString(),
+        roomType: widget.schedule.roomType ?? 0,
+        classID: widget.schedule.classID ?? 0,
+        classBookingDate: widget.selectedDate,
+        classBookingTime: widget.schedule.timeCls,
+        customerID: "9999999", // dummy value
+        contractID: "9999999", // dummy value
+        accessCardNumber: 0, // dummy value
+        isActive: true,
+        isRelease: false,
+        isConfirm: false,
+        classMapNumber: int.parse(selectedSeatId!),
+        createby: "9999", // dummy value
+        createdate: DateTime.now(),
+      );
+
+      await apiService.createBooking(booking);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Booking berhasil dibuat!')),
+      );
+      Navigator.of(context).pop(); // kembali ke screen sebelumnya
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal membuat booking: $e')),
+      );
+    } finally {
+      setState(() => isLoading = false);
+    }
   }
 }
 

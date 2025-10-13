@@ -1,6 +1,9 @@
-# TODO: Update Booking Screen for Dynamic Seats
+# TODO: Activate Booking Feature
 
-- [x] Update ScheduleItem.dart to include totalMap (int) and uniqCode (String)
-- [x] Create BookingItem.dart model with fields from the API response (studioID, ClassMapNumber, etc.)
-- [x] Update ApiService.dart to add fetchBookingsByUniqCode method
-- [x] Modify BookingsScreen.dart: Add state for seats, fetch bookings in initState, generate seats, update UI to display uniqCode
+- [x] 1. Update ScheduleItem model to include optional studioID and classID fields (set defaults if not provided).
+- [x] 2. Modify BookingsScreen to accept a DateTime selectedDate parameter.
+- [x] 3. Update ScheduleScreen to pass selectedDate when navigating to BookingsScreen.
+- [x] 4. Add createBooking method in ApiService for POST request.
+- [x] 5. Enhance the confirmation dialog in BookingsScreen with detailed, organized info display.
+- [x] 6. Implement actual booking creation on confirm, with loading state and error handling.
+- [x] 7. On success, show success message and navigate back; on error, show error.

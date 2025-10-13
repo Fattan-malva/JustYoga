@@ -750,7 +750,9 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                                       MaterialPageRoute(
                                                         builder: (_) =>
                                                             BookingsScreen(
-                                                                schedule: s),
+                                                                schedule: s,
+                                                                selectedDate:
+                                                                    selectedDate),
                                                       ),
                                                     );
                                                   },
