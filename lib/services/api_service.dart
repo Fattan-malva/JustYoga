@@ -19,6 +19,7 @@ import 'package:http/http.dart' as http;
 import '../models/schedule_item.dart';
 import '../models/studio.dart';
 import '../models/room_type.dart';
+import '../models/booking_item.dart';
 
 class ApiService {
   final String baseUrl;
@@ -126,6 +127,24 @@ class ApiService {
         }
       } catch (_) {}
       throw Exception('Failed to load schedules');
+    }
+  }
+
+  Future<List<BookingItem>> fetchBookingsByUniqCode(String uniqCode) async {
+    final url =
+        Uri.parse('$baseUrl/api/bookings/find-by-uniq-code?UniqCode=$uniqCode');
+    final resp = await http.get(url);
+    if (resp.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(resp.body);
+      return data.map((item) => BookingItem.fromJson(item)).toList();
+    } else {
+      try {
+        final Map<String, dynamic> errorData = jsonDecode(resp.body);
+        if (errorData.containsKey('message')) {
+          throw Exception(errorData['message']);
+        }
+      } catch (_) {}
+      throw Exception('Failed to load bookings');
     }
   }
 
