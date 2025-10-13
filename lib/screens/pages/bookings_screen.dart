@@ -32,7 +32,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
     setState(() => isLoading = true);
     try {
       final apiService = ApiService(
-          baseUrl: 'http://localhost:3000'); // Adjust baseUrl as needed
+          baseUrl: 'http://192.168.24.61:3000'); // Adjust baseUrl as needed
       final bookings =
           await apiService.fetchBookingsByUniqCode(widget.schedule.uniqCode);
       final takenSeats = bookings.map((b) => b.classMapNumber).toSet();
@@ -525,21 +525,22 @@ class _BookingsScreenState extends State<BookingsScreen> {
     setState(() => isLoading = true);
 
     try {
-      final apiService = ApiService(baseUrl: 'http://localhost:3000');
+      final apiService = ApiService(baseUrl: 'http://192.168.24.61:3000');
       final booking = BookingItem(
         studioID: (widget.schedule.studioID ?? 0).toString(),
         roomType: widget.schedule.roomType ?? 0,
         classID: widget.schedule.classID ?? 0,
-        classBookingDate: widget.selectedDate,
+        classBookingDate: DateTime(widget.selectedDate.year,
+            widget.selectedDate.month, widget.selectedDate.day),
         classBookingTime: widget.schedule.timeCls,
-        customerID: "9999999", // dummy value
-        contractID: "9999999", // dummy value
+        customerID: "20250928150045097", // dummy value
+        contractID: "20250928150045120", // dummy value
         accessCardNumber: 0, // dummy value
         isActive: true,
         isRelease: false,
         isConfirm: false,
         classMapNumber: int.parse(selectedSeatId!),
-        createby: "9999", // dummy value
+        createby: "999", // dummy value
         createdate: DateTime.now(),
       );
 

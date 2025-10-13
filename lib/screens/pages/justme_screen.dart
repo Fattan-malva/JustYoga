@@ -31,9 +31,10 @@ class _JustMeScreenState extends State<JustMeScreen> {
   bool isLoadingRoomTypes = false;
   String? roomTypeError;
 
-  final ApiService apiService = ApiService(baseUrl: 'http://localhost:3000');
+  final ApiService apiService =
+      ApiService(baseUrl: 'http://192.168.24.61:3000');
   // Note: For Flutter web, ensure your backend API has CORS enabled (e.g., app.use(cors()) in Express).
-  // Alternatively, run the app on an Android/iOS emulator or device, where localhost works without CORS issues.
+  // Alternatively, run the app on an Android/iOS emulator or device, where 192.168.24.61 works without CORS issues.
 
   String _getMonthName(int month) {
     const monthNames = [

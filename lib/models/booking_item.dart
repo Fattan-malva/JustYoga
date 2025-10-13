@@ -66,7 +66,8 @@ class BookingItem {
       'studioID': studioID,
       'RoomType': roomType,
       'ClassID': classID,
-      'ClassBookingDate': classBookingDate.toIso8601String(),
+      'ClassBookingDate':
+          '${classBookingDate.year}-${classBookingDate.month.toString().padLeft(2, '0')}-${classBookingDate.day.toString().padLeft(2, '0')}',
       'ClassBookingTime': classBookingTime,
       'customerID': customerID,
       'ContractID': contractID,
