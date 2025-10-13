@@ -26,6 +26,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
   }
 
   Future<void> _fetchBookings() async {
+    setState(() => isLoading = true);
     try {
       final apiService = ApiService(
           baseUrl: 'http://localhost:3000'); // Adjust baseUrl as needed
@@ -43,6 +44,12 @@ class _BookingsScreenState extends State<BookingsScreen> {
       });
     } catch (e) {
       setState(() {
+        seats = List.generate(widget.schedule.totalMap, (index) {
+          final seatNumber = index + 1;
+          return _Seat(
+              seatNumber.toString(), true); // All available if fetch fails
+        });
+        totalBooked = 0;
         isLoading = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
@@ -342,7 +349,6 @@ class _BookingsScreenState extends State<BookingsScreen> {
                               'assets/icons/mat.svg',
                               width: 30,
                               height: 30,
-
                             ),
 
                             title: Text(
