@@ -21,6 +21,7 @@ import '../models/studio.dart';
 import '../models/room_type.dart';
 import '../models/booking_item.dart';
 import '../models/justme_item.dart';
+import '../models/user.dart';
 
 class ApiService {
   final String baseUrl;
@@ -203,6 +204,49 @@ class ApiService {
         }
       } catch (_) {}
       throw Exception('No justme found for this date and studio');
+    }
+  }
+
+  Future<Map<String, dynamic>> login(String email, String password) async {
+    final url = Uri.parse('$baseUrl/api/auth/login');
+    final resp = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'email': email, 'password': password}),
+    );
+    if (resp.statusCode == 200) {
+      final Map<String, dynamic> data = jsonDecode(resp.body);
+      return data;
+    } else {
+      try {
+        final Map<String, dynamic> errorData = jsonDecode(resp.body);
+        if (errorData.containsKey('message')) {
+          throw Exception(errorData['message']);
+        }
+      } catch (_) {}
+      throw Exception('Login failed');
+    }
+  }
+
+  Future<Map<String, dynamic>> register(
+      String name, String email, String password) async {
+    final url = Uri.parse('$baseUrl/api/auth/register');
+    final resp = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'name': name, 'email': email, 'password': password}),
+    );
+    if (resp.statusCode == 201 || resp.statusCode == 200) {
+      final Map<String, dynamic> data = jsonDecode(resp.body);
+      return data;
+    } else {
+      try {
+        final Map<String, dynamic> errorData = jsonDecode(resp.body);
+        if (errorData.containsKey('message')) {
+          throw Exception(errorData['message']);
+        }
+      } catch (_) {}
+      throw Exception('Registration failed');
     }
   }
 

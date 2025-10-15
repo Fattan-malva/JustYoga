@@ -1,34 +1,46 @@
 import 'package:flutter/material.dart';
 import '../models/user.dart';
-import '../services/dummy_data.dart';
+import '../services/api_service.dart';
 
 class AuthProvider extends ChangeNotifier {
   UserModel? _user;
   bool get isAuthenticated => _user != null;
   UserModel? get user => _user;
 
-  // For demo: simple login with dummy user
-  Future<bool> loginWithDummy(String email, String password) async {
-    await Future.delayed(Duration(milliseconds: 600));
-    // Dummy credentials
-    if (email == demoUser.email && password == 'fattan14') {
-      _user = demoUser;
-      notifyListeners();
-      return true;
+  final ApiService _apiService = ApiService(baseUrl: 'http://localhost:3000');
+
+  Future<bool> login(String email, String password) async {
+    try {
+      final response = await _apiService.login(email, password);
+      // Assuming the response contains user data and token
+      // Adjust based on your API response structure
+      if (response.containsKey('user')) {
+        _user = UserModel.fromJson(response['user']);
+        notifyListeners();
+        return true;
+      }
+      return false;
+    } catch (e) {
+      print('Login error: $e');
+      return false;
     }
-    return false;
   }
 
   Future<bool> register(String name, String email, String password) async {
-    // TODO: Call API to register and receive created user & token
-    await Future.delayed(Duration(milliseconds: 600));
-    _user = UserModel(
-        id: 'u2',
-        name: name,
-        email: email,
-        avatarUrl: 'https://i.pravatar.cc/150?img=5');
-    notifyListeners();
-    return true;
+    try {
+      final response = await _apiService.register(name, email, password);
+      // Assuming the response contains user data and token
+      // Adjust based on your API response structure
+      if (response.containsKey('user')) {
+        _user = UserModel.fromJson(response['user']);
+        notifyListeners();
+        return true;
+      }
+      return false;
+    } catch (e) {
+      print('Register error: $e');
+      return false;
+    }
   }
 
   void logout() {

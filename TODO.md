@@ -1,5 +1,4 @@
-- [x] Add validation logic in schedule_screen.dart itemBuilder to disable booking button if class time has passed
-- [x] Parse timeCls string to hour and minute
-- [x] Combine selectedDate with parsed time to create classStart DateTime
-- [x] Compare classStart with DateTime.now() to set isDisabled
-- [x] Update ElevatedButton onPressed and style based on isDisabled
+- [x] Add login and register API methods to ApiService
+- [x] Update AuthProvider to use real API calls instead of dummy data
+- [x] Update login_screen.dart to call the new login method
+- [ ] Test login and register functionality with the provided API endpoints

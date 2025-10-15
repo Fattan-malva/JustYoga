@@ -20,7 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _loading = true);
     final auth = Provider.of<AuthProvider>(context, listen: false);
-    final ok = await auth.loginWithDummy(_email.text, _password.text);
+    final ok = await auth.login(_email.text, _password.text);
     setState(() => _loading = false);
     if (ok) Navigator.pushReplacementNamed(context, '/main');
     // If using real API, check response and tokens here
