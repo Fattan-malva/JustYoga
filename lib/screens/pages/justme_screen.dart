@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:calendar_slider/calendar_slider.dart';
 
 import '../../models/justme_item.dart';
+import '../../models/studio.dart';
 import '../../services/api_service.dart';
 
 class JustMeScreen extends StatefulWidget {
@@ -19,6 +20,11 @@ class _JustMeScreenState extends State<JustMeScreen> {
   bool isLoading = false;
   String? error;
   String? noJustMeMessage;
+
+  List<Studio> studios = [];
+  Studio? selectedStudio;
+  bool isLoadingStudios = false;
+  String? studioError;
 
   final ApiService apiService = ApiService(baseUrl: 'http://localhost:3000');
   // Catatan: Untuk Flutter web, pastikan API backend enable CORS.
@@ -68,7 +74,29 @@ class _JustMeScreenState extends State<JustMeScreen> {
   @override
   void initState() {
     super.initState();
+    _fetchStudios();
     _fetchJustMe();
+  }
+
+  Future<void> _fetchStudios() async {
+    setState(() {
+      isLoadingStudios = true;
+      studioError = null;
+    });
+    try {
+      final fetchedStudios = await apiService.fetchStudios();
+      setState(() {
+        studios = fetchedStudios;
+      });
+    } catch (e) {
+      setState(() {
+        studioError = e.toString();
+      });
+    } finally {
+      setState(() {
+        isLoadingStudios = false;
+      });
+    }
   }
 
   Future<void> _fetchJustMe() async {
@@ -81,8 +109,13 @@ class _JustMeScreenState extends State<JustMeScreen> {
       final dateStr = '${selectedDate.year.toString().padLeft(4, '0')}-'
           '${selectedDate.month.toString().padLeft(2, '0')}-'
           '${selectedDate.day.toString().padLeft(2, '0')}';
-      List<JustMeItem> fetchedItems =
-          await apiService.fetchJustMeByDate(dateStr);
+      List<JustMeItem> fetchedItems;
+      if (selectedStudio != null) {
+        fetchedItems = await apiService.fetchJustMeByDateAndStudio(
+            dateStr, selectedStudio!.studioID.toString());
+      } else {
+        fetchedItems = await apiService.fetchJustMeByDate(dateStr);
+      }
       setState(() {
         justmeItems = fetchedItems;
         noJustMeMessage = null;
@@ -181,6 +214,80 @@ class _JustMeScreenState extends State<JustMeScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Studio Dropdown
+          Padding(
+            padding:
+                const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 4),
+            child: DropdownButtonFormField<Studio>(
+              isExpanded: true,
+              style: TextStyle(
+                fontSize: 12,
+                height: 1.1,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.black87,
+              ),
+              dropdownColor: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.grey[850]
+                  : Colors.white,
+              decoration: InputDecoration(
+                isDense: true,
+                labelText: 'Studio',
+                labelStyle: TextStyle(
+                  fontSize: 11,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.grey[300]
+                      : Colors.grey[700],
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 2,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                prefixIcon: Icon(
+                  Icons.location_on,
+                  size: 14,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                suffixIcon: selectedStudio != null
+                    ? IconButton(
+                        icon: const Icon(Icons.close, size: 16),
+                        onPressed: () {
+                          setState(() {
+                            selectedStudio = null;
+                          });
+                          _fetchJustMe();
+                        },
+                      )
+                    : const Icon(Icons.arrow_drop_down),
+              ),
+              value: selectedStudio,
+              items: studios.map((studio) {
+                return DropdownMenuItem<Studio>(
+                  value: studio,
+                  child: Text(
+                    studio.name,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 12,
+                      height: 1.1,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black87,
+                    ),
+                  ),
+                );
+              }).toList(),
+              onChanged: (Studio? newValue) {
+                setState(() {
+                  selectedStudio = newValue;
+                });
+                _fetchJustMe();
+              },
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
             child: Text(

@@ -187,5 +187,24 @@ class ApiService {
     }
   }
 
+  Future<List<JustMeItem>> fetchJustMeByDateAndStudio(
+      String date, String studioID) async {
+    final url = Uri.parse(
+        '$baseUrl/api/justme/by-date-studio?date=$date&studioID=$studioID');
+    final resp = await http.get(url);
+    if (resp.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(resp.body);
+      return data.map((item) => JustMeItem.fromJson(item)).toList();
+    } else {
+      try {
+        final Map<String, dynamic> errorData = jsonDecode(resp.body);
+        if (errorData.containsKey('message')) {
+          throw Exception(errorData['message']);
+        }
+      } catch (_) {}
+      throw Exception('No justme found for this date and studio');
+    }
+  }
+
   // TODO: add post, put, delete helpers and token-based auth
 }
