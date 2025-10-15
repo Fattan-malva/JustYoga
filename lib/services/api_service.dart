@@ -22,6 +22,7 @@ import '../models/room_type.dart';
 import '../models/booking_item.dart';
 import '../models/justme_item.dart';
 import '../models/user.dart';
+import '../models/activation.dart';
 
 class ApiService {
   final String baseUrl;
@@ -247,6 +248,66 @@ class ApiService {
         }
       } catch (_) {}
       throw Exception('Registration failed');
+    }
+  }
+
+  Future<Map<String, dynamic>> checkActivation(
+      String email, String phone, String noIdentity, String birthDate) async {
+    final url = Uri.parse(
+        '$baseUrl/api/activation/check?email=$email&phone=$phone&noIdentity=$noIdentity&birthDate=$birthDate');
+    final resp = await http.get(url);
+    if (resp.statusCode == 200) {
+      try {
+        final Map<String, dynamic> data = jsonDecode(resp.body);
+        return data;
+      } catch (e) {
+        // If not JSON, return as message
+        return {'message': resp.body};
+      }
+    } else {
+      try {
+        final Map<String, dynamic> errorData = jsonDecode(resp.body);
+        if (errorData.containsKey('message')) {
+          throw Exception(errorData['message']);
+        }
+      } catch (_) {
+        // If not JSON, throw the body as exception
+        throw Exception(resp.body);
+      }
+      throw Exception('Activation check failed');
+    }
+  }
+
+  Future<Map<String, dynamic>> createActivation(
+      String customerID, String name, String email, String password) async {
+    final url = Uri.parse('$baseUrl/api/activation/create');
+    final resp = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'customerID': customerID,
+        'name': name,
+        'email': email,
+        'password': password,
+      }),
+    );
+    if (resp.statusCode == 201 || resp.statusCode == 200) {
+      try {
+        final Map<String, dynamic> data = jsonDecode(resp.body);
+        return data;
+      } catch (e) {
+        return {'message': resp.body};
+      }
+    } else {
+      try {
+        final Map<String, dynamic> errorData = jsonDecode(resp.body);
+        if (errorData.containsKey('message')) {
+          throw Exception(errorData['message']);
+        }
+      } catch (_) {
+        throw Exception(resp.body);
+      }
+      throw Exception('Activation creation failed');
     }
   }
 
