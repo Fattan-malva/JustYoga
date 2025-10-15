@@ -28,7 +28,7 @@ class HomeScreen extends StatelessWidget {
                   fit: BoxFit.cover,
                   colorFilter: ColorFilter.mode(
                     Colors.black
-                        .withOpacity(0.3), // ubah opacity sesuai kebutuhan
+                        .withOpacity(0.4), // ubah opacity sesuai kebutuhan
                     BlendMode.darken, // bikin gambar jadi lebih gelap
                   ),
                 ),
@@ -44,7 +44,7 @@ class HomeScreen extends StatelessWidget {
             child: Center(
               child: Image.asset(
                 "assets/icons/logo.png",
-                height: 60,
+                height: 80,
                 fit: BoxFit.contain,
               ),
             ),

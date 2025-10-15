@@ -71,7 +71,7 @@ class _MainLayoutState extends State<MainLayout> {
               return IconButton(
                 icon: Icon(
                   themeProvider.isDarkMode ? Icons.light_mode : Icons.dark_mode,
-                  color: Theme.of(context).appBarTheme.iconTheme?.color,
+                  color: Colors.white,
                 ),
                 onPressed: () => themeProvider.toggleTheme(),
                 tooltip: themeProvider.isDarkMode
