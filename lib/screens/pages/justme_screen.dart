@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:calendar_slider/calendar_slider.dart';
-import '../../models/schedule_item.dart';
-import '../../models/studio.dart';
-import '../../models/room_type.dart';
+
+import '../../models/justme_item.dart';
 import '../../services/api_service.dart';
 
 class JustMeScreen extends StatefulWidget {
@@ -16,25 +15,13 @@ class _JustMeScreenState extends State<JustMeScreen> {
   final DateTime firstDate = DateTime.now().subtract(const Duration(days: 30));
   final DateTime lastDate = DateTime.now().add(const Duration(days: 365));
 
-  List<ScheduleItem> schedules = [];
+  List<JustMeItem> justmeItems = [];
   bool isLoading = false;
   String? error;
-  String? noScheduleMessage;
+  String? noJustMeMessage;
 
-  List<Studio> studios = [];
-  Studio? selectedStudio;
-  bool isLoadingStudios = false;
-  String? studioError;
-
-  List<RoomType> roomTypes = [];
-  RoomType? selectedRoomType;
-  bool isLoadingRoomTypes = false;
-  String? roomTypeError;
-
-  final ApiService apiService =
-      ApiService(baseUrl: 'http://192.168.24.61:3000');
-  // Note: For Flutter web, ensure your backend API has CORS enabled (e.g., app.use(cors()) in Express).
-  // Alternatively, run the app on an Android/iOS emulator or device, where 192.168.24.61 works without CORS issues.
+  final ApiService apiService = ApiService(baseUrl: 'http://localhost:3000');
+  // Catatan: Untuk Flutter web, pastikan API backend enable CORS.
 
   String _getMonthName(int month) {
     const monthNames = [
@@ -62,7 +49,7 @@ class _JustMeScreenState extends State<JustMeScreen> {
       } else {
         selectedDate = prevMonth;
       }
-      _fetchSchedules();
+      _fetchJustMe();
     });
   }
 
@@ -74,59 +61,43 @@ class _JustMeScreenState extends State<JustMeScreen> {
       } else {
         selectedDate = nextMonth;
       }
-      _fetchSchedules();
+      _fetchJustMe();
     });
   }
 
   @override
   void initState() {
     super.initState();
-    _fetchStudios();
-    _fetchRoomTypes();
-    _fetchSchedules();
+    _fetchJustMe();
   }
 
-  Future<void> _fetchSchedules() async {
+  Future<void> _fetchJustMe() async {
     setState(() {
       isLoading = true;
       error = null;
-      noScheduleMessage = null;
+      noJustMeMessage = null;
     });
     try {
       final dateStr = '${selectedDate.year.toString().padLeft(4, '0')}-'
           '${selectedDate.month.toString().padLeft(2, '0')}-'
           '${selectedDate.day.toString().padLeft(2, '0')}';
-      List<ScheduleItem> fetchedSchedules;
-      if (selectedStudio != null && selectedRoomType != null) {
-        fetchedSchedules = await apiService.fetchSchedules(
-          dateStr,
-          studioID: selectedStudio!.studioID,
-          roomType: selectedRoomType!.roomType,
-        );
-      } else if (selectedStudio != null) {
-        fetchedSchedules = await apiService.fetchSchedulesByDateAndStudio(
-            dateStr, selectedStudio!.studioID);
-      } else if (selectedRoomType != null) {
-        fetchedSchedules = await apiService.fetchSchedulesByDateAndRoomType(
-            dateStr, selectedRoomType!.roomType);
-      } else {
-        fetchedSchedules = await apiService.fetchSchedulesByDate(dateStr);
-      }
+      List<JustMeItem> fetchedItems =
+          await apiService.fetchJustMeByDate(dateStr);
       setState(() {
-        schedules = fetchedSchedules;
-        noScheduleMessage = null;
+        justmeItems = fetchedItems;
+        noJustMeMessage = null;
       });
     } catch (e) {
       final errorMsg = e.toString();
-      if (errorMsg.contains('No schedule found')) {
+      if (errorMsg.contains('No justme found')) {
         setState(() {
-          noScheduleMessage = errorMsg.replaceFirst('Exception: ', '');
-          schedules = [];
+          noJustMeMessage = errorMsg.replaceFirst('Exception: ', '');
+          justmeItems = [];
         });
       } else {
         setState(() {
           error = errorMsg.replaceFirst('Exception: ', '');
-          schedules = [];
+          justmeItems = [];
         });
       }
     } finally {
@@ -136,98 +107,73 @@ class _JustMeScreenState extends State<JustMeScreen> {
     }
   }
 
-  Future<void> _fetchStudios() async {
-    setState(() {
-      isLoadingStudios = true;
-      studioError = null;
-    });
-    try {
-      final fetchedStudios = await apiService.fetchStudios();
-      setState(() {
-        studios = fetchedStudios;
-      });
-    } catch (e) {
-      setState(() {
-        studioError = e.toString();
-      });
-    } finally {
-      setState(() {
-        isLoadingStudios = false;
-      });
-    }
-  }
-
-  Future<void> _fetchRoomTypes() async {
-    setState(() {
-      isLoadingRoomTypes = true;
-      roomTypeError = null;
-    });
-    try {
-      final fetchedRoomTypes = await apiService.fetchRoomTypes();
-      setState(() {
-        roomTypes = fetchedRoomTypes;
-      });
-    } catch (e) {
-      setState(() {
-        roomTypeError = e.toString();
-      });
-    } finally {
-      setState(() {
-        isLoadingRoomTypes = false;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        elevation: 0,
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            IconButton(
-              icon: Icon(Icons.chevron_left, color: Colors.white),
-              onPressed: _goToPreviousMonth,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(110),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            bottomLeft: Radius.circular(30),
+            bottomRight: Radius.circular(30),
+          ),
+          child: AppBar(
+            automaticallyImplyLeading: false,
+            elevation: 4,
+            backgroundColor: theme.colorScheme.primary,
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.chevron_left, color: Colors.white),
+                  onPressed: _goToPreviousMonth,
+                ),
+                Text(
+                  '${_getMonthName(selectedDate.month)} ${selectedDate.year}',
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.chevron_right, color: Colors.white),
+                  onPressed: _goToNextMonth,
+                ),
+              ],
             ),
-            Text(
-              '${_getMonthName(selectedDate.month)} ${selectedDate.year}',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+            centerTitle: true,
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(60),
+              child: Padding(
+                padding: const EdgeInsets.only(top: 6),
+                child: SizedBox(
+                  height: 80,
+                  child: MediaQuery(
+                    data: MediaQuery.of(context).copyWith(
+                      textScaler: const TextScaler.linear(0.85),
+                    ),
+                    child: CalendarSlider(
+                      initialDate: selectedDate,
+                      firstDate: firstDate,
+                      lastDate: lastDate,
+                      locale: 'en',
+                      monthYearTextColor: Colors.transparent,
+                      monthYearButtonBackgroundColor: Colors.transparent,
+                      selectedDateColor: const Color(0xFFFFD700),
+                      selectedTileBackgroundColor:
+                          theme.primaryColor.withOpacity(0.1),
+                      selectedTileHeight: 60,
+                      tileHeight: 50,
+                      onDateSelected: (date) {
+                        setState(() => selectedDate = date);
+                        _fetchJustMe();
+                      },
+                    ),
+                  ),
+                ),
               ),
-            ),
-            IconButton(
-              icon: Icon(Icons.chevron_right, color: Colors.white),
-              onPressed: _goToNextMonth,
-            ),
-          ],
-        ),
-        centerTitle: true,
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(100),
-          child: SizedBox(
-            height: 100,
-            child: CalendarSlider(
-              initialDate: selectedDate,
-              firstDate: firstDate,
-              lastDate: lastDate,
-              locale: 'en',
-              monthYearTextColor: Colors.transparent,
-              monthYearButtonBackgroundColor: Colors.transparent,
-              selectedDateColor: Color(0xFFFFD700),
-              selectedTileBackgroundColor:
-                  Theme.of(context).primaryColor.withOpacity(0.1),
-              tileHeight: 70,
-              onDateSelected: (date) {
-                setState(() {
-                  selectedDate = date;
-                });
-                _fetchSchedules();
-              },
             ),
           ),
         ),
@@ -235,108 +181,20 @@ class _JustMeScreenState extends State<JustMeScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Expanded(
-                flex: 2,
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                      left: 16, right: 8, top: 16, bottom: 8),
-                  child: isLoadingStudios
-                      ? Center(child: CircularProgressIndicator())
-                      : studioError != null
-                          ? Center(
-                              child: Text(
-                                'Error loading studios: $studioError',
-                                style: TextStyle(color: Colors.red),
-                              ),
-                            )
-                          : DropdownButtonFormField<Studio>(
-                              isExpanded: true,
-                              decoration: InputDecoration(
-                                labelText: 'Studio',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                prefixIcon: Icon(Icons.location_on),
-                              ),
-                              value: selectedStudio,
-                              items: studios.map((studio) {
-                                return DropdownMenuItem<Studio>(
-                                  value: studio,
-                                  child: Text(
-                                    '${studio.name} - ${studio.address}',
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                );
-                              }).toList(),
-                              onChanged: (Studio? newValue) {
-                                setState(() {
-                                  selectedStudio = newValue;
-                                });
-                                _fetchSchedules();
-                              },
-                            ),
-                ),
-              ),
-              Expanded(
-                flex: 1,
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                      left: 8, right: 16, top: 16, bottom: 8),
-                  child: isLoadingRoomTypes
-                      ? Center(child: CircularProgressIndicator())
-                      : roomTypeError != null
-                          ? Center(
-                              child: Text(
-                                'Error loading room types: $roomTypeError',
-                                style: TextStyle(color: Colors.red),
-                              ),
-                            )
-                          : DropdownButtonFormField<RoomType>(
-                              isExpanded: true,
-                              decoration: InputDecoration(
-                                labelText: 'Room',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                prefixIcon: Icon(Icons.meeting_room),
-                              ),
-                              value: selectedRoomType,
-                              items: roomTypes.map((roomType) {
-                                return DropdownMenuItem<RoomType>(
-                                  value: roomType,
-                                  child: Text(
-                                    '${roomType.roomName}',
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                );
-                              }).toList(),
-                              onChanged: (RoomType? newValue) {
-                                setState(() {
-                                  selectedRoomType = newValue;
-                                });
-                                _fetchSchedules();
-                              },
-                            ),
-                ),
-              ),
-            ],
-          ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
             child: Text(
-              'Just Me Class for ${selectedDate.day} ${_getMonthName(selectedDate.month)} ${selectedDate.year}',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
+              'Just Me for ${selectedDate.day} ${_getMonthName(selectedDate.month)} ${selectedDate.year}',
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+              ),
             ),
           ),
           Expanded(
             child: isLoading
-                ? Center(child: CircularProgressIndicator())
-                : noScheduleMessage != null
+                ? const Center(child: CircularProgressIndicator())
+                : noJustMeMessage != null
                     ? Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -346,9 +204,9 @@ class _JustMeScreenState extends State<JustMeScreen> {
                               size: 64,
                               color: Colors.grey.withOpacity(0.5),
                             ),
-                            SizedBox(height: 16),
+                            const SizedBox(height: 16),
                             Text(
-                              noScheduleMessage!,
+                              noJustMeMessage!,
                               style: TextStyle(
                                 color: Colors.grey.withOpacity(0.5),
                                 fontSize: 16,
@@ -368,7 +226,7 @@ class _JustMeScreenState extends State<JustMeScreen> {
                                   size: 64,
                                   color: Colors.grey.withOpacity(0.5),
                                 ),
-                                SizedBox(height: 16),
+                                const SizedBox(height: 16),
                                 Text(
                                   '$error',
                                   style: TextStyle(
@@ -380,19 +238,22 @@ class _JustMeScreenState extends State<JustMeScreen> {
                               ],
                             ),
                           )
-                        : schedules.isEmpty
+                        : justmeItems.isEmpty
                             ? Center(
                                 child: Text(
-                                  'Tidak ada kelas pada tanggal ini.',
-                                  style: Theme.of(context).textTheme.bodyMedium,
+                                  'Tidak ada just me pada tanggal ini.',
+                                  style: theme.textTheme.bodyMedium,
                                 ),
                               )
                             : ListView.builder(
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 16),
-                                itemCount: schedules.length,
+                                itemCount: justmeItems.length,
                                 itemBuilder: (_, i) {
-                                  final s = schedules[i];
+                                  final item = justmeItems[i];
+                                  final timeRange =
+                                      '${item.timeFrom} - ${item.timeTo}';
+
                                   return Card(
                                     margin: const EdgeInsets.only(bottom: 12),
                                     shape: RoundedRectangleBorder(
@@ -407,47 +268,63 @@ class _JustMeScreenState extends State<JustMeScreen> {
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              // Judul Kelas & Jam
+                                              // Jam
                                               Row(
                                                 children: [
                                                   CircleAvatar(
-                                                    backgroundColor:
-                                                        Theme.of(context)
-                                                            .colorScheme
-                                                            .primary,
-                                                    child: Icon(Icons.schedule,
-                                                        color: Colors.white),
+                                                    radius: 10,
+                                                    backgroundColor: theme
+                                                        .colorScheme.primary,
+                                                    child: const Icon(
+                                                      Icons.schedule,
+                                                      color: Colors.white,
+                                                      size: 12,
+                                                    ),
                                                   ),
-                                                  const SizedBox(width: 12),
-                                                  Expanded(
-                                                    child: Text(
-                                                      '${s.timeCls} - ${s.className}',
-                                                      style: const TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        fontSize: 16,
-                                                      ),
+                                                  const SizedBox(width: 8),
+                                                  Text(
+                                                    timeRange,
+                                                    style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      fontSize: 16,
                                                     ),
                                                   ),
                                                 ],
                                               ),
-                                              const SizedBox(height: 8),
 
-                                              // Detail Room & Trainer
-                                              Text(
-                                                'Room: ${s.roomName ?? 'N/A'}\nTrainer: ${s.teacher1 ?? 'N/A'}' +
-                                                    (s.teacher2 != null
-                                                        ? ', ${s.teacher2}'
-                                                        : ''),
-                                                style: TextStyle(
-                                                    color: Colors.grey[700],
-                                                    fontSize: 14),
-                                              ),
+                                              const SizedBox(height: 2),
+
+                                              // Trainer
+                                              Row(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  const Icon(
+                                                    Icons.school_rounded,
+                                                    size: 15,
+                                                    color: Colors.redAccent,
+                                                  ),
+                                                  const SizedBox(width: 10),
+                                                  Expanded(
+                                                    child: Text(
+                                                      item.employeeName,
+                                                      style: const TextStyle(
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                  ),
+                                                ],
+                                              )
                                             ],
                                           ),
                                         ),
 
-                                        // Lokasi di kanan atas
+                                        // Area kanan atas: chip studio
                                         Positioned(
                                           right: 12,
                                           top: 12,
@@ -464,14 +341,22 @@ class _JustMeScreenState extends State<JustMeScreen> {
                                               children: [
                                                 const Icon(Icons.location_on,
                                                     color: Colors.red,
-                                                    size: 16),
+                                                    size: 12),
                                                 const SizedBox(width: 4),
-                                                Text(
-                                                  s.studioName,
-                                                  style: const TextStyle(
-                                                    color: Colors.red,
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.w600,
+                                                ConstrainedBox(
+                                                  constraints:
+                                                      const BoxConstraints(
+                                                          maxWidth: 120),
+                                                  child: Text(
+                                                    item.studioName,
+                                                    style: const TextStyle(
+                                                      color: Colors.red,
+                                                      fontSize: 10,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                    ),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
                                                   ),
                                                 ),
                                               ],

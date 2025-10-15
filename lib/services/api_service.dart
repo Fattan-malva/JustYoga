@@ -20,6 +20,7 @@ import '../models/schedule_item.dart';
 import '../models/studio.dart';
 import '../models/room_type.dart';
 import '../models/booking_item.dart';
+import '../models/justme_item.dart';
 
 class ApiService {
   final String baseUrl;
@@ -166,6 +167,23 @@ class ApiService {
         }
       } catch (_) {}
       throw Exception('Failed to create booking');
+    }
+  }
+
+  Future<List<JustMeItem>> fetchJustMeByDate(String date) async {
+    final url = Uri.parse('$baseUrl/api/justme/by-date?date=$date');
+    final resp = await http.get(url);
+    if (resp.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(resp.body);
+      return data.map((item) => JustMeItem.fromJson(item)).toList();
+    } else {
+      try {
+        final Map<String, dynamic> errorData = jsonDecode(resp.body);
+        if (errorData.containsKey('message')) {
+          throw Exception(errorData['message']);
+        }
+      } catch (_) {}
+      throw Exception('No justme found');
     }
   }
 
