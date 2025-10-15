@@ -285,6 +285,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         children: [
           Row(
             children: [
+              // === DROPDOWN STUDIO ===
               Expanded(
                 flex: 2,
                 child: Padding(
@@ -304,7 +305,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                               isExpanded: true,
                               style: TextStyle(
                                 fontSize: 12,
-                                height: 1.1, // ⬅️ lebih rapat lagi
+                                height: 1.1,
                                 color: Theme.of(context).brightness ==
                                         Brightness.dark
                                     ? Colors.white
@@ -313,9 +314,9 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                               dropdownColor: Theme.of(context).brightness ==
                                       Brightness.dark
                                   ? Colors.grey[850]
-                                  : Colors.white, // ⬅️ dropdown-nya ikut tema
+                                  : Colors.white,
                               decoration: InputDecoration(
-                                isDense: true, // ⬅️ wajib biar super ciut
+                                isDense: true,
                                 labelText: 'Studio',
                                 labelStyle: TextStyle(
                                   fontSize: 11,
@@ -326,8 +327,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                 ),
                                 contentPadding: const EdgeInsets.symmetric(
                                   horizontal: 8,
-                                  vertical:
-                                      2, // ⬅️ makin kecil → makin tipis form-nya
+                                  vertical: 2,
                                 ),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(14),
@@ -337,6 +337,17 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                   size: 14,
                                   color: Theme.of(context).colorScheme.primary,
                                 ),
+                                suffixIcon: selectedStudio != null
+                                    ? IconButton(
+                                        icon: const Icon(Icons.close, size: 16),
+                                        onPressed: () {
+                                          setState(() {
+                                            selectedStudio = null;
+                                          });
+                                          _fetchSchedules();
+                                        },
+                                      )
+                                    : const Icon(Icons.arrow_drop_down),
                               ),
                               value: selectedStudio,
                               items: studios.map((studio) {
@@ -365,6 +376,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                             ),
                 ),
               ),
+
+              // === DROPDOWN ROOM TYPE ===
               Expanded(
                 flex: 2,
                 child: Padding(
@@ -416,6 +429,17 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                   size: 14,
                                   color: Theme.of(context).colorScheme.primary,
                                 ),
+                                suffixIcon: selectedRoomType != null
+                                    ? IconButton(
+                                        icon: const Icon(Icons.close, size: 16),
+                                        onPressed: () {
+                                          setState(() {
+                                            selectedRoomType = null;
+                                          });
+                                          _fetchSchedules();
+                                        },
+                                      )
+                                    : const Icon(Icons.arrow_drop_down),
                               ),
                               value: selectedRoomType,
                               items: roomTypes.map((roomType) {
@@ -535,7 +559,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                       hour,
                                       minute,
                                     );
-                                    isDisabled = classStart.isBefore(DateTime.now());
+                                    isDisabled =
+                                        classStart.isBefore(DateTime.now());
                                   } catch (e) {
                                     // If parsing fails, assume not disabled
                                     isDisabled = false;
@@ -751,7 +776,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                                     elevation: 0,
                                                     backgroundColor: isDisabled
                                                         ? Colors.grey
-                                                        : theme.colorScheme.primary,
+                                                        : theme.colorScheme
+                                                            .primary,
                                                     foregroundColor: isDisabled
                                                         ? Colors.grey[600]
                                                         : Colors.white,
@@ -773,7 +799,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                                             MaterialPageRoute(
                                                               builder: (_) =>
                                                                   BookingsScreen(
-                                                                      schedule: s,
+                                                                      schedule:
+                                                                          s,
                                                                       selectedDate:
                                                                           selectedDate),
                                                             ),
