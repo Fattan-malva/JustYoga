@@ -11,7 +11,7 @@ import 'providers/theme_provider.dart';
 import 'screens/splash_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/login_screen.dart';
-import 'screens/register_screen.dart';
+
 import 'screens/class_detail_screen.dart';
 import 'screens/trainer_profile_screen.dart';
 import 'widgets/main_layout.dart';
@@ -43,7 +43,6 @@ class GymBookingApp extends StatelessWidget {
               SplashScreen.routeName: (_) => SplashScreen(),
               OnboardingScreen.routeName: (_) => OnboardingScreen(),
               LoginScreen.routeName: (_) => LoginScreen(),
-              RegisterScreen.routeName: (_) => RegisterScreen(),
               '/main': (_) => MainLayout(),
               ClassDetailScreen.routeName: (_) => ClassDetailScreen(),
               TrainerProfileScreen.routeName: (_) => TrainerProfileScreen(),
@@ -149,7 +148,7 @@ class AppTheme {
       labelStyle: TextStyle(color: AppColors.darkTextSecondary),
       hintStyle: TextStyle(color: AppColors.darkTextSecondary),
     ),
-    dialogBackgroundColor: AppColors.darkSurface, 
+    dialogBackgroundColor: AppColors.darkSurface,
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
       backgroundColor: AppColors.darkSurface,
       selectedItemColor: AppColors.primary,

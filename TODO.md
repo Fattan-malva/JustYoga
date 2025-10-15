@@ -1,4 +1,4 @@
-- [x] Add login and register API methods to ApiService
-- [x] Update AuthProvider to use real API calls instead of dummy data
-- [x] Update login_screen.dart to call the new login method
-- [ ] Test login and register functionality with the provided API endpoints
+- [x] Update AnimatedSwitcher to use SlideTransition for smoother animation between login and signup forms
+- [x] Modify _HeaderClipper to accept a bool parameter for dynamic shape based on login/signup
+- [x] Add logo image from assets/icons/logo.png to the header
+- [ ] Test the changes in the app
