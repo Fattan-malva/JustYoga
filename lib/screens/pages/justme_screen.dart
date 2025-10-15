@@ -289,7 +289,7 @@ class _JustMeScreenState extends State<JustMeScreen> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Text(
               'Just Me for ${selectedDate.day} ${_getMonthName(selectedDate.month)} ${selectedDate.year}',
               style: theme.textTheme.titleLarge?.copyWith(

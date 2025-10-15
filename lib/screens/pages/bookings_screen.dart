@@ -32,7 +32,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
     setState(() => isLoading = true);
     try {
       final apiService = ApiService(
-          baseUrl: 'http://192.168.24.61:3000'); // Adjust baseUrl as needed
+          baseUrl: 'http://localhost:3000'); // Adjust baseUrl as needed
       final bookings =
           await apiService.fetchBookingsByUniqCode(widget.schedule.uniqCode);
       final takenSeats = bookings.map((b) => b.classMapNumber).toSet();
@@ -525,7 +525,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
     setState(() => isLoading = true);
 
     try {
-      final apiService = ApiService(baseUrl: 'http://192.168.24.61:3000');
+      final apiService = ApiService(baseUrl: 'http://localhost:3000');
       final booking = BookingItem(
         studioID: (widget.schedule.studioID ?? 0).toString(),
         roomType: widget.schedule.roomType ?? 0,

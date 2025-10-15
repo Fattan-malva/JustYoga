@@ -33,8 +33,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   bool isLoadingRoomTypes = false;
   String? roomTypeError;
 
-  final ApiService apiService =
-      ApiService(baseUrl: 'http://192.168.24.61:3000');
+  final ApiService apiService = ApiService(baseUrl: 'http://localhost:3000');
   // Catatan: Untuk Flutter web, pastikan API backend enable CORS.
 
   String _getMonthName(int month) {
@@ -471,7 +470,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             ],
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Text(
               'Reguler Class for ${selectedDate.day} ${_getMonthName(selectedDate.month)} ${selectedDate.year}',
               style: theme.textTheme.titleLarge?.copyWith(
