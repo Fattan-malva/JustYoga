@@ -26,7 +26,8 @@ class _JustMeScreenState extends State<JustMeScreen> {
   bool isLoadingStudios = false;
   String? studioError;
 
-  final ApiService apiService = ApiService(baseUrl: 'http://localhost:3000');
+  final ApiService apiService =
+      ApiService(baseUrl: 'http://192.168.234.182:3000');
   // Catatan: Untuk Flutter web, pastikan API backend enable CORS.
 
   String _getMonthName(int month) {

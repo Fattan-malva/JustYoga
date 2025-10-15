@@ -7,7 +7,8 @@ class AuthProvider extends ChangeNotifier {
   bool get isAuthenticated => _user != null;
   UserModel? get user => _user;
 
-  final ApiService _apiService = ApiService(baseUrl: 'http://localhost:3000');
+  final ApiService _apiService =
+      ApiService(baseUrl: 'http://192.168.234.182:3000');
 
   Future<bool> login(String email, String password) async {
     try {
