@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 import '../../models/schedule_item.dart';
 import '../../models/booking_item.dart';
 import '../../services/api_service.dart';
+import '../../providers/auth_provider.dart';
 
 class BookingsScreen extends StatefulWidget {
   final ScheduleItem schedule;
@@ -526,6 +528,8 @@ class _BookingsScreenState extends State<BookingsScreen> {
 
     try {
       final apiService = ApiService(baseUrl: 'http://localhost:3000');
+      final auth = Provider.of<AuthProvider>(context, listen: false);
+      final user = auth.user;
       final booking = BookingItem(
         studioID: (widget.schedule.studioID ?? 0).toString(),
         roomType: widget.schedule.roomType ?? 0,
@@ -533,14 +537,16 @@ class _BookingsScreenState extends State<BookingsScreen> {
         classBookingDate: DateTime(widget.selectedDate.year,
             widget.selectedDate.month, widget.selectedDate.day),
         classBookingTime: widget.schedule.timeCls,
-        customerID: "20250928150045097", // dummy value
-        contractID: "20250928150045120", // dummy value
+        customerID:
+            user?.customerID ?? "", // from profile data
+        contractID:
+            user?.lastContractID ?? "", // from profile data
         accessCardNumber: 0, // dummy value
         isActive: true,
         isRelease: false,
         isConfirm: false,
         classMapNumber: int.parse(selectedSeatId!),
-        createby: "999", // dummy value
+        createby: "000", // dummy value
         createdate: DateTime.now(),
       );
 
