@@ -1,4 +1,3 @@
-- [x] Update AnimatedSwitcher to use SlideTransition for smoother animation between login and signup forms
-- [x] Modify _HeaderClipper to accept a bool parameter for dynamic shape based on login/signup
-- [x] Add logo image from assets/icons/logo.png to the header
-- [ ] Test the changes in the app
+- [x] Add fetchCustomer method to ApiService for /api/customers?customerID=10
+- [x] Update AuthProvider to load customer data on login or activation
+- [x] Update ProfileScreen to display customer data in read-only form fields

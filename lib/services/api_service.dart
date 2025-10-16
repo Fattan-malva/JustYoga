@@ -279,7 +279,15 @@ class ApiService {
   }
 
   Future<Map<String, dynamic>> createActivation(
-      String customerID, String name, String email, String password) async {
+      String customerID,
+      String name,
+      String toStudioID,
+      String lastContractID,
+      String noIdentity,
+      String birthDate,
+      String phone,
+      String email,
+      String password) async {
     final url = Uri.parse('$baseUrl/api/activation/create');
     final resp = await http.post(
       url,
@@ -287,6 +295,11 @@ class ApiService {
       body: jsonEncode({
         'customerID': customerID,
         'name': name,
+        'toStudioID': toStudioID,
+        'lastContractID': lastContractID,
+        'noIdentity': noIdentity,
+        'birthDate': birthDate,
+        'phone': phone,
         'email': email,
         'password': password,
       }),
@@ -308,6 +321,40 @@ class ApiService {
         throw Exception(resp.body);
       }
       throw Exception('Activation creation failed');
+    }
+  }
+
+  Future<ActivationModel> fetchActivation(String customerID) async {
+    final url = Uri.parse('$baseUrl/api/activation/$customerID');
+    final resp = await http.get(url);
+    if (resp.statusCode == 200) {
+      final Map<String, dynamic> data = jsonDecode(resp.body);
+      return ActivationModel.fromJson(data);
+    } else {
+      try {
+        final Map<String, dynamic> errorData = jsonDecode(resp.body);
+        if (errorData.containsKey('message')) {
+          throw Exception(errorData['message']);
+        }
+      } catch (_) {}
+      throw Exception('Failed to load activation');
+    }
+  }
+
+  Future<Map<String, dynamic>> fetchCustomer(String customerID) async {
+    final url = Uri.parse('$baseUrl/api/customers?customerID=$customerID');
+    final resp = await http.get(url);
+    if (resp.statusCode == 200) {
+      final Map<String, dynamic> data = jsonDecode(resp.body);
+      return data;
+    } else {
+      try {
+        final Map<String, dynamic> errorData = jsonDecode(resp.body);
+        if (errorData.containsKey('message')) {
+          throw Exception(errorData['message']);
+        }
+      } catch (_) {}
+      throw Exception('Failed to load customer');
     }
   }
 

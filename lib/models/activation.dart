@@ -6,6 +6,7 @@ class ActivationModel {
   String noIdentity;
   String email;
   String lastContractID;
+  String toStudioID;
 
   ActivationModel({
     required this.customerID,
@@ -15,6 +16,7 @@ class ActivationModel {
     required this.noIdentity,
     required this.email,
     required this.lastContractID,
+    required this.toStudioID,
   });
 
   factory ActivationModel.fromJson(Map<String, dynamic> json) =>
@@ -26,6 +28,7 @@ class ActivationModel {
         noIdentity: json['noIdentity'] ?? '',
         email: json['email'] ?? '',
         lastContractID: json['lastContractID']?.toString() ?? '',
+        toStudioID: json['toStudioID']?.toString() ?? '',
       );
 
   Map<String, dynamic> toJson() => {
@@ -36,5 +39,6 @@ class ActivationModel {
         'noIdentity': noIdentity,
         'email': email,
         'lastContractID': lastContractID,
+        'toStudioID': toStudioID,
       };
 }

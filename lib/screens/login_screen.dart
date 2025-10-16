@@ -560,6 +560,11 @@ class _LoginScreenState extends State<LoginScreen> {
       final response = await auth.createActivation(
         _activationData!.customerID,
         _activationData!.name,
+        '', // toStudioID - need to determine how to get this
+        _activationData!.lastContractID,
+        _activationData!.noIdentity,
+        _activationData!.birthDate,
+        _activationData!.phone,
         _activationData!.email,
         passwordActivationController.text,
       );
@@ -568,14 +573,11 @@ class _LoginScreenState extends State<LoginScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(response['message'])),
         );
-        // Optionally navigate to login or main screen
-        setState(() {
-          showLogin = true;
-          _activationData = null;
-          _errorMessage = null;
-          passwordActivationController.clear();
-          confirmPasswordActivationController.clear();
-        });
+        // Set user from activation data
+        final auth = Provider.of<AuthProvider>(context, listen: false);
+        auth.setUserFromActivation(_activationData!);
+        // Navigate to main screen
+        Navigator.pushReplacementNamed(context, '/main');
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Activation failed")),
