@@ -58,7 +58,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ],
 
               ElevatedButton(
-                onPressed: () => auth.logout(),
+                onPressed: () async {
+                  await auth.logout();
+                  Navigator.pushReplacementNamed(context, '/login');
+                },
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size(double.infinity, 50),
                 ),

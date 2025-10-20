@@ -537,10 +537,8 @@ class _BookingsScreenState extends State<BookingsScreen> {
         classBookingDate: DateTime(widget.selectedDate.year,
             widget.selectedDate.month, widget.selectedDate.day),
         classBookingTime: widget.schedule.timeCls,
-        customerID:
-            user?.customerID ?? "", // from profile data
-        contractID:
-            user?.lastContractID ?? "", // from profile data
+        customerID: user?.customerID ?? "", // from profile data
+        contractID: user?.lastContractID ?? "", // from profile data
         accessCardNumber: 0, // dummy value
         isActive: true,
         isRelease: false,

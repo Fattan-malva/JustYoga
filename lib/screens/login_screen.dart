@@ -573,11 +573,18 @@ class _LoginScreenState extends State<LoginScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(response['message'])),
         );
-        // Set user from activation data
-        final auth = Provider.of<AuthProvider>(context, listen: false);
-        auth.setUserFromActivation(_activationData!);
-        // Navigate to main screen
-        Navigator.pushReplacementNamed(context, '/main');
+        // Reset form and switch back to login
+        setState(() {
+          showLogin = true;
+          _activationData = null;
+          _errorMessage = null;
+          emailSignupController.clear();
+          phoneSignupController.clear();
+          nikSignupController.clear();
+          birthDateSignupController.clear();
+          passwordActivationController.clear();
+          confirmPasswordActivationController.clear();
+        });
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Activation failed")),

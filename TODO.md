@@ -1,3 +1,3 @@
-- [x] Add fetchCustomer method to ApiService for /api/customers?customerID=10
-- [x] Update AuthProvider to load customer data on login or activation
-- [x] Update ProfileScreen to display customer data in read-only form fields
+- [ ] Modify _submitActivation in login_screen.dart to not auto-login after successful activation
+- [ ] Show success message and switch back to login form
+- [ ] Test the activation flow

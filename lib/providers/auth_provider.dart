@@ -130,8 +130,18 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  void logout() {
-    _user = null;
-    notifyListeners();
+  Future<void> logout() async {
+    if (_user != null && _user!.customerID.isNotEmpty) {
+      try {
+        await _apiService.logout(_user!.customerID);
+        _user = null;
+        notifyListeners();
+      } catch (e) {
+        print('Logout error: $e');
+        // Still clear user even if API fails
+        _user = null;
+        notifyListeners();
+      }
+    }
   }
 }

@@ -358,5 +358,26 @@ class ApiService {
     }
   }
 
+  Future<Map<String, dynamic>> logout(String customerID) async {
+    final url = Uri.parse('$baseUrl/api/auth/logout');
+    final resp = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'customerID': customerID}),
+    );
+    if (resp.statusCode == 200) {
+      final Map<String, dynamic> data = jsonDecode(resp.body);
+      return data;
+    } else {
+      try {
+        final Map<String, dynamic> errorData = jsonDecode(resp.body);
+        if (errorData.containsKey('message')) {
+          throw Exception(errorData['message']);
+        }
+      } catch (_) {}
+      throw Exception('Logout failed');
+    }
+  }
+
   // TODO: add post, put, delete helpers and token-based auth
 }
