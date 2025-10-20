@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'secure_storage_service.dart';
 
 /*
   Placeholder API service.
@@ -26,12 +27,18 @@ import '../models/activation.dart';
 
 class ApiService {
   final String baseUrl;
+  final SecureStorageService _secureStorage = SecureStorageService();
 
   ApiService({required this.baseUrl});
 
   Future<Map<String, dynamic>> get(String path) async {
     final url = Uri.parse('$baseUrl\$path');
-    final resp = await http.get(url);
+    final token = await _secureStorage.getToken();
+    final headers = <String, String>{'Accept': 'application/json'};
+    if (token != null) {
+      headers['Authorization'] = 'Bearer $token';
+    }
+    final resp = await http.get(url, headers: headers);
     return jsonDecode(resp.body);
   }
 
@@ -59,7 +66,12 @@ class ApiService {
 
   Future<List<ScheduleItem>> fetchSchedulesByDate(String date) async {
     final url = Uri.parse('$baseUrl/api/schedules/by-date?date=$date');
-    final resp = await http.get(url);
+    final token = await _secureStorage.getToken();
+    final headers = <String, String>{'Accept': 'application/json'};
+    if (token != null) {
+      headers['Authorization'] = 'Bearer $token';
+    }
+    final resp = await http.get(url, headers: headers);
     if (resp.statusCode == 200) {
       final List<dynamic> data = jsonDecode(resp.body);
       return data.map((item) => ScheduleItem.fromJson(item)).toList();
@@ -78,7 +90,12 @@ class ApiService {
       String date, int studioID) async {
     final url = Uri.parse(
         '$baseUrl/api/schedules/by-date-studio?date=$date&studioID=$studioID');
-    final resp = await http.get(url);
+    final token = await _secureStorage.getToken();
+    final headers = <String, String>{'Accept': 'application/json'};
+    if (token != null) {
+      headers['Authorization'] = 'Bearer $token';
+    }
+    final resp = await http.get(url, headers: headers);
     if (resp.statusCode == 200) {
       final List<dynamic> data = jsonDecode(resp.body);
       return data.map((item) => ScheduleItem.fromJson(item)).toList();
@@ -97,7 +114,12 @@ class ApiService {
       String date, int roomType) async {
     final url = Uri.parse(
         '$baseUrl/api/schedules/by-date-roomType?date=$date&roomType=$roomType');
-    final resp = await http.get(url);
+    final token = await _secureStorage.getToken();
+    final headers = <String, String>{'Accept': 'application/json'};
+    if (token != null) {
+      headers['Authorization'] = 'Bearer $token';
+    }
+    final resp = await http.get(url, headers: headers);
     if (resp.statusCode == 200) {
       final List<dynamic> data = jsonDecode(resp.body);
       return data.map((item) => ScheduleItem.fromJson(item)).toList();
@@ -118,7 +140,12 @@ class ApiService {
     if (studioID != null) queryParams.add('studioID=$studioID');
     if (roomType != null) queryParams.add('roomType=$roomType');
     final url = Uri.parse('$baseUrl/api/schedules?${queryParams.join('&')}');
-    final resp = await http.get(url);
+    final token = await _secureStorage.getToken();
+    final headers = <String, String>{'Accept': 'application/json'};
+    if (token != null) {
+      headers['Authorization'] = 'Bearer $token';
+    }
+    final resp = await http.get(url, headers: headers);
     if (resp.statusCode == 200) {
       final List<dynamic> data = jsonDecode(resp.body);
       return data.map((item) => ScheduleItem.fromJson(item)).toList();
@@ -217,6 +244,10 @@ class ApiService {
     );
     if (resp.statusCode == 200) {
       final Map<String, dynamic> data = jsonDecode(resp.body);
+      // Save token to secure storage
+      if (data.containsKey('token')) {
+        await _secureStorage.saveToken(data['token']);
+      }
       return data;
     } else {
       try {
@@ -367,6 +398,8 @@ class ApiService {
     );
     if (resp.statusCode == 200) {
       final Map<String, dynamic> data = jsonDecode(resp.body);
+      // Delete token from secure storage
+      await _secureStorage.deleteToken();
       return data;
     } else {
       try {

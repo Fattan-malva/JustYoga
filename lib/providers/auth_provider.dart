@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/user.dart';
 import '../models/activation.dart';
 import '../services/api_service.dart';
+import '../services/secure_storage_service.dart';
 
 class AuthProvider extends ChangeNotifier {
   UserModel? _user;
@@ -9,6 +10,7 @@ class AuthProvider extends ChangeNotifier {
   UserModel? get user => _user;
 
   final ApiService _apiService = ApiService(baseUrl: 'http://localhost:3000');
+  final SecureStorageService _secureStorage = SecureStorageService();
 
   Future<bool> login(String email, String password) async {
     try {
@@ -142,6 +144,24 @@ class AuthProvider extends ChangeNotifier {
         _user = null;
         notifyListeners();
       }
+    }
+  }
+
+  Future<void> checkAuthStatus() async {
+    final token = await _secureStorage.getToken();
+    if (token != null) {
+      // Token exists, try to load user data
+      // Assuming you have a way to get user from token, e.g., from API or stored data
+      // For now, we'll assume user data is stored separately or fetched
+      // You might need to implement a method to validate token and get user
+      // For example:
+      // try {
+      //   final userData = await _apiService.getUserFromToken(token);
+      //   _user = UserModel.fromJson(userData);
+      //   notifyListeners();
+      // } catch (e) {
+      //   await _secureStorage.deleteToken();
+      // }
     }
   }
 }

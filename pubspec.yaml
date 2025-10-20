@@ -29,6 +29,9 @@ dependencies:
   # HTTP requests (untuk integrasi API Laravel nanti)
   http: ^1.2.2
 
+  # Secure storage for JWT token
+  flutter_secure_storage: ^9.0.0
+
   # Animations & transitions
   animations: ^2.0.11
 
