@@ -545,25 +545,25 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                       'Trainer: ${s.teacher1 ?? 'N/A'}'
                                       '${s.teacher2 != null ? ', ${s.teacher2}' : ''}';
 
-                                  // Validation: Disable button if class time has passed
+                                  // VALIDASI TOMBOL BOOKING
                                   bool isDisabled = false;
-                                  try {
-                                    final timeParts = s.timeCls.split(':');
-                                    final hour = int.parse(timeParts[0]);
-                                    final minute = int.parse(timeParts[1]);
-                                    final classStart = DateTime(
-                                      selectedDate.year,
-                                      selectedDate.month,
-                                      selectedDate.day,
-                                      hour,
-                                      minute,
-                                    );
-                                    isDisabled =
-                                        classStart.isBefore(DateTime.now());
-                                  } catch (e) {
-                                    // If parsing fails, assume not disabled
-                                    isDisabled = false;
-                                  }
+                                  // try {
+                                  //   final timeParts = s.timeCls.split(':');
+                                  //   final hour = int.parse(timeParts[0]);
+                                  //   final minute = int.parse(timeParts[1]);
+                                  //   final classStart = DateTime(
+                                  //     selectedDate.year,
+                                  //     selectedDate.month,
+                                  //     selectedDate.day,
+                                  //     hour,
+                                  //     minute,
+                                  //   );
+                                  //   isDisabled =
+                                  //       classStart.isBefore(DateTime.now());
+                                  // } catch (e) {
+                                  //   // If parsing fails, assume not disabled
+                                  //   isDisabled = false;
+                                  // }
 
                                   return Card(
                                     margin: const EdgeInsets.only(bottom: 12),

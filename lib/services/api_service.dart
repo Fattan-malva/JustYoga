@@ -42,6 +42,7 @@ class ApiService {
     return jsonDecode(resp.body);
   }
 
+  // GET STUDIOS
   Future<List<Studio>> fetchStudios() async {
     final url = Uri.parse('$baseUrl/api/studios');
     final resp = await http.get(url);
@@ -53,6 +54,7 @@ class ApiService {
     }
   }
 
+  // GET ROOM TYPES
   Future<List<RoomType>> fetchRoomTypes() async {
     final url = Uri.parse('$baseUrl/api/room-types');
     final resp = await http.get(url);
@@ -64,6 +66,7 @@ class ApiService {
     }
   }
 
+  // GET SCHEDULES
   Future<List<ScheduleItem>> fetchSchedulesByDate(String date) async {
     final url = Uri.parse('$baseUrl/api/schedules/by-date?date=$date');
     final token = await _secureStorage.getToken();
@@ -160,6 +163,7 @@ class ApiService {
     }
   }
 
+  // GET BOOKINGS
   Future<List<BookingItem>> fetchBookingsByUniqCode(String uniqCode) async {
     final url =
         Uri.parse('$baseUrl/api/bookings/find-by-uniq-code?UniqCode=$uniqCode');
@@ -178,13 +182,32 @@ class ApiService {
     }
   }
 
+  // CREATE BOOKING
   Future<BookingItem> createBooking(BookingItem booking) async {
     final url = Uri.parse('$baseUrl/api/bookings');
+
+    // Ambil token dari secure storage
+    final token = await _secureStorage.getToken();
+
+    // Header request
+    final headers = <String, String>{
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
+
+    // Jika ada token, tambahkan ke header Authorization
+    if (token != null) {
+      headers['Authorization'] = 'Bearer $token';
+    }
+
+    // Kirim request POST ke API
     final resp = await http.post(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: headers,
       body: jsonEncode(booking.toJson()),
     );
+
+    // Tangani respons dari server
     if (resp.statusCode == 201 || resp.statusCode == 200) {
       final Map<String, dynamic> data = jsonDecode(resp.body);
       return BookingItem.fromJson(data);
@@ -199,6 +222,7 @@ class ApiService {
     }
   }
 
+  // GET JUSTME
   Future<List<JustMeItem>> fetchJustMeByDate(String date) async {
     final url = Uri.parse('$baseUrl/api/justme/by-date?date=$date');
     final resp = await http.get(url);
@@ -235,6 +259,7 @@ class ApiService {
     }
   }
 
+  // LOGIN
   Future<Map<String, dynamic>> login(String email, String password) async {
     final url = Uri.parse('$baseUrl/api/auth/login');
     final resp = await http.post(
@@ -260,6 +285,7 @@ class ApiService {
     }
   }
 
+  // REGISTER
   Future<Map<String, dynamic>> register(
       String name, String email, String password) async {
     final url = Uri.parse('$baseUrl/api/auth/register');
@@ -282,6 +308,7 @@ class ApiService {
     }
   }
 
+  // ACTIVATION
   Future<Map<String, dynamic>> checkActivation(
       String email, String phone, String noIdentity, String birthDate) async {
     final url = Uri.parse(
@@ -389,6 +416,7 @@ class ApiService {
     }
   }
 
+  // LOGOUT
   Future<Map<String, dynamic>> logout(String customerID) async {
     final url = Uri.parse('$baseUrl/api/auth/logout');
     final resp = await http.post(
@@ -411,6 +439,4 @@ class ApiService {
       throw Exception('Logout failed');
     }
   }
-
-  // TODO: add post, put, delete helpers and token-based auth
 }
