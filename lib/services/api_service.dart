@@ -183,43 +183,30 @@ class ApiService {
   }
 
   // CREATE BOOKING
-  Future<BookingItem> createBooking(BookingItem booking) async {
+  Future<Map<String, dynamic>> createBooking(BookingItem booking) async {
     final url = Uri.parse('$baseUrl/api/bookings');
-
-    // Ambil token dari secure storage
     final token = await _secureStorage.getToken();
 
-    // Header request
     final headers = <String, String>{
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     };
 
-    // Jika ada token, tambahkan ke header Authorization
     if (token != null) {
       headers['Authorization'] = 'Bearer $token';
     }
 
-    // Kirim request POST ke API
     final resp = await http.post(
       url,
       headers: headers,
       body: jsonEncode(booking.toJson()),
     );
 
-    // Tangani respons dari server
-    if (resp.statusCode == 201 || resp.statusCode == 200) {
-      final Map<String, dynamic> data = jsonDecode(resp.body);
-      return BookingItem.fromJson(data);
-    } else {
-      try {
-        final Map<String, dynamic> errorData = jsonDecode(resp.body);
-        if (errorData.containsKey('message')) {
-          throw Exception(errorData['message']);
-        }
-      } catch (_) {}
-      throw Exception('Failed to create booking');
-    }
+    // Coba parse semua response ke Map
+    final Map<String, dynamic> data = jsonDecode(resp.body);
+
+    // Balikkan langsung message dari server, baik sukses maupun gagal
+    return data;
   }
 
   // GET JUSTME

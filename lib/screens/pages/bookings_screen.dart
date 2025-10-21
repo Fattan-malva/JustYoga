@@ -530,6 +530,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
       final apiService = ApiService(baseUrl: 'http://localhost:3000');
       final auth = Provider.of<AuthProvider>(context, listen: false);
       final user = auth.user;
+
       final booking = BookingItem(
         studioID: (widget.schedule.studioID ?? 0).toString(),
         roomType: widget.schedule.roomType ?? 0,
@@ -537,26 +538,35 @@ class _BookingsScreenState extends State<BookingsScreen> {
         classBookingDate: DateTime(widget.selectedDate.year,
             widget.selectedDate.month, widget.selectedDate.day),
         classBookingTime: widget.schedule.timeCls,
-        customerID: user?.customerID ?? "", // from profile data
-        contractID: user?.lastContractID ?? "", // from profile data
-        accessCardNumber: 0, // dummy value
+        customerID: user?.customerID ?? "",
+        contractID: user?.lastContractID ?? "",
+        accessCardNumber: 0,
         isActive: true,
         isRelease: false,
         isConfirm: false,
         classMapNumber: int.parse(selectedSeatId!),
-        createby: "000", // dummy value
+        createby: "000",
         createdate: DateTime.now(),
       );
 
-      await apiService.createBooking(booking);
+      final response = await apiService.createBooking(booking);
+
+      // Ambil pesan langsung dari API
+      final message = response['message'] ?? 'Tidak ada pesan dari server';
+      final success = response['success'] ?? false;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Booking berhasil dibuat!')),
+        SnackBar(content: Text(message)),
       );
-      Navigator.of(context).pop(); // kembali ke screen sebelumnya
+
+      // Kalau sukses, kembali ke screen sebelumnya
+      if (success) {
+        Navigator.of(context).pop();
+      }
     } catch (e) {
+      // Jika error dari jaringan atau parsing
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Gagal membuat booking: $e')),
+        SnackBar(content: Text('Terjadi kesalahan: $e')),
       );
     } finally {
       setState(() => isLoading = false);

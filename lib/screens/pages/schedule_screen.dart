@@ -693,7 +693,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                                 children: [
                                                   const Icon(
                                                     Icons
-                                                        .school_rounded, // 🔹 Ganti sesuai ikon yang kamu mau
+                                                        .school_rounded, 
                                                     size: 15,
                                                     color: Colors.redAccent,
                                                   ),
@@ -716,7 +716,6 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                           ),
                                         ),
 
-                                        // Area kanan atas: chip studio + room + tombol Booking
                                         Positioned(
                                           right: 12,
                                           top: 12,
