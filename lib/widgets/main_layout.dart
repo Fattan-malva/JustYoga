@@ -58,12 +58,41 @@ class _MainLayoutState extends State<MainLayout> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Theme.of(context).colorScheme.primary,
-        title: Text(
-          'Hi, ${user?.name ?? 'Guest'}',
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
+        titleSpacing: 0, // biar lebih rapat ke kiri
+        title: Row(
+          children: [
+            const SizedBox(width: 8),
+            GestureDetector(
+              onTap: () {
+                // Arahkan ke halaman Profile (index 4)
+                setState(() {
+                  _currentIndex = 4;
+                });
+                _pageController.animateToPage(
+                  4,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                );
+              },
+              child: CircleAvatar(
+                radius: 18,
+                backgroundColor: Colors.white.withOpacity(0.15),
+                child: const Icon(
+                  Icons.person,
+                  color: Colors.white,
+                  size: 22,
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Text(
+              'Hi, ${user?.name?.split(' ').first ?? 'Guest'}',
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
         ),
         actions: [
           Consumer<ThemeProvider>(
@@ -80,32 +109,7 @@ class _MainLayoutState extends State<MainLayout> {
               );
             },
           ),
-          Padding(
-            padding: EdgeInsets.only(right: 16),
-            child: GestureDetector(
-              onTap: () {
-                // Arahkan ke halaman Profile (index 4)
-                setState(() {
-                  _currentIndex = 4;
-                });
-                _pageController.animateToPage(
-                  4,
-                  duration: Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                );
-              },
-              child: CircleAvatar(
-                radius: 18, // bisa ubah ukuran lingkaran
-                backgroundColor:
-                    Colors.white.withOpacity(0.15), // opsional efek halus
-                child: Icon(
-                  Icons.person,
-                  color: Colors.white,
-                  size: 22,
-                ),
-              ),
-            ),
-          ),
+          const SizedBox(width: 8),
         ],
       ),
       body: PageView(
