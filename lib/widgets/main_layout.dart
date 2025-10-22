@@ -59,7 +59,7 @@ class _MainLayoutState extends State<MainLayout> {
         automaticallyImplyLeading: false,
         backgroundColor: Theme.of(context).colorScheme.primary,
         titleSpacing: 0,
-        toolbarHeight: 45, // DIKURANGI dari default (biasanya 56-64)
+        toolbarHeight: 50, // DIKURANGI dari default (biasanya 56-64)
         title: Row(
           children: [
             const SizedBox(width: 6), // DIKURANGI dari 8

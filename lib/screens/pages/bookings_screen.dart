@@ -33,8 +33,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
   Future<void> _fetchBookings() async {
     setState(() => isLoading = true);
     try {
-      final apiService = ApiService(
-          baseUrl: 'http://localhost:3000'); // Adjust baseUrl as needed
+      final apiService = ApiService(baseUrl: 'http://localhost:3000');
       final bookings =
           await apiService.fetchBookingsByUniqCode(widget.schedule.uniqCode);
       final takenSeats = bookings.map((b) => b.classMapNumber).toSet();
@@ -51,8 +50,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
       setState(() {
         seats = List.generate(widget.schedule.totalMap, (index) {
           final seatNumber = index + 1;
-          return _Seat(
-              seatNumber.toString(), true); // All available if fetch fails
+          return _Seat(seatNumber.toString(), true);
         });
         totalBooked = 0;
         isLoading = false;
@@ -67,30 +65,20 @@ class _BookingsScreenState extends State<BookingsScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final selectedColor = const Color.fromARGB(255, 67, 4, 27);
 
-    final timeAndClass =
-        '${widget.schedule.timeCls} - ${widget.schedule.timeClsEnd} - ${widget.schedule.className}';
-    final roomAndTrainer = 'Room: ${widget.schedule.roomName ?? 'N/A'}\n'
-        'Trainer: ${widget.schedule.teacher1 ?? 'N/A'}'
-        '${widget.schedule.teacher2 != null ? ', ${widget.schedule.teacher2}' : ''}';
-    final studioName = widget.schedule.studioName;
-    final mapInfo = 'Mat: $totalBooked/${widget.schedule.totalMap}';
-
-    // Define variables for header display
     final timeStr =
         '${widget.schedule.timeCls} - ${widget.schedule.timeClsEnd}';
     final className = widget.schedule.className;
     final roomName = widget.schedule.roomName ?? 'N/A';
     final trainerName = '${widget.schedule.teacher1 ?? 'N/A'}'
         '${widget.schedule.teacher2 != null ? ', ${widget.schedule.teacher2}' : ''}';
+    final studioName = widget.schedule.studioName;
+    final mapInfo = 'Mat: $totalBooked/${widget.schedule.totalMap}';
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Bookings'),
         backgroundColor: theme.colorScheme.primary,
-        foregroundColor: Colors.white,
-        titleTextStyle: const TextStyle(
-            color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
         leading: IconButton(
           icon: const Icon(Icons.chevron_left_rounded),
           color: Colors.white,
@@ -99,19 +87,15 @@ class _BookingsScreenState extends State<BookingsScreen> {
       ),
       body: Stack(
         children: [
-          // ===== Sticky header (info forward) =====
+          // ===== Sticky header =====
           Positioned(
             top: 0,
             left: 0,
             right: 0,
             child: Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
               decoration: BoxDecoration(
                 color: theme.colorScheme.primary,
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(30),
-                  bottomRight: Radius.circular(30),
-                ),
                 boxShadow: const [
                   BoxShadow(
                     color: Colors.black12,
@@ -122,6 +106,38 @@ class _BookingsScreenState extends State<BookingsScreen> {
               ),
               child: Column(
                 children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: const Text(
+                      'Find Your Space',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: const Text(
+                      'Discover Just Yoga studios near you',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: const Text(
+                      'calm, inspiring, and ready to welcome your practice',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
                   // ======== Header Keterangan Statis ========
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -290,142 +306,198 @@ class _BookingsScreenState extends State<BookingsScreen> {
                         const Text('Booked',
                             style: TextStyle(color: Colors.white)),
                         const SizedBox(width: 16),
-                        _legendDot(color: Color.fromARGB(255, 106, 15, 15)),
+                        _legendDot(color: selectedColor),
                         const SizedBox(width: 6),
                         const Text('Selected',
                             style: TextStyle(color: Colors.white)),
                       ],
                     ),
                   ),
+                  const SizedBox(height: 100),
                 ],
               ),
             ),
           ),
 
-          // ===== Scrollable content =====
-          Padding(
-            padding: const EdgeInsets.only(
-                top: 140), // Sesuaikan dengan tinggi header + legend
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // ===== Loading indicator =====
-                  if (isLoading)
-                    const Center(child: CircularProgressIndicator())
-                  else
-                    // ===== List kursi dengan tombol Konfirmasi per-item =====
-                    ListView.builder(
-                      shrinkWrap: true,
-                      primary: false,
-                      itemCount: seats.length,
-                      itemBuilder: (context, index) {
-                        final seat = seats[index];
-                        final bool isSelected = selectedSeatId == seat.id;
+          // ===== Body dengan border radius =====
+          Positioned.fill(
+            top: 210,
+            child: ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(30),
+                topRight: Radius.circular(30),
+              ),
+              child: Container(
+                color: theme.scaffoldBackgroundColor,
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // ===== Loading indicator =====
+                      if (isLoading)
+                        const Center(child: CircularProgressIndicator())
+                      else
+                        // ===== Grid View untuk kursi dengan card yang rapat =====
+                        GridView.builder(
+                          shrinkWrap: true,
+                          primary: false,
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 6,
+                            mainAxisSpacing: 6,
+                            childAspectRatio: 1.8,
+                          ),
+                          itemCount: seats.length,
+                          itemBuilder: (context, index) {
+                            final seat = seats[index];
+                            final bool isSelected = selectedSeatId == seat.id;
 
-                        final Color tileBorder = isSelected
-                            ? theme.colorScheme.primary
-                            : isDark
-                                ? Colors.grey[700]!
-                                : Colors.grey.shade300;
+                            final String status;
+                            final Color statusColor;
+                            if (isSelected) {
+                              status = 'Selected';
+                              statusColor =
+                                  const Color.fromARGB(255, 67, 4, 27);
+                            } else if (seat.isAvailable) {
+                              status = 'Available';
+                              statusColor = Colors.green;
+                            } else {
+                              status = 'Booked';
+                              statusColor = Colors.red;
+                            }
 
-                        final Color tileColor = isSelected
-                            ? theme.colorScheme.primary.withOpacity(0.10)
-                            : isDark
-                                ? Colors.grey[800]!
-                                : Colors.grey.shade100;
+                            final Color tileColor = isSelected
+                                ? theme.colorScheme.primary.withOpacity(0.10)
+                                : isDark
+                                    ? Colors.grey[800]!
+                                    : Colors.grey.shade100;
 
-                        final Color seatIconColor = !seat.isAvailable
-                            ? Colors.red
-                            : isSelected
-                                ? theme.colorScheme.primary
-                                : Colors.green;
-
-                        return Container(
-                          margin: const EdgeInsets.symmetric(vertical: 6),
-                          child: ListTile(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              side: BorderSide(color: tileBorder, width: 1.2),
-                            ),
-                            tileColor: tileColor,
-                            leading: SvgPicture.asset(
-                              'assets/icons/mat.svg',
-                              width: 30,
-                              height: 30,
-                            ),
-
-                            title: Text(
-                              'Mat ${seat.id}',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                color: isSelected
-                                    ? theme.colorScheme.primary
-                                    : isDark
-                                        ? Colors.white
-                                        : Colors.black87,
+                            return Card(
+                              elevation: 2,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
                               ),
-                            ),
-                            subtitle: Text(
-                              seat.isAvailable ? 'Available' : 'Booked',
-                              style: TextStyle(
-                                color: seat.isAvailable
-                                    ? Colors.green
-                                    : Colors.red,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            // Tombol Konfirmasi muncul hanya saat kursi ini dipilih
-                            trailing: AnimatedSwitcher(
-                              duration: const Duration(milliseconds: 150),
-                              transitionBuilder: (child, anim) =>
-                                  FadeTransition(opacity: anim, child: child),
-                              child: isSelected
-                                  ? SizedBox(
-                                      key: ValueKey('confirm_${seat.id}'),
-                                      width: 150,
-                                      child: ElevatedButton.icon(
-                                        onPressed: _onConfirmPressed,
-                                        icon: const Icon(Icons.check_circle,
-                                            size: 18),
-                                        label: const Text(
-                                          'Confirm',
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                        style: ElevatedButton.styleFrom(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 10, vertical: 10),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
+                              color: tileColor,
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(20),
+                                onTap: () {
+                                  if (!seat.isAvailable) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Mat tidak tersedia'),
+                                      ),
+                                    );
+                                    return;
+                                  }
+                                  setState(() => selectedSeatId = seat.id);
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      // Baris pertama: Icon dan Nomor Mat dengan font BESAR
+                                      Row(
+                                        children: [
+                                          SvgPicture.asset(
+                                            'assets/icons/mat.svg',
+                                            width: 22,
+                                            height: 22,
+                                          ),
+                                          const SizedBox(width: 6),
+                                          Expanded(
+                                            child: Text(
+                                              'Mat ${seat.id}',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16,
+                                                color: isSelected
+                                                    ? theme.colorScheme.primary
+                                                    : isDark
+                                                        ? Colors.white
+                                                        : Colors.black87,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+
+                                      const SizedBox(height: 4),
+
+                                      // Baris kedua: Status dengan font BESAR
+                                      Row(
+                                        children: [
+                                          Container(
+                                            width: 10,
+                                            height: 10,
+                                            decoration: BoxDecoration(
+                                              color: statusColor,
+                                              shape: BoxShape.circle,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 6),
+                                          Text(
+                                            status,
+                                            style: TextStyle(
+                                              color: statusColor,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+
+                                      // Tombol Confirm (diperbaiki ukurannya)
+                                      if (isSelected) ...[
+                                        const SizedBox(height: 6),
+                                        Align(
+                                          alignment: Alignment.center,
+                                          child: SizedBox(
+                                            width: 100, // ← LEBAR DIPERKECIL
+                                            child: ElevatedButton(
+                                              onPressed: _onConfirmPressed,
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor:
+                                                    theme.colorScheme.primary,
+                                                foregroundColor: Colors.white,
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                  horizontal:
+                                                      12, // ← DIPERKECIL
+                                                  vertical: 8, // ← DITINGGIKAN
+                                                ),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                ),
+                                                minimumSize: const Size(0,
+                                                    36), // ← TINGGI DITAMBAH (dari 28)
+                                              ),
+                                              child: const Text(
+                                                'Confirm',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    )
-                                  : const SizedBox(
-                                      key: ValueKey('spacer'),
-                                      width: 0,
-                                      height: 0,
-                                    ),
-                            ),
-                            onTap: () {
-                              if (!seat.isAvailable) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                        'Kursi ini tidak tersedia. Silakan pilih kursi lain.'),
+                                      ],
+                                    ],
                                   ),
-                                );
-                                return;
-                              }
-                              setState(() => selectedSeatId = seat.id);
-                            },
-                          ),
-                        );
-                      },
-                    ),
-                ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
@@ -451,7 +523,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
   void _onConfirmPressed() {
     if (selectedSeatId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Silakan pilih kursi terlebih dahulu.')),
+        const SnackBar(content: Text('Silakan pilih mat terlebih dahulu.')),
       );
       return;
     }
@@ -486,20 +558,26 @@ class _BookingsScreenState extends State<BookingsScreen> {
               const SizedBox(height: 8),
               _dialogRow('Studio', studioName),
               const SizedBox(height: 8),
-              _dialogRow('Kursi', selectedSeatId ?? '-'),
+              _dialogRow('Mat', selectedSeatId ?? '-'),
             ],
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text('No'),
+              child: const Text('Batal'),
             ),
             ElevatedButton(
               onPressed: () async {
-                Navigator.of(ctx).pop(); // tutup dialog
+                Navigator.of(ctx).pop();
                 await _createBooking();
               },
-              child: const Text('Yes'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.primary,
+              ),
+              child: const Text(
+                'Konfirmasi',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           ],
         );
@@ -551,7 +629,6 @@ class _BookingsScreenState extends State<BookingsScreen> {
 
       final response = await apiService.createBooking(booking);
 
-      // Ambil pesan langsung dari API
       final message = response['message'] ?? 'Tidak ada pesan dari server';
       final success = response['success'] ?? false;
 
@@ -559,12 +636,10 @@ class _BookingsScreenState extends State<BookingsScreen> {
         SnackBar(content: Text(message)),
       );
 
-      // Kalau sukses, kembali ke screen sebelumnya
       if (success) {
         Navigator.of(context).pop();
       }
     } catch (e) {
-      // Jika error dari jaringan atau parsing
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Terjadi kesalahan: $e')),
       );

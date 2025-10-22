@@ -300,8 +300,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   Expanded(
                     flex: 2,
                     child: Padding(
-                      padding: const EdgeInsets.only(
-                          left: 16, right: 8, bottom: 12), // SESUAIKAN PADDING
+                      padding:
+                          const EdgeInsets.only(left: 16, right: 8, bottom: 12),
                       child: isLoadingStudios
                           ? const Center(child: CircularProgressIndicator())
                           : studioError != null
@@ -316,33 +316,38 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                               : DropdownButtonFormField<Studio>(
                                   isExpanded: true,
                                   style: TextStyle(
-                                    fontSize: 13, // NAIKKAN DARI 12
+                                    fontSize: 13,
                                     height: 1.2,
                                     color: Theme.of(context).brightness ==
                                             Brightness.dark
-                                        ? Colors.white
+                                        ? Colors
+                                            .black87 // UBAH JADI HITAM UNTUK DARK MODE
                                         : Colors.black87,
                                   ),
                                   dropdownColor: Theme.of(context).brightness ==
                                           Brightness.dark
-                                      ? Colors.grey[850]
+                                      ? Colors.grey[
+                                          200] // UBAH JADI TERANG UNTUK DARK MODE
                                       : Colors.white,
                                   decoration: InputDecoration(
+                                    filled: true, // TAMBAHKAN INI
+                                    fillColor:
+                                        Colors.white, // WARNA BACKGROUND PUTIH
                                     isDense: true,
                                     labelText: selectedStudio == null
                                         ? 'Studio'
                                         : null,
                                     labelStyle: TextStyle(
-                                      fontSize: 12, // NAIKKAN DARI 11
+                                      fontSize: 12,
                                       color: Theme.of(context).brightness ==
                                               Brightness.dark
-                                          ? Colors.grey[300]
+                                          ? Colors.grey[
+                                              600] // WARNA LABEL LEBIH GELAP
                                           : Colors.grey[700],
                                     ),
                                     contentPadding: const EdgeInsets.symmetric(
-                                      horizontal:
-                                          12, // TAMBAH HORIZONTAL PADDING
-                                      vertical: 8, // TAMBAH VERTICAL PADDING
+                                      horizontal: 12,
+                                      vertical: 8,
                                     ),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(20),
@@ -369,14 +374,16 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                     ),
                                     prefixIcon: Icon(
                                       Icons.location_on,
-                                      size: 16, // NAIKKAN DARI 14
+                                      size: 16,
                                       color:
                                           Theme.of(context).colorScheme.primary,
                                     ),
                                     suffixIcon: selectedStudio != null
                                         ? IconButton(
                                             icon: const Icon(Icons.close,
-                                                size: 18), // NAIKKAN DARI 16
+                                                size: 18,
+                                                color: Colors
+                                                    .grey), // TAMBAH WARNA ICON
                                             onPressed: () {
                                               setState(() {
                                                 selectedStudio = null;
@@ -387,7 +394,10 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                           )
                                         : const Icon(
                                             Icons.keyboard_arrow_down_rounded,
-                                            size: 18),
+                                            size: 18,
+                                            color: Colors
+                                                .grey, // TAMBAH WARNA ICON
+                                          ),
                                   ),
                                   value: selectedStudio,
                                   items: studios.map((studio) {
@@ -397,12 +407,10 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                         '${studio.name} - ${studio.address}',
                                         overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
-                                          fontSize: 13, // NAIKKAN DARI 12
+                                          fontSize: 13,
                                           height: 1.2,
-                                          color: Theme.of(context).brightness ==
-                                                  Brightness.dark
-                                              ? Colors.white
-                                              : Colors.black87,
+                                          color: Colors
+                                              .black87, // WARNA TEXT ITEM HITAM
                                         ),
                                       ),
                                     );
@@ -421,8 +429,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   Expanded(
                     flex: 2,
                     child: Padding(
-                      padding: const EdgeInsets.only(
-                          left: 8, right: 16, bottom: 12), // SESUAIKAN PADDING
+                      padding:
+                          const EdgeInsets.only(left: 8, right: 16, bottom: 12),
                       child: isLoadingRoomTypes
                           ? const Center(child: CircularProgressIndicator())
                           : roomTypeError != null
@@ -437,33 +445,38 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                               : DropdownButtonFormField<RoomType>(
                                   isExpanded: true,
                                   style: TextStyle(
-                                    fontSize: 13, // NAIKKAN DARI 12
+                                    fontSize: 13,
                                     height: 1.2,
                                     color: Theme.of(context).brightness ==
                                             Brightness.dark
-                                        ? Colors.white
+                                        ? Colors
+                                            .black87 // UBAH JADI HITAM UNTUK DARK MODE
                                         : Colors.black87,
                                   ),
                                   dropdownColor: Theme.of(context).brightness ==
                                           Brightness.dark
-                                      ? Colors.grey[850]
+                                      ? Colors.grey[
+                                          200] // UBAH JADI TERANG UNTUK DARK MODE
                                       : Colors.white,
                                   decoration: InputDecoration(
+                                    filled: true, // TAMBAHKAN INI
+                                    fillColor:
+                                        Colors.white, // WARNA BACKGROUND PUTIH
                                     isDense: true,
                                     labelText: selectedRoomType == null
                                         ? 'Room'
                                         : null,
                                     labelStyle: TextStyle(
-                                      fontSize: 12, // NAIKKAN DARI 11
+                                      fontSize: 12,
                                       color: Theme.of(context).brightness ==
                                               Brightness.dark
-                                          ? Colors.grey[300]
+                                          ? Colors.grey[
+                                              600] // WARNA LABEL LEBIH GELAP
                                           : Colors.grey[700],
                                     ),
                                     contentPadding: const EdgeInsets.symmetric(
-                                      horizontal:
-                                          12, // TAMBAH HORIZONTAL PADDING
-                                      vertical: 8, // TAMBAH VERTICAL PADDING
+                                      horizontal: 12,
+                                      vertical: 8,
                                     ),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(20),
@@ -490,14 +503,16 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                     ),
                                     prefixIcon: Icon(
                                       Icons.meeting_room,
-                                      size: 16, // NAIKKAN DARI 14
+                                      size: 16,
                                       color:
                                           Theme.of(context).colorScheme.primary,
                                     ),
                                     suffixIcon: selectedRoomType != null
                                         ? IconButton(
                                             icon: const Icon(Icons.close,
-                                                size: 18), // NAIKKAN DARI 16
+                                                size: 18,
+                                                color: Colors
+                                                    .grey), // TAMBAH WARNA ICON
                                             onPressed: () {
                                               setState(() {
                                                 selectedRoomType = null;
@@ -508,7 +523,10 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                           )
                                         : const Icon(
                                             Icons.keyboard_arrow_down_rounded,
-                                            size: 18),
+                                            size: 18,
+                                            color: Colors
+                                                .grey, // TAMBAH WARNA ICON
+                                          ),
                                   ),
                                   value: selectedRoomType,
                                   items: roomTypes.map((roomType) {
@@ -518,12 +536,10 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                         roomType.roomName,
                                         overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
-                                          fontSize: 13, // NAIKKAN DARI 12
+                                          fontSize: 13,
                                           height: 1.2,
-                                          color: Theme.of(context).brightness ==
-                                                  Brightness.dark
-                                              ? Colors.white
-                                              : Colors.black87,
+                                          color: Colors
+                                              .black87, // WARNA TEXT ITEM HITAM
                                         ),
                                       ),
                                     );
