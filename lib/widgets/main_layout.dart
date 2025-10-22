@@ -58,13 +58,13 @@ class _MainLayoutState extends State<MainLayout> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Theme.of(context).colorScheme.primary,
-        titleSpacing: 0, // biar lebih rapat ke kiri
+        titleSpacing: 0,
+        toolbarHeight: 45, // DIKURANGI dari default (biasanya 56-64)
         title: Row(
           children: [
-            const SizedBox(width: 8),
+            const SizedBox(width: 6), // DIKURANGI dari 8
             GestureDetector(
               onTap: () {
-                // Arahkan ke halaman Profile (index 4)
                 setState(() {
                   _currentIndex = 4;
                 });
@@ -75,21 +75,22 @@ class _MainLayoutState extends State<MainLayout> {
                 );
               },
               child: CircleAvatar(
-                radius: 18,
+                radius: 16, // DIKURANGI dari 18
                 backgroundColor: Colors.white.withOpacity(0.15),
                 child: const Icon(
                   Icons.person,
                   color: Colors.white,
-                  size: 22,
+                  size: 20, // DIKURANGI dari 22
                 ),
               ),
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: 8), // DIKURANGI dari 10
             Text(
               'Hi, ${user?.name?.split(' ').first ?? 'Guest'}',
               style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
+                fontSize: 16, // DIKURANGI dari default
               ),
             ),
           ],
@@ -101,21 +102,27 @@ class _MainLayoutState extends State<MainLayout> {
                 icon: Icon(
                   themeProvider.isDarkMode ? Icons.light_mode : Icons.dark_mode,
                   color: Colors.white,
+                  size: 22, // DIKURANGI dari default
                 ),
                 onPressed: () => themeProvider.toggleTheme(),
                 tooltip: themeProvider.isDarkMode
                     ? 'Switch to Light Mode'
                     : 'Switch to Dark Mode',
+                padding: const EdgeInsets.all(4), // DIKURANGI
+                constraints: const BoxConstraints(
+                  minWidth: 36, // DIKURANGI
+                  minHeight: 36, // DIKURANGI
+                ),
               );
             },
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 6), // DIKURANGI dari 8
         ],
       ),
       body: PageView(
         controller: _pageController,
         onPageChanged: _onPageChanged,
-        physics: BouncingScrollPhysics(), // Untuk gesture swipe yang smooth
+        physics: const BouncingScrollPhysics(),
         children: _pages,
       ),
       bottomNavigationBar: AppBottomNav(

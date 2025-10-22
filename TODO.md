@@ -1,3 +1,1 @@
-- [ ] Modify _submitActivation in login_screen.dart to not auto-login after successful activation
-- [ ] Show success message and switch back to login form
-- [ ] Test the activation flow
+- [ ] Add `selectedDate: selectedDate` to the `CalendarSlider` widget in `lib/screens/pages/schedule_screen.dart` to fix month navigation selecting the 1st of the month.
