@@ -34,9 +34,14 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.fitness_center, color: Colors.white, size: 72),
+            Image.asset(
+              'assets/icons/JYicon.png',
+              width: 72,
+              height: 72,
+              fit: BoxFit.contain,
+            ),
               SizedBox(height: 12),
-              Text('Gym Booking', style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
+              Text('Just Yoga', style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
             ],
           ),
         ),
