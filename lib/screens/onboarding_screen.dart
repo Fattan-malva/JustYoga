@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'login_screen.dart';
-import '../constants/colors.dart'; // optional: pakai AppColors kalau ada
 
 class OnboardingScreen extends StatefulWidget {
   static const routeName = '/onboarding';

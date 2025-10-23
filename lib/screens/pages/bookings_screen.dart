@@ -56,7 +56,30 @@ class _BookingsScreenState extends State<BookingsScreen> {
         isLoading = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to load bookings: $e')),
+        SnackBar(
+          content: Row(
+            children: [
+              Icon(
+                Icons.emoji_events_outlined,
+                color: Colors.amber[300],
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'No bookings today. Be the first to book this studio!',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    color: Colors.amber[50],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: Colors.green[700],
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 3),
+        ),
       );
     }
   }
@@ -109,7 +132,18 @@ class _BookingsScreenState extends State<BookingsScreen> {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: const Text(
-                      'Find Your Space',
+                      'Find Your',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: const Text(
+                      'Space',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -137,158 +171,181 @@ class _BookingsScreenState extends State<BookingsScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  // ======== Header Keterangan Statis ========
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const [
-                      Expanded(
-                        child: Text(
-                          'Time & Class',
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
+                  const SizedBox(height: 26),
+                  // ======== Container dengan Card Transparan ========
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16.0),
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 170, 168, 168)!
+                          .withOpacity(0.3), // Transparan abu
+                      borderRadius:
+                          BorderRadius.circular(12.0), // Border radius
+                      border: Border.all(
+                        color: const Color.fromARGB(255, 170, 168, 168)!
+                            .withOpacity(0.2), // Border subtle
+                        width: 1.0,
                       ),
-                      Expanded(
-                        child: Text(
-                          'Room & Teacher',
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Text(
-                          'Studio & Map',
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 8),
-
-                  // ======== Baris Data Dinamis ========
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // Kolom 1: Time & Class
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                const Icon(Icons.schedule,
-                                    color: Colors.white, size: 14),
-                                const SizedBox(width: 6),
-                                Text(
-                                  timeStr,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
-                                    color: Colors.white,
-                                  ),
+                    ),
+                    child: Column(
+                      children: [
+                        // ======== Header Keterangan Statis ========
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: const [
+                            Expanded(
+                              child: Text(
+                                'Time & Class',
+                                textAlign: TextAlign.left,
+                                style: TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 0.5,
                                 ),
-                              ],
+                              ),
                             ),
-                            const SizedBox(height: 4),
-                            Text(
-                              className,
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: Colors.white70,
+                            Expanded(
+                              child: Text(
+                                'Room & Teacher',
+                                textAlign: TextAlign.left,
+                                style: TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Text(
+                                'Studio & Map',
+                                textAlign: TextAlign.left,
+                                style: TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 0.5,
+                                ),
                               ),
                             ),
                           ],
                         ),
-                      ),
 
-                      // Kolom 2: Room & Trainer
-                      Expanded(
-                        child: Column(
+                        const SizedBox(height: 12),
+
+                        // ======== Baris Data Dinamis ========
+                        Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Row(
-                              children: [
-                                const Icon(Icons.meeting_room,
-                                    color: Colors.white, size: 14),
-                                const SizedBox(width: 6),
-                                Text(
-                                  roomName,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
-                                    color: Colors.white,
+                            // Kolom 1: Time & Class
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.schedule,
+                                          color: Colors.white, size: 14),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        timeStr,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              trainerName,
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: Colors.white70,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      // Kolom 3: Studio & Map
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                const Icon(Icons.location_on,
-                                    color: Colors.white, size: 14),
-                                const SizedBox(width: 6),
-                                Flexible(
-                                  child: Text(
-                                    studioName,
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    className,
                                     style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14,
-                                      color: Colors.white,
+                                      fontSize: 12,
+                                      color: Colors.white70,
                                     ),
-                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                            const SizedBox(height: 4),
-                            Text(
-                              mapInfo,
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: Colors.white70,
+
+                            const SizedBox(width: 16),
+
+                            // Kolom 2: Room & Trainer
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.meeting_room,
+                                          color: Colors.white, size: 14),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        roomName,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    trainerName,
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.white70,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            const SizedBox(width: 16),
+
+                            // Kolom 3: Studio & Map
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.location_on,
+                                          color: Colors.white, size: 14),
+                                      const SizedBox(width: 6),
+                                      Flexible(
+                                        child: Text(
+                                          studioName,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14,
+                                            color: Colors.white,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    mapInfo,
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.white70,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-
                   const SizedBox(height: 16),
 
                   // ===== Legend (Available / Booked / Selected) =====
@@ -313,7 +370,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 100),
+                  const SizedBox(height: 200),
                 ],
               ),
             ),
@@ -321,7 +378,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
 
           // ===== Body dengan border radius =====
           Positioned.fill(
-            top: 210,
+            top: 310,
             child: ClipRRect(
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(30),
@@ -519,11 +576,14 @@ class _BookingsScreenState extends State<BookingsScreen> {
     );
   }
 
-  // ===== Logic konfirmasi =====
+  // ===== Confirmation Logic =====
   void _onConfirmPressed() {
     if (selectedSeatId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Silakan pilih mat terlebih dahulu.')),
+        const SnackBar(
+          content: Text('Please select a mat first.'),
+          behavior: SnackBarBehavior.floating,
+        ),
       );
       return;
     }
@@ -544,56 +604,174 @@ class _BookingsScreenState extends State<BookingsScreen> {
       context: context,
       barrierDismissible: false,
       builder: (ctx) {
-        return AlertDialog(
-          title: const Text('Konfirmasi Booking'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _dialogRow('Tanggal', dateStr),
-              const SizedBox(height: 8),
-              _dialogRow('Waktu & Kelas', timeAndClass),
-              const SizedBox(height: 8),
-              _dialogRow('Room & Trainer', roomAndTrainer),
-              const SizedBox(height: 8),
-              _dialogRow('Studio', studioName),
-              const SizedBox(height: 8),
-              _dialogRow('Mat', selectedSeatId ?? '-'),
-            ],
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.0),
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text('Batal'),
+          elevation: 8,
+          child: Container(
+            padding: const EdgeInsets.all(24.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12.0),
             ),
-            ElevatedButton(
-              onPressed: () async {
-                Navigator.of(ctx).pop();
-                await _createBooking();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.primary,
-              ),
-              child: const Text(
-                'Konfirmasi',
-                style: TextStyle(color: Colors.white),
-              ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header
+                Row(
+                  children: [
+                    Icon(
+                      Icons.assignment_turned_in_rounded,
+                      color: Theme.of(context).colorScheme.primary,
+                      size: 24,
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Booking Confirmation',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                const Divider(height: 1),
+                const SizedBox(height: 20),
+
+                // Booking Details
+                _buildDetailCard(
+                  icon: Icons.calendar_today,
+                  title: 'Date',
+                  value: dateStr,
+                ),
+                const SizedBox(height: 16),
+                _buildDetailCard(
+                  icon: Icons.access_time,
+                  title: 'Time & Class',
+                  value: timeAndClass,
+                ),
+                const SizedBox(height: 16),
+                _buildDetailCard(
+                  icon: Icons.room,
+                  title: 'Room & Trainer',
+                  value: roomAndTrainer,
+                ),
+                const SizedBox(height: 16),
+                _buildDetailCard(
+                  icon: Icons.business,
+                  title: 'Studio',
+                  value: studioName,
+                ),
+                const SizedBox(height: 16),
+                _buildDetailCard(
+                  icon: Icons.event_seat,
+                  title: 'Mat Number',
+                  value: selectedSeatId ?? '-',
+                ),
+
+                const SizedBox(height: 24),
+                const Divider(height: 1),
+                const SizedBox(height: 20),
+
+                // Action Buttons
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.of(ctx).pop(),
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.grey[700],
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 12),
+                      ),
+                      child: const Text(
+                        'CANCEL',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    ElevatedButton(
+                      onPressed: () async {
+                        Navigator.of(ctx).pop();
+                        await _createBooking();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24, vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                      ),
+                      child: const Text(
+                        'CONFIRM BOOKING',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ],
+          ),
         );
       },
     );
   }
 
-  Widget _dialogRow(String title, String value) {
-    return RichText(
-      text: TextSpan(
-        style: DefaultTextStyle.of(context).style.copyWith(fontSize: 14),
+  Widget _buildDetailCard({
+    required IconData icon,
+    required String title,
+    required String value,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(8.0),
+        border: Border.all(color: Colors.grey[200]!),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TextSpan(
-              text: '$title: ',
-              style: const TextStyle(fontWeight: FontWeight.bold)),
-          TextSpan(text: value),
+          Icon(
+            icon,
+            size: 20,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -629,11 +807,15 @@ class _BookingsScreenState extends State<BookingsScreen> {
 
       final response = await apiService.createBooking(booking);
 
-      final message = response['message'] ?? 'Tidak ada pesan dari server';
+      final message = response['message'] ?? 'No message received from server';
       final success = response['success'] ?? false;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
+        SnackBar(
+          content: Text(message),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: success ? Colors.green : Colors.red,
+        ),
       );
 
       if (success) {
@@ -641,7 +823,11 @@ class _BookingsScreenState extends State<BookingsScreen> {
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Terjadi kesalahan: $e')),
+        SnackBar(
+          content: Text('An error occurred: $e'),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.red,
+        ),
       );
     } finally {
       setState(() => isLoading = false);

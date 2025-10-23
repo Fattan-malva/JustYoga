@@ -22,7 +22,6 @@ import '../models/studio.dart';
 import '../models/room_type.dart';
 import '../models/booking_item.dart';
 import '../models/justme_item.dart';
-import '../models/user.dart';
 import '../models/activation.dart';
 
 class ApiService {

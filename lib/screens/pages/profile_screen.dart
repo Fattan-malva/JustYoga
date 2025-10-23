@@ -8,6 +8,9 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  bool isPersonalExpanded = false;
+  bool isAccountExpanded = false;
+
   @override
   void initState() {
     super.initState();
@@ -53,9 +56,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             children: [
                               if (user != null &&
                                   user.customerID.isNotEmpty) ...[
-                                _buildProfileCard(
+                                // === PERSONAL INFO CARD ===
+                                _buildExpandableCard(
                                   theme: theme,
                                   title: 'Personal Information',
+                                  isExpanded: isPersonalExpanded,
+                                  onTap: () {
+                                    setState(() {
+                                      isPersonalExpanded = !isPersonalExpanded;
+                                    });
+                                  },
                                   children: [
                                     _buildInfoRow(
                                         'Customer ID', user.customerID),
@@ -67,9 +77,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ],
                                 ),
                                 const SizedBox(height: 10),
-                                _buildProfileCard(
+
+                                // === ACCOUNT DETAILS CARD ===
+                                _buildExpandableCard(
                                   theme: theme,
                                   title: 'Account Details',
+                                  isExpanded: isAccountExpanded,
+                                  onTap: () {
+                                    setState(() {
+                                      isAccountExpanded = !isAccountExpanded;
+                                    });
+                                  },
                                   children: [
                                     _buildInfoRow('Email', user.email),
                                     _buildInfoRow(
@@ -135,7 +153,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Center(
               child: Column(
                 children: [
-                  // Avatar melayang
                   CircleAvatar(
                     radius: 55,
                     backgroundColor: Colors.white,
@@ -155,7 +172,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).brightness == Brightness.dark
                           ? Colors.white
-                          : Colors.black, // otomatis ganti warna
+                          : Colors.black,
                       height: 1.2,
                     ),
                   ),
@@ -179,7 +196,87 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ===== CARD COMPONENT =====
+  // ===== EXPANDABLE CARD =====
+  Widget _buildExpandableCard({
+    required ThemeData theme,
+    required String title,
+    required bool isExpanded,
+    required VoidCallback onTap,
+    required List<Widget> children,
+  }) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(16),
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeInOut,
+        width: double.infinity,
+        padding: const EdgeInsets.all(20),
+        margin: const EdgeInsets.only(bottom: 12),
+        decoration: BoxDecoration(
+          color: theme.cardColor,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 6,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // === HEADER TITLE + CHEVRON ===
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+                AnimatedRotation(
+                  turns: isExpanded ? 0.25 : 0, // rotate chevron
+                  duration: const Duration(milliseconds: 250),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primary.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(50),
+                    ),
+                    padding: const EdgeInsets.all(6),
+                    child: Icon(
+                      Icons.chevron_right_rounded,
+                      size: 26,
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            // === ANIMATED EXPAND CONTENT ===
+            AnimatedCrossFade(
+              firstChild: const SizedBox.shrink(),
+              secondChild: Padding(
+                padding: const EdgeInsets.only(top: 16),
+                child: Column(children: children),
+              ),
+              crossFadeState: isExpanded
+                  ? CrossFadeState.showSecond
+                  : CrossFadeState.showFirst,
+              duration: const Duration(milliseconds: 250),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ===== STATIC CARD (untuk guest) =====
   Widget _buildProfileCard({
     required ThemeData theme,
     required String title,
@@ -220,7 +317,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ===== ROW DATA =====
+  // ===== INFO ROW =====
   Widget _buildInfoRow(String label, String value) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
