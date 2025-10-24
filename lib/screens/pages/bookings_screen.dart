@@ -132,7 +132,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: const Text(
-                      'Find Your',
+                      'Book Your\nSession',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -143,34 +143,14 @@ class _BookingsScreenState extends State<BookingsScreen> {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: const Text(
-                      'Space',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: const Text(
-                      'Discover Just Yoga studios near you',
+                      'Select your preferred studio or mat\nand start your next mindful practice with ease',
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.white,
                       ),
                     ),
                   ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: const Text(
-                      'calm, inspiring, and ready to welcome your practice',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
+
                   const SizedBox(height: 26),
                   // ======== Container dengan Card Transparan ========
                   Container(

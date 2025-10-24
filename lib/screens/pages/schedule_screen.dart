@@ -315,34 +315,25 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                 )
                               : DropdownButtonFormField<Studio>(
                                   isExpanded: true,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 13,
                                     height: 1.2,
-                                    color: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? Colors
-                                            .black87 // UBAH JADI HITAM UNTUK DARK MODE
-                                        : Colors.black87,
+                                    color: Colors.black87,
                                   ),
-                                  dropdownColor: Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? Colors.grey[
-                                          200] // UBAH JADI TERANG UNTUK DARK MODE
-                                      : Colors.white,
+                                  dropdownColor: Colors.white,
                                   decoration: InputDecoration(
-                                    filled: true, // TAMBAHKAN INI
-                                    fillColor:
-                                        Colors.white, // WARNA BACKGROUND PUTIH
+                                    filled: true,
+                                    fillColor: const Color(
+                                        0xFFF0F0F0), // 🔹 Abu-abu lembut
                                     isDense: true,
                                     labelText: selectedStudio == null
-                                        ? 'Studio'
+                                        ? 'All Studios'
                                         : null,
                                     labelStyle: TextStyle(
                                       fontSize: 12,
                                       color: Theme.of(context).brightness ==
                                               Brightness.dark
-                                          ? Colors.grey[
-                                              600] // WARNA LABEL LEBIH GELAP
+                                          ? Colors.grey[600]
                                           : Colors.grey[700],
                                     ),
                                     contentPadding: const EdgeInsets.symmetric(
@@ -372,18 +363,36 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                         width: 1.5,
                                       ),
                                     ),
-                                    prefixIcon: Icon(
-                                      Icons.location_on,
-                                      size: 16,
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
+
+                                    // === PREFIX ICON (icon lokasi dengan bg putih bulat)
+                                    prefixIcon: Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 6, right: 8),
+                                      child: Container(
+                                        decoration: const BoxDecoration(
+                                          color: Colors
+                                              .white, // 🔸 Background putih
+                                          shape: BoxShape.circle,
+                                        ),
+                                        padding: const EdgeInsets.all(6),
+                                        child: Icon(
+                                          Icons.location_on,
+                                          size: 20,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                        ),
+                                      ),
                                     ),
+
+                                    // === SUFFIX ICON (tanpa background)
                                     suffixIcon: selectedStudio != null
                                         ? IconButton(
-                                            icon: const Icon(Icons.close,
-                                                size: 18,
-                                                color: Colors
-                                                    .grey), // TAMBAH WARNA ICON
+                                            icon: const Icon(
+                                              Icons.close,
+                                              size: 18,
+                                              color: Colors.grey,
+                                            ),
                                             onPressed: () {
                                               setState(() {
                                                 selectedStudio = null;
@@ -392,11 +401,14 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                             },
                                             padding: const EdgeInsets.all(4),
                                           )
-                                        : const Icon(
-                                            Icons.keyboard_arrow_down_rounded,
-                                            size: 18,
-                                            color: Colors
-                                                .grey, // TAMBAH WARNA ICON
+                                        : const Padding(
+                                            padding: EdgeInsets.only(right: 0),
+                                            child: Icon(
+                                              Icons
+                                                  .keyboard_arrow_right_rounded,
+                                              size: 20,
+                                              color: Colors.black,
+                                            ),
                                           ),
                                   ),
                                   value: selectedStudio,
@@ -406,11 +418,10 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                       child: Text(
                                         '${studio.name} - ${studio.address}',
                                         overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           fontSize: 13,
                                           height: 1.2,
-                                          color: Colors
-                                              .black87, // WARNA TEXT ITEM HITAM
+                                          color: Colors.black87,
                                         ),
                                       ),
                                     );
@@ -444,34 +455,24 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                 )
                               : DropdownButtonFormField<RoomType>(
                                   isExpanded: true,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 13,
                                     height: 1.2,
-                                    color: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? Colors
-                                            .black87 // UBAH JADI HITAM UNTUK DARK MODE
-                                        : Colors.black87,
+                                    color: Colors.black87,
                                   ),
-                                  dropdownColor: Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? Colors.grey[
-                                          200] // UBAH JADI TERANG UNTUK DARK MODE
-                                      : Colors.white,
+                                  dropdownColor: Colors.white,
                                   decoration: InputDecoration(
-                                    filled: true, // TAMBAHKAN INI
-                                    fillColor:
-                                        Colors.white, // WARNA BACKGROUND PUTIH
+                                    filled: true,
+                                    fillColor: const Color(0xFFF0F0F0),
                                     isDense: true,
                                     labelText: selectedRoomType == null
-                                        ? 'Room'
+                                        ? 'All Rooms'
                                         : null,
                                     labelStyle: TextStyle(
                                       fontSize: 12,
                                       color: Theme.of(context).brightness ==
                                               Brightness.dark
-                                          ? Colors.grey[
-                                              600] // WARNA LABEL LEBIH GELAP
+                                          ? Colors.grey[600]
                                           : Colors.grey[700],
                                     ),
                                     contentPadding: const EdgeInsets.symmetric(
@@ -501,18 +502,36 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                         width: 1.5,
                                       ),
                                     ),
-                                    prefixIcon: Icon(
-                                      Icons.meeting_room,
-                                      size: 16,
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
+
+                                    // === PREFIX ICON (icon ruangan dengan bg putih bulat)
+                                    prefixIcon: Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 6, right: 8),
+                                      child: Container(
+                                        decoration: const BoxDecoration(
+                                          color: Colors
+                                              .white, // 🔸 Background putih
+                                          shape: BoxShape.circle,
+                                        ),
+                                        padding: const EdgeInsets.all(6),
+                                        child: Icon(
+                                          Icons.meeting_room,
+                                          size: 20,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                        ),
+                                      ),
                                     ),
+
+                                    // === SUFFIX ICON (tanpa background)
                                     suffixIcon: selectedRoomType != null
                                         ? IconButton(
-                                            icon: const Icon(Icons.close,
-                                                size: 18,
-                                                color: Colors
-                                                    .grey), // TAMBAH WARNA ICON
+                                            icon: const Icon(
+                                              Icons.close,
+                                              size: 18,
+                                              color: Colors.grey,
+                                            ),
                                             onPressed: () {
                                               setState(() {
                                                 selectedRoomType = null;
@@ -521,11 +540,14 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                             },
                                             padding: const EdgeInsets.all(4),
                                           )
-                                        : const Icon(
-                                            Icons.keyboard_arrow_down_rounded,
-                                            size: 18,
-                                            color: Colors
-                                                .grey, // TAMBAH WARNA ICON
+                                        : const Padding(
+                                            padding: EdgeInsets.only(right: 0),
+                                            child: Icon(
+                                              Icons
+                                                  .keyboard_arrow_right_rounded,
+                                              size: 20,
+                                              color: Colors.black,
+                                            ),
                                           ),
                                   ),
                                   value: selectedRoomType,
@@ -535,11 +557,10 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                       child: Text(
                                         roomType.roomName,
                                         overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           fontSize: 13,
                                           height: 1.2,
-                                          color: Colors
-                                              .black87, // WARNA TEXT ITEM HITAM
+                                          color: Colors.black87,
                                         ),
                                       ),
                                     );
@@ -554,7 +575,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     ),
                   ),
                 ],
-              ),
+              )
             ],
           ),
         ),

@@ -107,20 +107,12 @@ class ConsultantScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Text(
-            'Book Your',
+            'Book Your\nConsultation',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                 ),
             textAlign: TextAlign.left, // 🔹 pastikan teks rata kiri
-          ),
-          Text(
-            'Consultation',
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-            textAlign: TextAlign.left,
           ),
           const SizedBox(height: 10),
           Text(
