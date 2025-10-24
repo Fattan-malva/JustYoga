@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
 import '../models/user.dart';
 import '../models/activation.dart';
+import '../models/plan_history.dart';
+import '../models/just_me_history.dart';
 import '../services/api_service.dart';
 import '../services/secure_storage_service.dart';
 
 class AuthProvider extends ChangeNotifier {
   UserModel? _user;
+  List<PlanHistory>? _planHistory;
+  List<JustMeHistory>? _justMeHistory;
   bool get isAuthenticated => _user != null;
   UserModel? get user => _user;
+  List<PlanHistory>? get planHistory => _planHistory;
+  List<JustMeHistory>? get justMeHistory => _justMeHistory;
 
   final ApiService _apiService = ApiService(baseUrl: 'http://localhost:3000');
   final SecureStorageService _secureStorage = SecureStorageService();
@@ -125,9 +131,34 @@ class AuthProvider extends ChangeNotifier {
       try {
         final customerData = await _apiService.fetchCustomer(_user!.customerID);
         _user = UserModel.fromJson(customerData);
+        await loadPlanHistory();
+        await loadJustMeHistory();
         notifyListeners();
       } catch (e) {
         print('Failed to load customer data: $e');
+      }
+    }
+  }
+
+  Future<void> loadPlanHistory() async {
+    if (_user != null && _user!.customerID.isNotEmpty) {
+      try {
+        _planHistory = await _apiService.fetchPlanHistory(_user!.customerID);
+        notifyListeners();
+      } catch (e) {
+        print('Failed to load plan history: $e');
+      }
+    }
+  }
+
+  Future<void> loadJustMeHistory() async {
+    if (_user != null && _user!.customerID.isNotEmpty) {
+      try {
+        _justMeHistory =
+            await _apiService.fetchJustMeHistory(_user!.customerID);
+        notifyListeners();
+      } catch (e) {
+        print('Failed to load just me history: $e');
       }
     }
   }

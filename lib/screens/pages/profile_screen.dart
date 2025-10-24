@@ -10,6 +10,8 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   bool isPersonalExpanded = false;
   bool isAccountExpanded = false;
+  bool isPlanHistoryExpanded = false;
+  bool isJustMeHistoryExpanded = false;
 
   @override
   void initState() {
@@ -95,6 +97,54 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     _buildInfoRow('Studio ID', user.toStudioID),
                                   ],
                                 ),
+                                const SizedBox(height: 10),
+
+                                // === PLAN HISTORY CARD ===
+                                _buildExpandableCard(
+                                  theme: theme,
+                                  title: 'Plan History',
+                                  isExpanded: isPlanHistoryExpanded,
+                                  onTap: () {
+                                    setState(() {
+                                      isPlanHistoryExpanded =
+                                          !isPlanHistoryExpanded;
+                                    });
+                                  },
+                                  children: auth.planHistory != null &&
+                                          auth.planHistory!.isNotEmpty
+                                      ? auth.planHistory!
+                                          .map((plan) =>
+                                              _buildPlanHistoryItem(plan))
+                                          .toList()
+                                      : [
+                                          _buildInfoRow('No Data',
+                                              'No plan history available')
+                                        ],
+                                ),
+                                const SizedBox(height: 10),
+
+                                // === JUST ME HISTORY CARD ===
+                                _buildExpandableCard(
+                                  theme: theme,
+                                  title: 'Just Me History',
+                                  isExpanded: isJustMeHistoryExpanded,
+                                  onTap: () {
+                                    setState(() {
+                                      isJustMeHistoryExpanded =
+                                          !isJustMeHistoryExpanded;
+                                    });
+                                  },
+                                  children: auth.justMeHistory != null &&
+                                          auth.justMeHistory!.isNotEmpty
+                                      ? auth.justMeHistory!
+                                          .map((justMe) =>
+                                              _buildJustMeHistoryItem(justMe))
+                                          .toList()
+                                      : [
+                                          _buildInfoRow('No Data',
+                                              'No just me history available')
+                                        ],
+                                ),
                               ] else ...[
                                 _buildProfileCard(
                                   theme: theme,
@@ -164,7 +214,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                   const SizedBox(height: 12),
-
                   Text(
                     user?.name ?? 'Guest',
                     style: TextStyle(
@@ -177,7 +226,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                   const SizedBox(height: 4),
-
                   Text(
                     user?.email ?? '',
                     style: TextStyle(
@@ -211,7 +259,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         duration: const Duration(milliseconds: 250),
         curve: Curves.easeInOut,
         width: double.infinity,
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: isExpanded ? 20 : 12, // 🔹 lebih kecil saat belum dibuka
+        ),
         margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
           color: theme.cardColor,
@@ -345,6 +396,64 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  // ===== PLAN HISTORY ITEM =====
+  Widget _buildPlanHistoryItem(plan) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            plan.productName,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          _buildInfoRow('Start Date', plan.startDate),
+          _buildInfoRow('End Date', plan.endDate),
+          _buildInfoRow('Transaction Date', plan.trxDate),
+        ],
+      ),
+    );
+  }
+
+  // ===== JUST ME HISTORY ITEM =====
+  Widget _buildJustMeHistoryItem(justMe) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            justMe.productName,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          _buildInfoRow('Start Date', justMe.startDate),
+          _buildInfoRow('End Date', justMe.endDate),
+          _buildInfoRow('Remaining Sessions', justMe.remainSession.toString()),
         ],
       ),
     );

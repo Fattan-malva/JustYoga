@@ -23,6 +23,8 @@ import '../models/room_type.dart';
 import '../models/booking_item.dart';
 import '../models/justme_item.dart';
 import '../models/activation.dart';
+import '../models/plan_history.dart';
+import '../models/just_me_history.dart';
 
 class ApiService {
   final String baseUrl;
@@ -423,6 +425,44 @@ class ApiService {
         }
       } catch (_) {}
       throw Exception('Logout failed');
+    }
+  }
+
+  // GET PLAN HISTORY
+  Future<List<PlanHistory>> fetchPlanHistory(String customerID) async {
+    final url =
+        Uri.parse('$baseUrl/api/product/plan-history?customerID=$customerID');
+    final resp = await http.get(url);
+    if (resp.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(resp.body);
+      return data.map((item) => PlanHistory.fromJson(item)).toList();
+    } else {
+      try {
+        final Map<String, dynamic> errorData = jsonDecode(resp.body);
+        if (errorData.containsKey('message')) {
+          throw Exception(errorData['message']);
+        }
+      } catch (_) {}
+      throw Exception('Failed to load plan history');
+    }
+  }
+
+  // GET JUST ME HISTORY
+  Future<List<JustMeHistory>> fetchJustMeHistory(String customerID) async {
+    final url = Uri.parse(
+        '$baseUrl/api/product/just-me-history?customerID=$customerID');
+    final resp = await http.get(url);
+    if (resp.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(resp.body);
+      return data.map((item) => JustMeHistory.fromJson(item)).toList();
+    } else {
+      try {
+        final Map<String, dynamic> errorData = jsonDecode(resp.body);
+        if (errorData.containsKey('message')) {
+          throw Exception(errorData['message']);
+        }
+      } catch (_) {}
+      throw Exception('Failed to load just me history');
     }
   }
 }
