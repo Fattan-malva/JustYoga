@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../widgets/bottom_nav.dart';
 import '../screens/pages/home_screen.dart';
 import '../screens/pages/schedule_screen.dart';
-import '../screens/pages/justme_screen.dart';
+import '../screens/pages/findStudio_screen.dart';
 import '../screens/pages/membership_screen.dart';
 import '../screens/pages/profile_screen.dart';
 import '../providers/auth_provider.dart';
@@ -23,7 +23,7 @@ class _MainLayoutState extends State<MainLayout> {
   final List<Widget> _pages = [
     HomeScreen(),
     ScheduleScreen(),
-    JustMeScreen(),
+    FindStudioScreen(),
     MembershipScreen(),
     ProfileScreen(),
   ];

@@ -36,8 +36,8 @@ class AppBottomNav extends StatelessWidget {
         SalomonBottomBarItem(
           icon: SvgPicture.asset(
             'assets/icons/schedule.svg',
-            width: 30,
-            height: 30,
+            width: 33,
+            height: 33,
             colorFilter: ColorFilter.mode(
               isDarkMode ? Colors.red : Theme.of(context).iconTheme.color!,
               BlendMode.srcIn,
@@ -48,7 +48,7 @@ class AppBottomNav extends StatelessWidget {
         ),
         SalomonBottomBarItem(
           icon: SvgPicture.asset(
-            'assets/icons/just-me.svg',
+            'assets/icons/find-studio.svg',
             width: 30,
             height: 30,
             colorFilter: ColorFilter.mode(
@@ -56,7 +56,7 @@ class AppBottomNav extends StatelessWidget {
               BlendMode.srcIn,
             ),
           ),
-          title: const Text("Just Me"),
+          title: const Text("Studios"),
           selectedColor: Colors.red,
         ),
 
