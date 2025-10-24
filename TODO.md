@@ -1,5 +1,6 @@
-- [x] Update justme_screen.dart AppBar to match schedule_screen.dart: toolbarHeight 140, column title with "Just Me" and navigation row, bottom with CalendarSlider and studio dropdown.
-- [x] Update body: add ClipRRect borderRadius 30 on top, Container scaffoldBackgroundColor, remove date text, adjust padding.
-- [x] Ensure dropdown styling matches schedule_screen.dart.
-- [x] Verify date validation for next/previous is identical (already is).
-- [ ] Test UI to ensure identical concept to schedule_screen.dart.
+- [ ] Make PrivateSessionScreen StatefulWidget
+- [ ] Add state variables: selectedDate, firstDate, lastDate, justmeItems, isLoading, error, noJustMeMessage, studios, selectedStudio, isLoadingStudios, studioError, apiService
+- [ ] Add methods: _getMonthName, _goToPreviousMonth, _goToNextMonth, _fetchStudios, _fetchJustMe
+- [ ] Modify headerContent to include month nav row, calendar slider, studio dropdown below the texts
+- [ ] Change bodyContent to the ClipRRect container with just me list
+- [ ] Adjust headerHeight to accommodate the new content
