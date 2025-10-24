@@ -7,6 +7,7 @@ import '../utils/validators.dart';
 import '../constants/colors.dart';
 import '../models/activation.dart';
 
+
 class LoginScreen extends StatefulWidget {
   static const String routeName = '/login';
   const LoginScreen({super.key});
@@ -18,12 +19,14 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   bool showLogin = true;
   bool isActivationMode = false; // <--- Tambahkan flag baru
+  bool isSignupMode = false; // *** NEW ***
   bool obscurePassword = true;
   bool obscureConfirm = true;
   bool _loading = false;
 
   final _loginForm = GlobalKey<FormState>();
   final _signupForm = GlobalKey<FormState>();
+  final _registerForm = GlobalKey<FormState>(); // *** NEW ***
 
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -38,6 +41,16 @@ class _LoginScreenState extends State<LoginScreen> {
       TextEditingController();
   final TextEditingController confirmPasswordActivationController =
       TextEditingController();
+
+  // *** NEW: controllers untuk register baru (Sign Up)
+  final TextEditingController nameSignupController = TextEditingController();
+  final TextEditingController studioSignupController = TextEditingController();
+  String? selectedStudio;
+  final List<String> studios = [
+    'Studio A',
+    'Studio B',
+    'Studio C',
+  ];
 
   ActivationModel? _activationData;
   String? _errorMessage;
@@ -122,7 +135,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 AnimatedSwitcher(
                   duration: const Duration(milliseconds: 400),
-                  child: showLogin ? _buildLoginForm() : _buildSignupForm(),
+                  child: showLogin
+                      ? _buildLoginForm()
+                      : (isSignupMode ? _buildRegisterForm() : _buildSignupForm()),
                 ),
 
                 const SizedBox(height: 40),
@@ -224,6 +239,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               showLogin = false;
                               isActivationMode =
                                   true; // <-- ubah title ke mode aktivasi
+                              isSignupMode = false; // ensure signup mode off
                             }),
                     )
                   ],
@@ -254,6 +270,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             showLogin = false;
                             isActivationMode =
                                 false; // <-- ubah ke mode signup biasa
+                            isSignupMode = true; // *** NEW: buka signup (register) ***
                           });
                         },
                     )
@@ -267,7 +284,8 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  // ---------------- SIGNUP FORM ----------------
+  // ---------------- SIGNUP FORM (activation) ----------------
+  // NOTE: _buildSignupForm() TIDAK DIUBAH — ini tetap untuk activation flow
   Widget _buildSignupForm() {
     if (_activationData != null) {
       return _buildActivationResult();
@@ -403,7 +421,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   // --- sisanya (activation result, buildInput, _submitLogin, dll) tetap sama ---
   // kamu tidak perlu ubah bagian bawah kode
-  
+
   Widget _buildActivationResult() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -703,6 +721,185 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  // ---------------- NEW: Register form widget (Sign Up) ----------------
+  Widget _buildRegisterForm() {
+    return Padding(
+      key: const ValueKey('registerForm'),
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Form(
+        key: _registerForm,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const SizedBox(height: 6),
+
+            // Full Name
+            Text(
+              "Full Name",
+              style: GoogleFonts.poppins(
+                color: Colors.black87,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 8),
+            _buildStyledInput(
+              hint: "Full Name",
+              controller: nameSignupController,
+              validator: (v) =>
+                  v == null || v.isEmpty ? "Full name required" : null,
+              keyboardType: TextInputType.name,
+            ),
+            const SizedBox(height: 18),
+
+            // Phone
+            Text(
+              "Phone",
+              style: GoogleFonts.poppins(
+                color: Colors.black87,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 8),
+            _buildStyledInput(
+              hint: "Phone",
+              controller: phoneSignupController,
+              validator: (v) =>
+                  v == null || v.isEmpty ? "Phone number required" : null,
+              keyboardType: TextInputType.phone,
+            ),
+            const SizedBox(height: 18),
+
+            // Email
+            Text(
+              "Email",
+              style: GoogleFonts.poppins(
+                color: Colors.black87,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 8),
+            _buildStyledInput(
+              hint: "Email",
+              controller: emailSignupController,
+              validator: Validators.validateEmail,
+              keyboardType: TextInputType.emailAddress,
+            ),
+            const SizedBox(height: 18),
+
+            // Password
+            Text(
+              "Password",
+              style: GoogleFonts.poppins(
+                color: Colors.black87,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 8),
+            _buildStyledInput(
+              hint: "Password",
+              controller: passwordActivationController, // reuse controller
+              validator: Validators.validatePassword,
+              obscure: obscurePassword,
+              suffix: IconButton(
+                icon: Icon(
+                  obscurePassword ? Icons.visibility_off : Icons.visibility,
+                  color: Colors.grey,
+                ),
+                onPressed: () => setState(() => obscurePassword = !obscurePassword),
+              ),
+            ),
+            const SizedBox(height: 18),
+
+            // Choose Studio (dropdown)
+            Text(
+              "Choose Studio",
+              style: GoogleFonts.poppins(
+                color: Colors.black87,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 8),
+            _buildStyledDropdown(),
+            const SizedBox(height: 28),
+
+            // Sign Up button (besar & merah seperti gambar)
+            _loading
+                ? const Center(child: CircularProgressIndicator())
+                : _buildPrimaryActionButton("Sign Up", _submitRegister),
+
+            const SizedBox(height: 16),
+
+            // Back to Login link
+            Center(
+              child: RichText(
+                text: TextSpan(
+                  text: "Already have an account? ",
+                  style: GoogleFonts.poppins(color: Colors.black87),
+                  children: [
+                    TextSpan(
+                      text: "Login",
+                      style: GoogleFonts.poppins(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () => setState(() {
+                              showLogin = true;
+                              isActivationMode = false;
+                              isSignupMode = false; // kembali ke login
+                            }),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ---------------- NEW: Dropdown helper untuk "Choose Studio" ----------------
+  Widget _buildStyledDropdown() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.black87, width: 1.6),
+        color: Colors.white,
+      ),
+      child: DropdownButtonFormField<String>(
+        value: selectedStudio,
+        items: studios
+            .map((s) => DropdownMenuItem<String>(
+                  value: s,
+                  child: Text(
+                    s,
+                    style: GoogleFonts.poppins(),
+                  ),
+                ))
+            .toList(),
+        onChanged: (v) {
+          setState(() {
+            selectedStudio = v;
+            studioSignupController.text = v ?? '';
+          });
+        },
+        decoration: InputDecoration(
+          hintText: "-- Choose Studio --",
+          border: InputBorder.none,
+        ),
+        validator: (v) => v == null || v.isEmpty ? "Please choose a studio" : null,
+      ),
+    );
+  }
+
   // ---------------- LOGIN LOGIC ----------------
   Future<void> _submitLogin() async {
     if (!_loginForm.currentState!.validate()) return;
@@ -802,6 +999,81 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Activation error: $e")),
+      );
+    } finally {
+      setState(() => _loading = false);
+    }
+  }
+
+  // ---------------- NEW: Submit handler untuk register baru (Sign Up) ----------------
+  Future<void> _submitRegister() async {
+    // simple validation: cek field penting
+    if (_registerForm.currentState != null && !_registerForm.currentState!.validate()) {
+      return;
+    }
+
+    if (nameSignupController.text.isEmpty ||
+        phoneSignupController.text.isEmpty ||
+        emailSignupController.text.isEmpty ||
+        passwordActivationController.text.isEmpty ||
+        selectedStudio == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please fill all fields")),
+      );
+      return;
+    }
+
+    // validasi email & password dasar (gunakan Validators)
+    final emailErr = Validators.validateEmail(emailSignupController.text);
+    if (emailErr != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(emailErr)),
+      );
+      return;
+    }
+    final passErr = Validators.validatePassword(passwordActivationController.text);
+    if (passErr != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(passErr)),
+      );
+      return;
+    }
+
+    setState(() => _loading = true);
+
+    try {
+      // TODO: panggil AuthProvider.register / endpoint yang kamu punya
+      // contoh (jika ada):
+      // final auth = Provider.of<AuthProvider>(context, listen: false);
+      // final ok = await auth.register({
+      //   'name': nameSignupController.text,
+      //   'phone': phoneSignupController.text,
+      //   'email': emailSignupController.text,
+      //   'password': passwordActivationController.text,
+      //   'studio': selectedStudio,
+      // });
+      // if (ok) { ... }
+
+      // untuk sekarang hanya simulasi sukses:
+      await Future.delayed(const Duration(seconds: 1));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Registration success (simulated)")),
+      );
+
+      // reset form & kembali ke login
+      setState(() {
+        showLogin = true;
+        isSignupMode = false;
+        nameSignupController.clear();
+        phoneSignupController.clear();
+        emailSignupController.clear();
+        passwordActivationController.clear();
+        selectedStudio = null;
+        studioSignupController.clear();
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Registration error: $e")),
       );
     } finally {
       setState(() => _loading = false);

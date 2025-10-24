@@ -24,7 +24,7 @@ class HomeScreen extends StatelessWidget {
               height: 220,
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: const AssetImage("assets/images/banner.jpg"),
+                  image: const AssetImage("assets/images/Banner.png"),
                   fit: BoxFit.cover,
                   colorFilter: ColorFilter.mode(
                     Colors.black
@@ -42,23 +42,23 @@ class HomeScreen extends StatelessWidget {
             left: 0,
             right: 0,
             child: Center(
-              child: Image.asset(
-                "assets/icons/logo.png",
-                height: 80,
-                fit: BoxFit.contain,
-              ),
-            ),
+                //child: Image.asset(
+                //  "assets/icons/logo.png",
+                //  height: 80,
+                //  fit: BoxFit.contain,
+                //),
+                ),
           ),
 
           // Search Bar
-          Positioned(
-            top: 110,
-            left: 16,
-            right: 16,
-            child: custom_search.SearchBar(
-              controller: searchController,
-            ),
-          ),
+          //Positioned(
+          //  top: 110,
+          //  left: 16,
+          //  right: 16,
+          //  child: custom_search.SearchBar(
+          //    controller: searchController,
+          //  ),
+          //),
 
           // Floating Categories
           Positioned(
@@ -77,18 +77,20 @@ class HomeScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     CategoryCard(
-                        label: "Live", icon: Icons.live_tv, width: cardWidth),
-                    CategoryCard(
-                        label: "Video",
-                        icon: Icons.play_circle_fill,
+                        label: "Class",
+                        iconPath: "assets/icons/class.svg",
                         width: cardWidth),
                     CategoryCard(
-                        label: "Workshop",
-                        icon: Icons.school,
+                        label: "Just Me",
+                        iconPath: "assets/icons/just_me.svg",
                         width: cardWidth),
                     CategoryCard(
-                        label: "Packages",
-                        icon: Icons.card_giftcard,
+                        label: "Membership",
+                        iconPath: "assets/icons/membership.svg",
+                        width: cardWidth),
+                    CategoryCard(
+                        label: "Trainer",
+                        iconPath: "assets/icons/trainers.svg",
                         width: cardWidth),
                   ],
                 );
@@ -112,7 +114,7 @@ class HomeScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "Live Classes",
+                          "Our Trainer",
                           style: theme.textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -133,7 +135,7 @@ class HomeScreen extends StatelessWidget {
                     child: ListView.builder(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       scrollDirection: Axis.horizontal,
-                      itemCount: 5,
+                      itemCount: 10,
                       itemBuilder: (_, i) => _liveClassCard(context),
                     ),
                   ),
@@ -171,7 +173,7 @@ class HomeScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "Workshops",
+                          "Our Studio",
                           style: theme.textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -215,44 +217,62 @@ class HomeScreen extends StatelessWidget {
   }
 
   // Live Class Card
+  // Live Class Card (ubah jadi gambar bulat + teks di bawah)
   Widget _liveClassCard(BuildContext context) {
     final theme = Theme.of(context);
+    final borderColor = Colors.red.shade700; // ganti warna kalau mau
+
     return Container(
-      width: 160,
+      width: 80,
       margin: const EdgeInsets.only(right: 12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: theme.cardColor,
-        boxShadow: [
-          BoxShadow(
-            color: theme.shadowColor.withOpacity(0.1),
-            blurRadius: 4,
-            offset: const Offset(2, 2),
-          )
-        ],
-      ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-            child: Image.asset(
-              "assets/images/banner.jpg",
-              height: 100,
-              width: double.infinity,
-              fit: BoxFit.cover,
+          // Circle with border
+          Container(
+            width: 100,
+            height: 100,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: borderColor, width: 6),
+              // optional shadow:
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: 6,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
+            child: ClipOval(
+              child: Image.asset(
+                "assets/images/trainerpp.png", // <-- ganti sesuai filemu
+                fit: BoxFit.cover,
+                width: 100,
+                height: 100,
+              ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text("Yoga Class",
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                )),
+
+          const SizedBox(height: 8),
+
+          // Name / Title (mirip gambar)
+          Text(
+            "SINTA MANJA", // <-- ganti sesuai kebutuhan
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: borderColor,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 0.6,
+            ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Text("Live Now", style: theme.textTheme.bodySmall),
+
+          const SizedBox(height: 4),
+
+          // Subtext (opsional)
+          Text(
+            "Trainer", // atau "Yoga Class" / keterangan lain
+            style: theme.textTheme.bodySmall,
           ),
         ],
       ),
@@ -280,7 +300,7 @@ class HomeScreen extends StatelessWidget {
               borderRadius:
                   const BorderRadius.vertical(top: Radius.circular(12)),
               child: Image.asset(
-                "assets/images/banner.jpg",
+                "assets/images/studio.jpg",
                 width: double.infinity,
                 fit: BoxFit.cover,
               ),
