@@ -13,6 +13,7 @@ import 'screens/login_screen.dart';
 import 'screens/class_detail_screen.dart';
 import 'screens/trainer_profile_screen.dart';
 import 'widgets/main_layout.dart';
+import 'screens/pages/consultant_screen.dart';
 
 void main() {
   runApp(GymBookingApp());
@@ -44,6 +45,7 @@ class GymBookingApp extends StatelessWidget {
               '/main': (_) => MainLayout(),
               ClassDetailScreen.routeName: (_) => ClassDetailScreen(),
               TrainerProfileScreen.routeName: (_) => TrainerProfileScreen(),
+              ConsultantScreen.routeName: (_) => ConsultantScreen(),
             },
           );
         },

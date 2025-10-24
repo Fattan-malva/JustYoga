@@ -77,9 +77,11 @@ class HomeScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     CategoryCard(
-                        label: "Class",
-                        iconPath: "assets/icons/class.svg",
-                        width: cardWidth),
+                        label: "Consultant",
+                        iconPath: "assets/icons/consultant.svg",
+                        width: cardWidth,
+                        onTap: () =>
+                            Navigator.pushNamed(context, '/consultant')),
                     CategoryCard(
                         label: "Just Me",
                         iconPath: "assets/icons/just_me.svg",
