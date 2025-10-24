@@ -144,50 +144,72 @@ class _JustMeScreenState extends State<JustMeScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(110),
-        child: ClipRRect(
-          borderRadius: const BorderRadius.only(
-            bottomLeft: Radius.circular(30),
-            bottomRight: Radius.circular(30),
-          ),
-          child: AppBar(
-            automaticallyImplyLeading: false,
-            elevation: 4,
-            backgroundColor: theme.colorScheme.primary,
-            title: Row(
+      backgroundColor: theme.colorScheme.primary,
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        elevation: 4,
+        backgroundColor: theme.colorScheme.primary,
+        toolbarHeight: 140, // NAIKKAN dari default ke 140
+        title: Column(
+          children: [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: const Text(
+                'Just Me',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            const SizedBox(height: 4), // DIKURANGI DRASTIS dari sebelumnya
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 IconButton(
-                  icon: const Icon(Icons.chevron_left, color: Colors.white),
+                  icon: const Icon(Icons.chevron_left,
+                      color: Colors.white, size: 20),
                   onPressed: _goToPreviousMonth,
+                  padding: const EdgeInsets.all(4),
+                  constraints:
+                      const BoxConstraints(minWidth: 36, minHeight: 36),
                 ),
                 Text(
                   '${_getMonthName(selectedDate.month)} ${selectedDate.year}',
                   style: const TextStyle(
-                    fontSize: 20,
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.chevron_right, color: Colors.white),
+                  icon: const Icon(Icons.chevron_right,
+                      color: Colors.white, size: 20),
                   onPressed: _goToNextMonth,
+                  padding: const EdgeInsets.all(4),
+                  constraints:
+                      const BoxConstraints(minWidth: 36, minHeight: 36),
                 ),
               ],
             ),
-            centerTitle: true,
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(60),
-              child: Padding(
-                padding: const EdgeInsets.only(top: 6),
+          ],
+        ),
+        centerTitle: true,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(80),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 0),
                 child: SizedBox(
                   height: 80,
                   child: MediaQuery(
                     data: MediaQuery.of(context).copyWith(
-                      textScaler: const TextScaler.linear(0.85),
+                      textScaler: const TextScaler.linear(0.9),
                     ),
                     child: CalendarSlider(
+                      key: ValueKey(selectedDate),
                       initialDate: selectedDate,
                       firstDate: firstDate,
                       lastDate: lastDate,
@@ -207,123 +229,143 @@ class _JustMeScreenState extends State<JustMeScreen> {
                   ),
                 ),
               ),
-            ),
+              // Studio Dropdown
+              Padding(
+                padding: const EdgeInsets.only(left: 16, right: 16, bottom: 12),
+                child: isLoadingStudios
+                    ? const Center(child: CircularProgressIndicator())
+                    : studioError != null
+                        ? Center(
+                            child: Text(
+                              'Error: $studioError',
+                              style: const TextStyle(
+                                  color: Colors.red, fontSize: 11),
+                              textAlign: TextAlign.center,
+                            ),
+                          )
+                        : DropdownButtonFormField<Studio>(
+                            isExpanded: true,
+                            style: TextStyle(
+                              fontSize: 13,
+                              height: 1.2,
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors
+                                      .black87 // UBAH JADI HITAM UNTUK DARK MODE
+                                  : Colors.black87,
+                            ),
+                            dropdownColor:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.grey[
+                                        200] // UBAH JADI TERANG UNTUK DARK MODE
+                                    : Colors.white,
+                            decoration: InputDecoration(
+                              filled: true, // TAMBAHKAN INI
+                              fillColor: Colors.white, // WARNA BACKGROUND PUTIH
+                              isDense: true,
+                              labelText:
+                                  selectedStudio == null ? 'Studio' : null,
+                              labelStyle: TextStyle(
+                                fontSize: 12,
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Colors
+                                        .grey[600] // WARNA LABEL LEBIH GELAP
+                                    : Colors.grey[700],
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(20),
+                                borderSide: BorderSide(
+                                  color: Colors.grey.shade400,
+                                  width: 1.0,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(20),
+                                borderSide: BorderSide(
+                                  color: Colors.grey.shade400,
+                                  width: 1.0,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(20),
+                                borderSide: BorderSide(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  width: 1.5,
+                                ),
+                              ),
+                              prefixIcon: Icon(
+                                Icons.location_on,
+                                size: 16,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                              suffixIcon: selectedStudio != null
+                                  ? IconButton(
+                                      icon: const Icon(Icons.close,
+                                          size: 18,
+                                          color:
+                                              Colors.grey), // TAMBAH WARNA ICON
+                                      onPressed: () {
+                                        setState(() {
+                                          selectedStudio = null;
+                                        });
+                                        _fetchJustMe();
+                                      },
+                                      padding: const EdgeInsets.all(4),
+                                    )
+                                  : const Icon(
+                                      Icons.keyboard_arrow_down_rounded,
+                                      size: 18,
+                                      color: Colors.grey, // TAMBAH WARNA ICON
+                                    ),
+                            ),
+                            value: selectedStudio,
+                            items: studios.map((studio) {
+                              return DropdownMenuItem<Studio>(
+                                value: studio,
+                                child: Text(
+                                  '${studio.name} - ${studio.address}',
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    height: 1.2,
+                                    color:
+                                        Colors.black87, // WARNA TEXT ITEM HITAM
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                            onChanged: (Studio? newValue) {
+                              setState(() {
+                                selectedStudio = newValue;
+                              });
+                              _fetchJustMe();
+                            },
+                          ),
+              ),
+            ],
           ),
         ),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Studio Dropdown
-          Padding(
-            padding:
-                const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 4),
-            child: DropdownButtonFormField<Studio>(
-              isExpanded: true,
-              style: TextStyle(
-                fontSize: 12,
-                height: 1.1,
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.white
-                    : Colors.black87,
-              ),
-              dropdownColor: Theme.of(context).brightness == Brightness.dark
-                  ? Colors.grey[850]
-                  : Colors.white,
-              decoration: InputDecoration(
-                isDense: true,
-                labelText: 'Studio',
-                labelStyle: TextStyle(
-                  fontSize: 11,
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.grey[300]
-                      : Colors.grey[700],
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 2,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                prefixIcon: Icon(
-                  Icons.location_on,
-                  size: 14,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                suffixIcon: selectedStudio != null
-                    ? IconButton(
-                        icon: const Icon(Icons.close, size: 16),
-                        onPressed: () {
-                          setState(() {
-                            selectedStudio = null;
-                          });
-                          _fetchJustMe();
-                        },
-                      )
-                    : const Icon(Icons.arrow_drop_down),
-              ),
-              value: selectedStudio,
-              items: studios.map((studio) {
-                return DropdownMenuItem<Studio>(
-                  value: studio,
-                  child: Text(
-                    studio.name,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 12,
-                      height: 1.1,
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? Colors.white
-                          : Colors.black87,
-                    ),
-                  ),
-                );
-              }).toList(),
-              onChanged: (Studio? newValue) {
-                setState(() {
-                  selectedStudio = newValue;
-                });
-                _fetchJustMe();
-              },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Text(
-              'Just Me for ${selectedDate.day} ${_getMonthName(selectedDate.month)} ${selectedDate.year}',
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-              ),
-            ),
-          ),
-          Expanded(
-            child: isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : noJustMeMessage != null
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.sentiment_dissatisfied,
-                              size: 64,
-                              color: Colors.grey.withOpacity(0.5),
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              noJustMeMessage!,
-                              style: TextStyle(
-                                color: Colors.grey.withOpacity(0.5),
-                                fontSize: 16,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                      )
-                    : error != null
+      body: ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(30),
+          topRight: Radius.circular(30),
+        ),
+        child: Container(
+          color: theme.scaffoldBackgroundColor,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 16),
+              Expanded(
+                child: isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : noJustMeMessage != null
                         ? Center(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -335,7 +377,7 @@ class _JustMeScreenState extends State<JustMeScreen> {
                                 ),
                                 const SizedBox(height: 16),
                                 Text(
-                                  '$error',
+                                  noJustMeMessage!,
                                   style: TextStyle(
                                     color: Colors.grey.withOpacity(0.5),
                                     fontSize: 16,
@@ -345,138 +387,172 @@ class _JustMeScreenState extends State<JustMeScreen> {
                               ],
                             ),
                           )
-                        : justmeItems.isEmpty
+                        : error != null
                             ? Center(
-                                child: Text(
-                                  'Tidak ada just me pada tanggal ini.',
-                                  style: theme.textTheme.bodyMedium,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.sentiment_dissatisfied,
+                                      size: 64,
+                                      color: Colors.grey.withOpacity(0.5),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      '$error',
+                                      style: TextStyle(
+                                        color: Colors.grey.withOpacity(0.5),
+                                        fontSize: 16,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ],
                                 ),
                               )
-                            : ListView.builder(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 16),
-                                itemCount: justmeItems.length,
-                                itemBuilder: (_, i) {
-                                  final item = justmeItems[i];
-                                  final timeRange =
-                                      '${item.timeFrom} - ${item.timeTo}';
-
-                                  return Card(
-                                    margin: const EdgeInsets.only(bottom: 12),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(16),
+                            : justmeItems.isEmpty
+                                ? Center(
+                                    child: Text(
+                                      'Tidak ada just me pada tanggal ini.',
+                                      style: theme.textTheme.bodyMedium,
                                     ),
-                                    elevation: 4,
-                                    child: Stack(
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.all(16.0),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              // Jam
-                                              Row(
+                                  )
+                                : ListView.builder(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16),
+                                    itemCount: justmeItems.length,
+                                    itemBuilder: (_, i) {
+                                      final item = justmeItems[i];
+                                      final timeRange =
+                                          '${item.timeFrom} - ${item.timeTo}';
+
+                                      return Card(
+                                        margin:
+                                            const EdgeInsets.only(bottom: 12),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(16),
+                                        ),
+                                        elevation: 4,
+                                        child: Stack(
+                                          children: [
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.all(16.0),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
                                                 children: [
-                                                  CircleAvatar(
-                                                    radius: 10,
-                                                    backgroundColor: theme
-                                                        .colorScheme.primary,
-                                                    child: const Icon(
-                                                      Icons.schedule,
-                                                      color: Colors.white,
-                                                      size: 12,
-                                                    ),
+                                                  // Jam
+                                                  Row(
+                                                    children: [
+                                                      CircleAvatar(
+                                                        radius: 10,
+                                                        backgroundColor: theme
+                                                            .colorScheme
+                                                            .primary,
+                                                        child: const Icon(
+                                                          Icons.schedule,
+                                                          color: Colors.white,
+                                                          size: 12,
+                                                        ),
+                                                      ),
+                                                      const SizedBox(width: 8),
+                                                      Text(
+                                                        timeRange,
+                                                        style: const TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                          fontSize: 16,
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
-                                                  const SizedBox(width: 8),
-                                                  Text(
-                                                    timeRange,
-                                                    style: const TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      fontSize: 16,
-                                                    ),
-                                                  ),
+
+                                                  const SizedBox(height: 2),
+
+                                                  // Trainer
+                                                  Row(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      const Icon(
+                                                        Icons.school_rounded,
+                                                        size: 15,
+                                                        color: Colors.redAccent,
+                                                      ),
+                                                      const SizedBox(width: 10),
+                                                      Expanded(
+                                                        child: Text(
+                                                          item.employeeName,
+                                                          style:
+                                                              const TextStyle(
+                                                            fontSize: 15,
+                                                            fontWeight:
+                                                                FontWeight.w500,
+                                                          ),
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  )
                                                 ],
                                               ),
-
-                                              const SizedBox(height: 2),
-
-                                              // Trainer
-                                              Row(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                children: [
-                                                  const Icon(
-                                                    Icons.school_rounded,
-                                                    size: 15,
-                                                    color: Colors.redAccent,
-                                                  ),
-                                                  const SizedBox(width: 10),
-                                                  Expanded(
-                                                    child: Text(
-                                                      item.employeeName,
-                                                      style: const TextStyle(
-                                                        fontSize: 15,
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                      ),
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                    ),
-                                                  ),
-                                                ],
-                                              )
-                                            ],
-                                          ),
-                                        ),
-
-                                        // Area kanan atas: chip studio
-                                        Positioned(
-                                          right: 12,
-                                          top: 12,
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 8, vertical: 4),
-                                            decoration: BoxDecoration(
-                                              color: Colors.red.shade50,
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
                                             ),
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                const Icon(Icons.location_on,
-                                                    color: Colors.red,
-                                                    size: 12),
-                                                const SizedBox(width: 4),
-                                                ConstrainedBox(
-                                                  constraints:
-                                                      const BoxConstraints(
-                                                          maxWidth: 120),
-                                                  child: Text(
-                                                    item.studioName,
-                                                    style: const TextStyle(
-                                                      color: Colors.red,
-                                                      fontSize: 10,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                    ),
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                  ),
+
+                                            // Area kanan atas: chip studio
+                                            Positioned(
+                                              right: 12,
+                                              top: 12,
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 8,
+                                                        vertical: 4),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.red.shade50,
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
                                                 ),
-                                              ],
+                                                child: Row(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    const Icon(
+                                                        Icons.location_on,
+                                                        color: Colors.red,
+                                                        size: 12),
+                                                    const SizedBox(width: 4),
+                                                    ConstrainedBox(
+                                                      constraints:
+                                                          const BoxConstraints(
+                                                              maxWidth: 120),
+                                                      child: Text(
+                                                        item.studioName,
+                                                        style: const TextStyle(
+                                                          color: Colors.red,
+                                                          fontSize: 10,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                        ),
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
                                             ),
-                                          ),
+                                          ],
                                         ),
-                                      ],
-                                    ),
-                                  );
-                                },
-                              ),
+                                      );
+                                    },
+                                  ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

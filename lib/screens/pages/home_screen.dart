@@ -85,7 +85,9 @@ class HomeScreen extends StatelessWidget {
                     CategoryCard(
                         label: "Just Me",
                         iconPath: "assets/icons/just_me.svg",
-                        width: cardWidth),
+                        width: cardWidth,
+                        onTap: () =>
+                            Navigator.pushNamed(context, '/private_session')),
                     CategoryCard(
                         label: "Membership",
                         iconPath: "assets/icons/membership.svg",
