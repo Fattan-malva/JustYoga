@@ -1,10 +1,7 @@
-# TODO: Implement Maps Button Functionality
-
-## Steps to Complete
-- [x] Add url_launcher dependency to pubspec.yaml
-- [x] Run flutter pub get to install the dependency
-- [x] Add import for url_launcher in findStudio_screen.dart
-- [x] Update onPressed callback in findStudio_screen.dart to launch maps with studio address
-- [x] Add permissions for Android (AndroidManifest.xml)
-- [x] Add permissions for iOS (Info.plist)
-- [ ] Test the maps functionality on a device
+- [x] Change plan history card background color to #FFD597
+- [x] Add a divider after the product name in plan history item
+- [x] Modify start date and end date display to be side by side with '-' separator, without labels
+- [x] Add date formatting for birth date, start date, and end date to display as "10 March 2025" format
+- [x] Update Just Me History card items to match plan history concept with silver color and remaining sessions above dates
+- [x] Set profile screen cards to be expanded by default and reorder them: Plan History, Just Me History, Personal Info, Account Detail
+- [ ] Make product name in Plan History and Just Me History responsive on mobile - reduce font size if text is too long

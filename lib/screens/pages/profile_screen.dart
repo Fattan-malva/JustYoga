@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 import '../../providers/auth_provider.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -8,10 +10,10 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  bool isPersonalExpanded = false;
-  bool isAccountExpanded = false;
-  bool isPlanHistoryExpanded = false;
-  bool isJustMeHistoryExpanded = false;
+  bool isPersonalExpanded = true;
+  bool isAccountExpanded = true;
+  bool isPlanHistoryExpanded = true;
+  bool isJustMeHistoryExpanded = true;
 
   @override
   void initState() {
@@ -48,7 +50,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 50),
+                      const SizedBox(height: 200),
 
                       // ===== SCROLL AREA (card-card + logout) =====
                       Expanded(
@@ -58,47 +60,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             children: [
                               if (user != null &&
                                   user.customerID.isNotEmpty) ...[
-                                // === PERSONAL INFO CARD ===
-                                _buildExpandableCard(
-                                  theme: theme,
-                                  title: 'Personal Information',
-                                  isExpanded: isPersonalExpanded,
-                                  onTap: () {
-                                    setState(() {
-                                      isPersonalExpanded = !isPersonalExpanded;
-                                    });
-                                  },
-                                  children: [
-                                    _buildInfoRow(
-                                        'Customer ID', user.customerID),
-                                    _buildInfoRow('Full Name', user.name),
-                                    _buildInfoRow('Birth Date', user.birthDate),
-                                    _buildInfoRow('Phone', user.phone),
-                                    _buildInfoRow(
-                                        'Identity Number', user.noIdentity),
-                                  ],
-                                ),
-                                const SizedBox(height: 10),
-
-                                // === ACCOUNT DETAILS CARD ===
-                                _buildExpandableCard(
-                                  theme: theme,
-                                  title: 'Account Details',
-                                  isExpanded: isAccountExpanded,
-                                  onTap: () {
-                                    setState(() {
-                                      isAccountExpanded = !isAccountExpanded;
-                                    });
-                                  },
-                                  children: [
-                                    _buildInfoRow('Email', user.email),
-                                    _buildInfoRow(
-                                        'Last Contract', user.lastContractID),
-                                    _buildInfoRow('Studio ID', user.toStudioID),
-                                  ],
-                                ),
-                                const SizedBox(height: 10),
-
                                 // === PLAN HISTORY CARD ===
                                 _buildExpandableCard(
                                   theme: theme,
@@ -144,6 +105,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           _buildInfoRow('No Data',
                                               'No just me history available')
                                         ],
+                                ),
+                                const SizedBox(height: 10),
+
+                                // === PERSONAL INFO CARD ===
+                                _buildExpandableCard(
+                                  theme: theme,
+                                  title: 'Personal Information',
+                                  isExpanded: isPersonalExpanded,
+                                  onTap: () {
+                                    setState(() {
+                                      isPersonalExpanded = !isPersonalExpanded;
+                                    });
+                                  },
+                                  children: [
+                                    _buildInfoRow(
+                                        'Customer ID', user.customerID),
+                                    _buildInfoRow('Full Name', user.name),
+                                    _buildInfoRow('Birth Date', user.birthDate),
+                                    _buildInfoRow('Phone', user.phone),
+                                    _buildInfoRow(
+                                        'Identity Number', user.noIdentity),
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+
+                                // === ACCOUNT DETAILS CARD ===
+                                _buildExpandableCard(
+                                  theme: theme,
+                                  title: 'Account Details',
+                                  isExpanded: isAccountExpanded,
+                                  onTap: () {
+                                    setState(() {
+                                      isAccountExpanded = !isAccountExpanded;
+                                    });
+                                  },
+                                  children: [
+                                    _buildInfoRow('Email', user.email),
+                                    _buildInfoRow(
+                                        'Last Contract', user.lastContractID),
+                                    _buildInfoRow('Studio ID', user.toStudioID),
+                                  ],
                                 ),
                               ] else ...[
                                 _buildProfileCard(
@@ -203,6 +205,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Center(
               child: Column(
                 children: [
+                  // === AVATAR ===
                   CircleAvatar(
                     radius: 55,
                     backgroundColor: Colors.white,
@@ -214,6 +217,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                   const SizedBox(height: 12),
+
+                  // === NAMA ===
                   Text(
                     user?.name ?? 'Guest',
                     style: TextStyle(
@@ -226,6 +231,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                   const SizedBox(height: 4),
+
+                  // === EMAIL ===
                   Text(
                     user?.email ?? '',
                     style: TextStyle(
@@ -233,6 +240,152 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       color: Theme.of(context).brightness == Brightness.dark
                           ? Colors.white70
                           : Colors.black87,
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // ===== CARD ACTIVE PLAN =====
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.85,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [
+                          Color(0xFFA50F0F), // 🔴 merah gelap
+                          Color.fromARGB(255, 249, 63, 63), // 🟡 merah sedang
+                          Color.fromARGB(255, 255, 169, 159), // 🟨 gold terang
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color.fromARGB(255, 252, 238, 195)
+                              .withOpacity(0.3),
+                          blurRadius: 10,
+                          spreadRadius: 1,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Stack(
+                      children: [
+                        // === Isi utama card ===
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // === Header: Icon + Active Plan ===
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                SvgPicture.asset(
+                                  'assets/icons/membership.svg',
+                                  height: 24,
+                                  width: 24,
+                                  color: Colors.black87,
+                                ),
+                                const SizedBox(width: 8),
+                                const Text(
+                                  'Active Plan',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            const SizedBox(height: 6),
+
+                            // === Garis penuh ===
+                            Container(
+                              height: 2,
+                              width: double.infinity,
+                              color: Colors.black.withOpacity(0.25),
+                            ),
+
+                            const SizedBox(height: 12),
+
+                            // === Product Name ===
+                            const Padding(
+                              padding: EdgeInsets.only(left: 8),
+                              child: Text(
+                                'Premium Yoga Mat Plan',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+
+                            // === Start & End Date ===
+                            const Row(
+                              children: [
+                                SizedBox(width: 8),
+                                Text(
+                                  '12 Oct 2025',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                SizedBox(width: 12),
+                                Text(
+                                  '-',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                SizedBox(width: 12),
+                                Text(
+                                  '12 Dec 2025',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+
+                        // === Badge "Active" di kanan atas ===
+                        Positioned(
+                          top: 0,
+                          right: 0,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.green.shade700,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.15),
+                                  blurRadius: 6,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: const Text(
+                              'Active',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -389,7 +542,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Expanded(
             flex: 3,
             child: Text(
-              value.isNotEmpty ? value : '-',
+              value.isNotEmpty ? _formatDate(value) : '-',
               style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
@@ -401,32 +554,133 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  // ===== FORMAT DATE =====
+  String _formatDate(String dateString) {
+    try {
+      DateTime dateTime = DateTime.parse(dateString);
+      return DateFormat('d MMMM yyyy').format(dateTime);
+    } catch (e) {
+      return dateString;
+    }
+  }
+
   // ===== PLAN HISTORY ITEM =====
   Widget _buildPlanHistoryItem(plan) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey.shade200),
+        gradient: const LinearGradient(
+          colors: [
+            Color(0xFFF9B63F), // gold gelap sedikit
+            Color(0xFFFFC94D), // gold sedang
+            Color(0xFFFFE39F), // gold terang
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.amber.withOpacity(0.3), // soft golden shadow
+            blurRadius: 12,
+            spreadRadius: 1,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            plan.productName,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
+          Row(
+            children: [
+              const Icon(
+                Icons.description, // ikon "data history"
+                color: Color(0xFF333333),
+                size: 20,
+              ),
+              const SizedBox(width: 6), // jarak antara ikon dan teks
+              Expanded(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    plan.productName,
+                    style: TextStyle(
+                      fontSize:
+                          MediaQuery.of(context).size.width < 360 ? 12 : 16,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF333333),
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Divider(
+            color: Colors.black.withOpacity(0.1),
+            thickness: 1,
           ),
           const SizedBox(height: 8),
-          _buildInfoRow('Start Date', plan.startDate),
-          _buildInfoRow('End Date', plan.endDate),
-          _buildInfoRow('Transaction Date', plan.trxDate),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Text(
+                _formatDate(plan.startDate),
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF333333),
+                ),
+              ),
+              const SizedBox(width: 8),
+              const Text(
+                '-',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF333333),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                _formatDate(plan.endDate),
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF333333),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
+    );
+  }
+
+  // ===== PLAN HISTORY INFO ROW =====
+  Widget _buildPlanHistoryInfoRow(String label, String value) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.grey.shade600,
+          ),
+        ),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Color(0xFF333333),
+          ),
+        ),
+      ],
     );
   }
 
@@ -434,26 +688,107 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildJustMeHistoryItem(justMe) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey.shade200),
+        gradient: const LinearGradient(
+          colors: [
+            Color(0xFFB8B8B8), // silver gelap
+            Color(0xFFD9D9D9), // silver sedang
+            Color(0xFFF2F2F2), // silver terang
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.3), // soft silver shadow
+            blurRadius: 12,
+            spreadRadius: 1,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            justMe.productName,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
+          Row(
+            children: [
+              const Icon(
+                Icons.group, // ikon "data history"
+                color: Color(0xFF333333),
+                size: 20,
+              ),
+              const SizedBox(width: 6), // jarak antara ikon dan teks
+              Expanded(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    justMe.productName,
+                    style: TextStyle(
+                      fontSize:
+                          MediaQuery.of(context).size.width < 360 ? 12 : 16,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF333333),
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 8),
+          Divider(
+            color: Colors.grey.shade400,
+            thickness: 1,
           ),
           const SizedBox(height: 8),
-          _buildInfoRow('Start Date', justMe.startDate),
-          _buildInfoRow('End Date', justMe.endDate),
-          _buildInfoRow('Remaining Sessions', justMe.remainSession.toString()),
+
+          // 🔹 Ganti dari Center() ke Align kiri
+          Text(
+            'Remaining Sessions: ${justMe.remainSession ?? 0}',
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: Color(0xFF333333),
+            ),
+          ),
+
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Text(
+                _formatDate(justMe.startDate),
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF333333),
+                ),
+              ),
+              const SizedBox(width: 8),
+              const Text(
+                '-',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF333333),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                _formatDate(justMe.endDate),
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF333333),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );

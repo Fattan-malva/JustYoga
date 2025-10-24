@@ -207,13 +207,19 @@ class _FindStudioScreenState extends State<FindStudioScreen> {
                                             ?.copyWith(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 18,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onSurface,
                                             ),
                                       ),
                                       const SizedBox(height: 8),
                                       Container(
                                         width: double.infinity,
                                         height: 2,
-                                        color: Colors.black,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurface
+                                            .withOpacity(0.3),
                                       ),
                                       const SizedBox(height: 20),
 
@@ -266,14 +272,15 @@ class _FindStudioScreenState extends State<FindStudioScreen> {
                                                           children: [
                                                             Text(
                                                               studio.name,
-                                                              style:
-                                                                  const TextStyle(
+                                                              style: TextStyle(
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .w600,
                                                                 fontSize: 16,
-                                                                color: Colors
-                                                                    .black87,
+                                                                color: Theme.of(
+                                                                        context)
+                                                                    .colorScheme
+                                                                    .onSurface,
                                                               ),
                                                             ),
                                                             const SizedBox(
