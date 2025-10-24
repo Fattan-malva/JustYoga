@@ -1,6 +1,10 @@
-- [ ] Make PrivateSessionScreen StatefulWidget
-- [ ] Add state variables: selectedDate, firstDate, lastDate, justmeItems, isLoading, error, noJustMeMessage, studios, selectedStudio, isLoadingStudios, studioError, apiService
-- [ ] Add methods: _getMonthName, _goToPreviousMonth, _goToNextMonth, _fetchStudios, _fetchJustMe
-- [ ] Modify headerContent to include month nav row, calendar slider, studio dropdown below the texts
-- [ ] Change bodyContent to the ClipRRect container with just me list
-- [ ] Adjust headerHeight to accommodate the new content
+# TODO: Implement Maps Button Functionality
+
+## Steps to Complete
+- [x] Add url_launcher dependency to pubspec.yaml
+- [x] Run flutter pub get to install the dependency
+- [x] Add import for url_launcher in findStudio_screen.dart
+- [x] Update onPressed callback in findStudio_screen.dart to launch maps with studio address
+- [x] Add permissions for Android (AndroidManifest.xml)
+- [x] Add permissions for iOS (Info.plist)
+- [ ] Test the maps functionality on a device

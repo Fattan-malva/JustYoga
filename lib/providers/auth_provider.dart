@@ -15,7 +15,8 @@ class AuthProvider extends ChangeNotifier {
   List<PlanHistory>? get planHistory => _planHistory;
   List<JustMeHistory>? get justMeHistory => _justMeHistory;
 
-  final ApiService _apiService = ApiService(baseUrl: 'http://localhost:3000');
+  final ApiService _apiService =
+      ApiService(baseUrl: 'http://192.168.234.182:3000');
   final SecureStorageService _secureStorage = SecureStorageService();
 
   Future<bool> login(String email, String password) async {
