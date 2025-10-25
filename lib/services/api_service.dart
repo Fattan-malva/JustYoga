@@ -21,6 +21,7 @@ import '../models/schedule_item.dart';
 import '../models/studio.dart';
 import '../models/room_type.dart';
 import '../models/booking_item.dart';
+import '../models/booking_list_item.dart';
 import '../models/justme_item.dart';
 import '../models/activation.dart';
 import '../models/plan_history.dart';
@@ -173,6 +174,31 @@ class ApiService {
     if (resp.statusCode == 200) {
       final List<dynamic> data = jsonDecode(resp.body);
       return data.map((item) => BookingItem.fromJson(item)).toList();
+    } else {
+      try {
+        final Map<String, dynamic> errorData = jsonDecode(resp.body);
+        if (errorData.containsKey('message')) {
+          throw Exception(errorData['message']);
+        }
+      } catch (_) {}
+      throw Exception('Failed to load bookings');
+    }
+  }
+
+  // GET BOOKINGS BY CUSTOMER ID
+  Future<List<BookingListItem>> fetchBookingsByCustomerId(
+      String customerId) async {
+    final url = Uri.parse(
+        '$baseUrl/api/bookings/find-by-customer-id?customerID=$customerId');
+    final token = await _secureStorage.getToken();
+    final headers = <String, String>{'Accept': 'application/json'};
+    if (token != null) {
+      headers['Authorization'] = 'Bearer $token';
+    }
+    final resp = await http.get(url, headers: headers);
+    if (resp.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(resp.body);
+      return data.map((item) => BookingListItem.fromJson(item)).toList();
     } else {
       try {
         final Map<String, dynamic> errorData = jsonDecode(resp.body);

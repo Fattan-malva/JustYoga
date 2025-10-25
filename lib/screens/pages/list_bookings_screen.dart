@@ -1,56 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 import '../../providers/auth_provider.dart';
+import '../../services/api_service.dart';
+import '../../models/booking_list_item.dart';
 
-class ListBookingsScreen extends StatelessWidget {
-  // Data dummy untuk booking list
-  final List<Map<String, String>> dummyBookings = [
-    {
-      'className': 'Hot Yoga Flow',
-      'studio': 'Yoga Studio Central',
-      'trainer': 'Sarah Johnson',
-      'time': '07:00 - 08:30',
-      'room': 'Room A',
-      'matNumber': 'Mat 12',
-      'status': 'Confirmed'
-    },
-    {
-      'className': 'Vinyasa Power',
-      'studio': 'Sunrise Yoga Studio',
-      'trainer': 'Mike Chen',
-      'time': '09:00 - 10:15',
-      'room': 'Room B',
-      'matNumber': 'Mat 08',
-      'status': 'Confirmed'
-    },
-    {
-      'className': 'Gentle Hatha',
-      'studio': 'Peaceful Minds Studio',
-      'trainer': 'Emma Wilson',
-      'time': '14:00 - 15:00',
-      'room': 'Room C',
-      'matNumber': 'Mat 15',
-      'status': 'Pending'
-    },
-    {
-      'className': 'Ashtanga Primary',
-      'studio': 'Yoga Studio Central',
-      'trainer': 'David Lee',
-      'time': '17:30 - 19:00',
-      'room': 'Room A',
-      'matNumber': 'Mat 05',
-      'status': 'Confirmed'
-    },
-    {
-      'className': 'Yin & Meditation',
-      'studio': 'Zen Yoga Space',
-      'trainer': 'Lisa Park',
-      'time': '20:00 - 21:00',
-      'room': 'Room D',
-      'matNumber': 'Mat 11',
-      'status': 'Cancelled'
-    },
-  ];
+class ListBookingsScreen extends StatefulWidget {
+  @override
+  _ListBookingsScreenState createState() => _ListBookingsScreenState();
+}
+
+class _ListBookingsScreenState extends State<ListBookingsScreen> {
+  late Future<List<BookingListItem>> _bookingsFuture;
+  final ApiService _apiService = ApiService(baseUrl: 'http://localhost:3000');
+
+  @override
+  void initState() {
+    super.initState();
+    _loadBookings();
+  }
+
+  void _loadBookings() {
+    final auth = Provider.of<AuthProvider>(context, listen: false);
+    final user = auth.user;
+    if (user != null && user.customerID != null) {
+      _bookingsFuture = _apiService.fetchBookingsByCustomerId(user.customerID!);
+    } else {
+      _bookingsFuture = Future.value([]);
+    }
+  }
 
   // Function untuk mendapatkan warna status
   Color _getStatusColor(String status, BuildContext context) {
@@ -67,6 +45,16 @@ class ListBookingsScreen extends StatelessWidget {
     }
   }
 
+  // Function untuk format tanggal
+  String _formatDate(String dateString) {
+    try {
+      DateTime date = DateTime.parse(dateString);
+      return DateFormat('d MMMM yyyy').format(date);
+    } catch (e) {
+      return dateString;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthProvider>(context);
@@ -75,7 +63,8 @@ class ListBookingsScreen extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? theme.colorScheme.background : Colors.grey.shade50,
+      backgroundColor:
+          isDark ? theme.colorScheme.background : Colors.grey.shade50,
       body: Padding(
         padding: EdgeInsets.all(16),
         child: Column(
@@ -107,13 +96,11 @@ class ListBookingsScreen extends StatelessWidget {
               color: isDark ? theme.cardColor : Colors.white,
               child: ListTile(
                 leading: CircleAvatar(
-                  backgroundColor: isDark 
-                    ? theme.colorScheme.primary.withOpacity(0.2)
-                    : Colors.blue.shade50,
-                  child: Icon(
-                    Icons.card_membership, 
-                    color: isDark ? theme.colorScheme.primary : Colors.blue
-                  ),
+                  backgroundColor: isDark
+                      ? theme.colorScheme.primary.withOpacity(0.2)
+                      : Colors.blue.shade50,
+                  child: Icon(Icons.card_membership,
+                      color: isDark ? theme.colorScheme.primary : Colors.blue),
                 ),
                 title: Text(
                   'Status Membership',
@@ -131,20 +118,22 @@ class ListBookingsScreen extends StatelessWidget {
                 trailing: Container(
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: isDark 
-                      ? Colors.green.withOpacity(0.2)
-                      : Colors.green.shade50,
+                    color: isDark
+                        ? Colors.green.withOpacity(0.2)
+                        : Colors.green.shade50,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: isDark 
-                        ? Colors.green.shade300.withOpacity(0.3)
-                        : Colors.green.shade100,
+                      color: isDark
+                          ? Colors.green.shade300.withOpacity(0.3)
+                          : Colors.green.shade100,
                     ),
                   ),
                   child: Text(
                     'Aktif',
                     style: TextStyle(
-                      color: isDark ? Colors.green.shade300 : Colors.green.shade800,
+                      color: isDark
+                          ? Colors.green.shade300
+                          : Colors.green.shade800,
                       fontWeight: FontWeight.w600,
                       fontSize: 12,
                     ),
@@ -154,11 +143,37 @@ class ListBookingsScreen extends StatelessWidget {
             ),
             SizedBox(height: 24),
             Expanded(
-              child: ListView.builder(
-                itemCount: dummyBookings.length,
-                itemBuilder: (context, index) {
-                  final booking = dummyBookings[index];
-                  return _buildBookingCard(booking, context);
+              child: FutureBuilder<List<BookingListItem>>(
+                future: _bookingsFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(
+                      child: Text(
+                        'Error loading bookings: ${snapshot.error}',
+                        style: TextStyle(color: theme.colorScheme.error),
+                      ),
+                    );
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return Center(
+                      child: Text(
+                        'No bookings found',
+                        style: TextStyle(
+                            color:
+                                theme.colorScheme.onSurface.withOpacity(0.7)),
+                      ),
+                    );
+                  } else {
+                    final bookings = snapshot.data!;
+                    return ListView.builder(
+                      itemCount: bookings.length,
+                      itemBuilder: (context, index) {
+                        final booking = bookings[index];
+                        return _buildBookingCard(booking, context);
+                      },
+                    );
+                  }
                 },
               ),
             ),
@@ -168,7 +183,7 @@ class ListBookingsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildBookingCard(Map<String, String> booking, BuildContext context) {
+  Widget _buildBookingCard(BookingListItem booking, BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -194,30 +209,45 @@ class ListBookingsScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
-                  child: Text(
-                    booking['className']!,
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: theme.colorScheme.onSurface,
-                    ),
-                    overflow: TextOverflow.ellipsis,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        booking.className,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.onSurface,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        _formatDate(booking.classBookingDate),
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: theme.colorScheme.onSurface.withOpacity(0.7),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 SizedBox(width: 8),
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: _getStatusColor(booking['status']!, context).withOpacity(isDark ? 0.2 : 0.1),
+                    color: _getStatusColor(booking.status, context)
+                        .withOpacity(isDark ? 0.2 : 0.1),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: _getStatusColor(booking['status']!, context).withOpacity(isDark ? 0.4 : 0.3),
+                      color: _getStatusColor(booking.status, context)
+                          .withOpacity(isDark ? 0.4 : 0.3),
                     ),
                   ),
                   child: Text(
-                    booking['status']!,
+                    booking.status,
                     style: TextStyle(
-                      color: _getStatusColor(booking['status']!, context),
+                      color: _getStatusColor(booking.status, context),
                       fontWeight: FontWeight.w600,
                       fontSize: 12,
                     ),
@@ -228,9 +258,9 @@ class ListBookingsScreen extends StatelessWidget {
             SizedBox(height: 12),
             // Garis pemisah
             Divider(
-              color: isDark 
-                ? theme.colorScheme.outline.withOpacity(0.3)
-                : Colors.grey.shade200,
+              color: isDark
+                  ? theme.colorScheme.outline.withOpacity(0.3)
+                  : Colors.grey.shade200,
               height: 1,
             ),
             SizedBox(height: 12),
@@ -241,28 +271,41 @@ class ListBookingsScreen extends StatelessWidget {
                 // Kolom kiri - Studio dan Trainer
                 Expanded(
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildCompactDetailRow(Icons.business, 'Studio', booking['studio']!, context),
-                      SizedBox(height: 12),
-                      _buildCompactDetailRow(Icons.person, 'Trainer', booking['trainer']!, context),
+                      _buildCompactDetailRow(
+                          'Studio', booking.studioName, context),
+                      SizedBox(height: 16),
+                      _buildCompactDetailRow(
+                          'Trainer',
+                          booking.teacher1Name.isNotEmpty
+                              ? booking.teacher1Name
+                              : 'N/A',
+                          context),
                     ],
                   ),
                 ),
-                SizedBox(width: 16),
+                SizedBox(width: 24),
                 // Kolom kanan - Time, Room, dan Mat Number
                 Expanded(
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildCompactDetailRow(Icons.access_time, 'Time', booking['time']!, context),
-                      SizedBox(height: 12),
+                      _buildCompactDetailRow(
+                          'Time',
+                          '${booking.classBookingTime} - ${booking.timeClsEnd}',
+                          context),
+                      SizedBox(height: 16),
                       Row(
                         children: [
                           Expanded(
-                            child: _buildCompactDetailRow(Icons.room, 'Room', booking['room']!, context),
+                            child: _buildCompactDetailRow(
+                                'Room', booking.roomName, context),
                           ),
-                          SizedBox(width: 8),
+                          SizedBox(width: 16),
                           Expanded(
-                            child: _buildCompactDetailRow(Icons.weekend, 'Mat', booking['matNumber']!, context),
+                            child: _buildCompactDetailRow('Mat',
+                                'Mat ${booking.classMapNumber}', context),
                           ),
                         ],
                       ),
@@ -277,45 +320,31 @@ class ListBookingsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCompactDetailRow(IconData icon, String label, String value, BuildContext context) {
+  Widget _buildCompactDetailRow(
+      String label, String value, BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    return Row(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(
-          icon,
-          size: 16,
-          color: isDark 
-            ? theme.colorScheme.onSurface.withOpacity(0.6)
-            : Colors.grey.shade600,
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            color: isDark
+                ? theme.colorScheme.onSurface.withOpacity(0.5)
+                : Colors.grey.shade500,
+            fontWeight: FontWeight.w500,
+          ),
         ),
-        SizedBox(width: 6),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 11,
-                  color: isDark 
-                    ? theme.colorScheme.onSurface.withOpacity(0.5)
-                    : Colors.grey.shade500,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              SizedBox(height: 2),
-              Text(
-                value,
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: theme.colorScheme.onSurface,
-                ),
-              ),
-            ],
+        SizedBox(height: 2),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: theme.colorScheme.onSurface,
           ),
         ),
       ],

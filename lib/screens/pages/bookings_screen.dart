@@ -33,7 +33,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
   Future<void> _fetchBookings() async {
     setState(() => isLoading = true);
     try {
-      final apiService = ApiService(baseUrl: 'http://192.168.234.182:3000');
+      final apiService = ApiService(baseUrl: 'http://localhost:3000');
       final bookings =
           await apiService.fetchBookingsByUniqCode(widget.schedule.uniqCode);
       final takenSeats = bookings.map((b) => b.classMapNumber).toSet();
@@ -763,7 +763,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
     setState(() => isLoading = true);
 
     try {
-      final apiService = ApiService(baseUrl: 'http://192.168.234.182:3000');
+      final apiService = ApiService(baseUrl: 'http://localhost:3000');
       final auth = Provider.of<AuthProvider>(context, listen: false);
       final user = auth.user;
 

@@ -98,8 +98,7 @@ class _FindStudioScreenState extends State<FindStudioScreen> {
   bool isLoading = false;
   String? error;
 
-  final ApiService apiService =
-      ApiService(baseUrl: 'http://192.168.234.182:3000');
+  final ApiService apiService = ApiService(baseUrl: 'http://localhost:3000');
 
   @override
   void initState() {
