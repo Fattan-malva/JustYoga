@@ -25,6 +25,7 @@ import '../models/justme_item.dart';
 import '../models/activation.dart';
 import '../models/plan_history.dart';
 import '../models/just_me_history.dart';
+import '../models/active_plan.dart';
 
 class ApiService {
   final String baseUrl;
@@ -389,7 +390,20 @@ class ApiService {
 
   Future<Map<String, dynamic>> fetchCustomer(String customerID) async {
     final url = Uri.parse('$baseUrl/api/customers?customerID=$customerID');
-    final resp = await http.get(url);
+    final token = await _secureStorage.getToken(); // ambil token yang disimpan
+
+    final headers = <String, String>{
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
+
+    // Tambahkan Authorization jika token tersedia
+    if (token != null) {
+      headers['Authorization'] = 'Bearer $token';
+    }
+
+    final resp = await http.get(url, headers: headers);
+
     if (resp.statusCode == 200) {
       final Map<String, dynamic> data = jsonDecode(resp.body);
       return data;
@@ -463,6 +477,25 @@ class ApiService {
         }
       } catch (_) {}
       throw Exception('Failed to load just me history');
+    }
+  }
+
+  // GET ACTIVE PLAN
+  Future<List<ActivePlan>> fetchActivePlan(String lastContractID) async {
+    final url = Uri.parse(
+        '$baseUrl/api/product/active-plan?lastContractID=$lastContractID');
+    final resp = await http.get(url);
+    if (resp.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(resp.body);
+      return data.map((item) => ActivePlan.fromJson(item)).toList();
+    } else {
+      try {
+        final Map<String, dynamic> errorData = jsonDecode(resp.body);
+        if (errorData.containsKey('message')) {
+          throw Exception(errorData['message']);
+        }
+      } catch (_) {}
+      throw Exception('Failed to load active plan');
     }
   }
 }

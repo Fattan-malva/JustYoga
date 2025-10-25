@@ -3,6 +3,7 @@ import '../models/user.dart';
 import '../models/activation.dart';
 import '../models/plan_history.dart';
 import '../models/just_me_history.dart';
+import '../models/active_plan.dart';
 import '../services/api_service.dart';
 import '../services/secure_storage_service.dart';
 
@@ -10,10 +11,12 @@ class AuthProvider extends ChangeNotifier {
   UserModel? _user;
   List<PlanHistory>? _planHistory;
   List<JustMeHistory>? _justMeHistory;
+  List<ActivePlan>? _activePlan;
   bool get isAuthenticated => _user != null;
   UserModel? get user => _user;
   List<PlanHistory>? get planHistory => _planHistory;
   List<JustMeHistory>? get justMeHistory => _justMeHistory;
+  List<ActivePlan>? get activePlan => _activePlan;
 
   final ApiService _apiService =
       ApiService(baseUrl: 'http://192.168.234.182:3000');
@@ -134,6 +137,7 @@ class AuthProvider extends ChangeNotifier {
         _user = UserModel.fromJson(customerData);
         await loadPlanHistory();
         await loadJustMeHistory();
+        await loadActivePlan();
         notifyListeners();
       } catch (e) {
         print('Failed to load customer data: $e');
@@ -160,6 +164,17 @@ class AuthProvider extends ChangeNotifier {
         notifyListeners();
       } catch (e) {
         print('Failed to load just me history: $e');
+      }
+    }
+  }
+
+  Future<void> loadActivePlan() async {
+    if (_user != null && _user!.lastContractID.isNotEmpty) {
+      try {
+        _activePlan = await _apiService.fetchActivePlan(_user!.lastContractID);
+        notifyListeners();
+      } catch (e) {
+        print('Failed to load active plan: $e');
       }
     }
   }

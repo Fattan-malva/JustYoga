@@ -246,148 +246,202 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 20),
 
                   // ===== CARD ACTIVE PLAN =====
-                  Container(
-                    width: MediaQuery.of(context).size.width * 0.85,
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [
-                          Color(0xFFA50F0F), // 🔴 merah gelap
-                          Color.fromARGB(255, 249, 63, 63), // 🟡 merah sedang
-                          Color.fromARGB(255, 255, 169, 159), // 🟨 gold terang
+                  if (auth.activePlan != null && auth.activePlan!.isNotEmpty)
+                    Builder(
+                      builder: (context) {
+                        final plan = auth.activePlan!.first;
+                        final isActive = plan.status;
+                        return Container(
+                          width: MediaQuery.of(context).size.width * 0.85,
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            gradient: isActive
+                                ? const LinearGradient(
+                                    colors: [
+                                      Color(0xFFA50F0F), // 🔴 merah gelap
+                                      Color.fromARGB(
+                                          255, 249, 63, 63), // 🟡 merah sedang
+                                      Color.fromARGB(
+                                          255, 255, 169, 159), // 🟨 gold terang
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  )
+                                : const LinearGradient(
+                                    colors: [
+                                      Color(0xFFB0B0B0), // grey gelap
+                                      Color(0xFFD0D0D0), // grey sedang
+                                      Color(0xFFE0E0E0), // grey terang
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: isActive
+                                    ? const Color.fromARGB(255, 252, 238, 195)
+                                        .withOpacity(0.3)
+                                    : Colors.grey.withOpacity(0.3),
+                                blurRadius: 10,
+                                spreadRadius: 1,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Stack(
+                            children: [
+                              // === Isi utama card ===
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // === Header: Icon + Plan ===
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      SvgPicture.asset(
+                                        'assets/icons/vip.svg',
+                                        height: 24,
+                                        width: 24,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        isActive
+                                            ? 'Active Plan'
+                                            : 'Inactive Plan',
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+
+                                  const SizedBox(height: 6),
+
+                                  // === Garis penuh ===
+                                  Container(
+                                    height: 2,
+                                    width: double.infinity,
+                                    color: Colors.black.withOpacity(0.25),
+                                  ),
+
+                                  const SizedBox(height: 12),
+
+                                  // === Product Name ===
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 8),
+                                    child: Text(
+                                      plan.productName,
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
+
+                                  // === Start & End Date ===
+                                  Row(
+                                    children: [
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        _formatDate(plan.startDate),
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      const Text(
+                                        '-',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Text(
+                                        _formatDate(plan.endDate),
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+
+                              // === Badge di kanan atas ===
+                              Positioned(
+                                top: 0,
+                                right: 0,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: isActive
+                                        ? Colors.green.shade50.withOpacity(0.3)
+                                        : Colors.grey.shade200.withOpacity(0.3),
+                                    borderRadius: BorderRadius.circular(12),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.15),
+                                        blurRadius: 6,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Text(
+                                    isActive ? 'Active' : 'Inactive',
+                                    style: TextStyle(
+                                      color: isActive
+                                          ? const Color.fromARGB(255, 91, 253, 97)
+                                          : Colors.grey.shade600,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    )
+                  else
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.85,
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade300,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 10,
+                            spreadRadius: 1,
+                            offset: const Offset(0, 4),
+                          ),
                         ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
                       ),
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color.fromARGB(255, 252, 238, 195)
-                              .withOpacity(0.3),
-                          blurRadius: 10,
-                          spreadRadius: 1,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Stack(
-                      children: [
-                        // === Isi utama card ===
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // === Header: Icon + Active Plan ===
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                SvgPicture.asset(
-                                  'assets/icons/membership.svg',
-                                  height: 24,
-                                  width: 24,
-                                  color: Colors.black87,
-                                ),
-                                const SizedBox(width: 8),
-                                const Text(
-                                  'Active Plan',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ],
-                            ),
-
-                            const SizedBox(height: 6),
-
-                            // === Garis penuh ===
-                            Container(
-                              height: 2,
-                              width: double.infinity,
-                              color: Colors.black.withOpacity(0.25),
-                            ),
-
-                            const SizedBox(height: 12),
-
-                            // === Product Name ===
-                            const Padding(
-                              padding: EdgeInsets.only(left: 8),
-                              child: Text(
-                                'Premium Yoga Mat Plan',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
-
-                            // === Start & End Date ===
-                            const Row(
-                              children: [
-                                SizedBox(width: 8),
-                                Text(
-                                  '12 Oct 2025',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                                SizedBox(width: 12),
-                                Text(
-                                  '-',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                                SizedBox(width: 12),
-                                Text(
-                                  '12 Dec 2025',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-
-                        // === Badge "Active" di kanan atas ===
-                        Positioned(
-                          top: 0,
-                          right: 0,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: Colors.green.shade700,
-                              borderRadius: BorderRadius.circular(12),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.15),
-                                  blurRadius: 6,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: const Text(
-                              'Active',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
-                              ),
-                            ),
+                      child: const Center(
+                        child: Text(
+                          'No Active Plan',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black54,
                           ),
                         ),
-                      ],
+                      ),
                     ),
-                  ),
                 ],
               ),
             ),
