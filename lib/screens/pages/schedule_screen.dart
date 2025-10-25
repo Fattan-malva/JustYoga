@@ -215,7 +215,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         automaticallyImplyLeading: false,
         elevation: 4,
         backgroundColor: theme.colorScheme.primary,
-        toolbarHeight: 140, // NAIKKAN dari default ke 140
+        toolbarHeight: 165, // NAIKKAN dari default ke 140
         title: Column(
           children: [
             Align(

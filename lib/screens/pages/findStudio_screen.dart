@@ -149,6 +149,9 @@ class _FindStudioScreenState extends State<FindStudioScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
+          SizedBox(
+            height: 10,
+          ),
           Text(
             'Find Your\nSpace',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(

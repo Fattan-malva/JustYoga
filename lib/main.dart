@@ -9,12 +9,12 @@ import 'providers/theme_provider.dart';
 import 'screens/splash_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/login_screen.dart';
-
 import 'screens/class_detail_screen.dart';
 import 'screens/trainer_profile_screen.dart';
 import 'widgets/main_layout.dart';
 import 'screens/pages/consultant_screen.dart';
 import 'screens/pages/privateSession_screen.dart';
+
 
 void main() {
   runApp(GymBookingApp());

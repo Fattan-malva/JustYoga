@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:gymbooking/screens/pages/list_bookings_screen.dart';
 import 'package:provider/provider.dart';
 import '../widgets/bottom_nav.dart';
 import '../screens/pages/home_screen.dart';
 import '../screens/pages/schedule_screen.dart';
 import '../screens/pages/findStudio_screen.dart';
-import '../screens/pages/membership_screen.dart';
+import '../screens/pages/list_bookings_screen.dart';
 import '../screens/pages/profile_screen.dart';
 import '../providers/auth_provider.dart';
 import '../providers/theme_provider.dart';
@@ -24,7 +25,7 @@ class _MainLayoutState extends State<MainLayout> {
     HomeScreen(),
     ScheduleScreen(),
     FindStudioScreen(),
-    MembershipScreen(),
+    ListBookingsScreen(),
     ProfileScreen(),
   ];
 
@@ -43,7 +44,7 @@ class _MainLayoutState extends State<MainLayout> {
   void _onBottomNavTapped(int index) {
     _pageController.animateToPage(
       index,
-      duration: Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
     );
   }
@@ -53,77 +54,102 @@ class _MainLayoutState extends State<MainLayout> {
     final auth = Provider.of<AuthProvider>(context);
     final user = auth.user;
 
+    const double appBarHeight = 60;
+
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        titleSpacing: 0,
-        toolbarHeight: 50, // DIKURANGI dari default (biasanya 56-64)
-        title: Row(
-          children: [
-            const SizedBox(width: 6), // DIKURANGI dari 8
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  _currentIndex = 4;
-                });
-                _pageController.animateToPage(
-                  4,
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                );
-              },
-              child: CircleAvatar(
-                radius: 16, // DIKURANGI dari 18
-                backgroundColor: Colors.white.withOpacity(0.15),
-                child: const Icon(
-                  Icons.person,
-                  color: Colors.white,
-                  size: 20, // DIKURANGI dari 22
-                ),
-              ),
+      extendBodyBehindAppBar: true, // biar body bisa di bawah AppBar tanpa celah
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: Stack(
+        children: [
+          // ===== BODY =====
+          Container(
+            margin: const EdgeInsets.only(top: appBarHeight - 22), 
+            // dikurangi sedikit biar body “menyatu” pas di bawah rounded AppBar
+            child: PageView(
+              controller: _pageController,
+              onPageChanged: _onPageChanged,
+              physics: const BouncingScrollPhysics(),
+              children: _pages,
             ),
-            const SizedBox(width: 8), // DIKURANGI dari 10
-            Text(
-              'Hi, ${user?.name?.split(' ').first ?? 'Guest'}',
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 16, // DIKURANGI dari default
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          Consumer<ThemeProvider>(
-            builder: (context, themeProvider, child) {
-              return IconButton(
-                icon: Icon(
-                  themeProvider.isDarkMode ? Icons.light_mode : Icons.dark_mode,
-                  color: Colors.white,
-                  size: 22, // DIKURANGI dari default
-                ),
-                onPressed: () => themeProvider.toggleTheme(),
-                tooltip: themeProvider.isDarkMode
-                    ? 'Switch to Light Mode'
-                    : 'Switch to Dark Mode',
-                padding: const EdgeInsets.all(4), // DIKURANGI
-                constraints: const BoxConstraints(
-                  minWidth: 36, // DIKURANGI
-                  minHeight: 36, // DIKURANGI
-                ),
-              );
-            },
           ),
-          const SizedBox(width: 6), // DIKURANGI dari 8
+
+          // ===== APPBAR =====
+          ClipRRect(
+            borderRadius: const BorderRadius.only(
+              bottomLeft: Radius.circular(24),
+              bottomRight: Radius.circular(24),
+            ),
+            child: Container(
+              height: appBarHeight,
+              color: Theme.of(context).colorScheme.primary,
+              child: SafeArea(
+                bottom: false,
+                child: Row(
+                  children: [
+                    const SizedBox(width: 6),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _currentIndex = 4;
+                        });
+                        _pageController.animateToPage(
+                          4,
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                        );
+                      },
+                      child: CircleAvatar(
+                        radius: 16,
+                        backgroundColor: Colors.white.withOpacity(0.15),
+                        child: const Icon(
+                          Icons.person,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Hi, ${user?.name?.split(' ').first ?? 'Guest'}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const Spacer(),
+                    Consumer<ThemeProvider>(
+                      builder: (context, themeProvider, child) {
+                        return IconButton(
+                          icon: Icon(
+                            themeProvider.isDarkMode
+                                ? Icons.light_mode
+                                : Icons.dark_mode,
+                            color: Colors.white,
+                            size: 22,
+                          ),
+                          onPressed: () => themeProvider.toggleTheme(),
+                          tooltip: themeProvider.isDarkMode
+                              ? 'Switch to Light Mode'
+                              : 'Switch to Dark Mode',
+                          padding: const EdgeInsets.all(4),
+                          constraints: const BoxConstraints(
+                            minWidth: 36,
+                            minHeight: 36,
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(width: 6),
+                  ],
+                ),
+              ),
+            ),
+          ),
         ],
       ),
-      body: PageView(
-        controller: _pageController,
-        onPageChanged: _onPageChanged,
-        physics: const BouncingScrollPhysics(),
-        children: _pages,
-      ),
+
+      // ===== BOTTOM NAV =====
       bottomNavigationBar: AppBottomNav(
         currentIndex: _currentIndex,
         onTap: _onBottomNavTapped,

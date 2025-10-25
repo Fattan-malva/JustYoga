@@ -36,8 +36,8 @@ class AppBottomNav extends StatelessWidget {
         SalomonBottomBarItem(
           icon: SvgPicture.asset(
             'assets/icons/schedule.svg',
-            width: 33,
-            height: 33,
+            width: 34,
+            height: 34,
             colorFilter: ColorFilter.mode(
               isDarkMode ? Colors.red : Theme.of(context).iconTheme.color!,
               BlendMode.srcIn,
@@ -63,16 +63,16 @@ class AppBottomNav extends StatelessWidget {
         // 🔸 Membership — selalu amber, baik mode terang maupun gelap
         SalomonBottomBarItem(
           icon: SvgPicture.asset(
-            'assets/icons/membership.svg',
-            width: 33,
-            height: 33,
-            colorFilter: const ColorFilter.mode(
-              Colors.amber,
+            'assets/icons/bookings.svg',
+            width: 30,
+            height: 30,
+            colorFilter: ColorFilter.mode(
+              isDarkMode ? Colors.red : Theme.of(context).iconTheme.color!,
               BlendMode.srcIn,
             ),
           ),
-          title: const Text("Membership"),
-          selectedColor: Colors.amber,
+          title: const Text("Bookings"),
+          selectedColor: Colors.red,
         ),
       ],
     );
